@@ -8,6 +8,7 @@ import Html.Events exposing (..)
 import Pages.Ex01 as Ex01
 import Pages.Ex02 as Ex02
 import Pages.Ex03 as Ex03
+import Pages.Ex04 as Ex04
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), top)
 
@@ -22,6 +23,7 @@ type alias Model =
     , ex01Model : Maybe Ex01.Model
     , ex02Model : Maybe Ex02.Model
     , ex03Model : Maybe Ex03.Model
+    , ex04Model : Maybe Ex04.Model
     }
 
 
@@ -32,6 +34,7 @@ defaultModel key =
     , ex01Model = Nothing
     , ex02Model = Nothing
     , ex03Model = Nothing
+    , ex04Model = Nothing
     }
 
 
@@ -45,6 +48,7 @@ type Msg
     | Ex01Msg Ex01.Msg
     | Ex02Msg Ex02.Msg
     | Ex03Msg Ex03.Msg
+    | Ex04Msg Ex04.Msg
 
 
 
@@ -108,6 +112,9 @@ init _ url key =
                 Exercise 3 ->
                     { model0 | currentExercise = Just 3, ex03Model = Just Ex03.init }
 
+                Exercise 4 ->
+                    { model0 | currentExercise = Just 4, ex04Model = Just Ex04.init }
+
                 _ ->
                     model0
     in
@@ -146,6 +153,9 @@ update msg model =
 
                 Exercise 3 ->
                     ( { model0 | currentExercise = Just 3, ex03Model = Just Ex03.init }, Cmd.none )
+
+                Exercise 4 ->
+                    ( { model0 | currentExercise = Just 4, ex04Model = Just Ex04.init }, Cmd.none )
 
                 _ ->
                     ( model0, Cmd.none )
@@ -186,6 +196,17 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        Ex04Msg subMsg ->
+            case model.ex04Model of
+                Just ex04Model ->
+                    let
+                        ( newModel, cmd ) =
+                            Ex04.update subMsg ex04Model
+                    in
+                    ( { model | ex04Model = Just newModel }, Cmd.map Ex04Msg cmd )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
 
 -- VIEW
@@ -249,6 +270,14 @@ mainPane model =
 
                     Nothing ->
                         text "Loading Ex03..."
+
+            Just 4 ->
+                case model.ex04Model of
+                    Just ex04Model ->
+                        Html.map Ex04Msg (Ex04.view ex04Model)
+
+                    Nothing ->
+                        text "Loading Ex04..."
 
             Just n ->
                 text ("Exercise " ++ String.fromInt n ++ " - Not implemented yet")
