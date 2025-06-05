@@ -67,7 +67,7 @@ view model =
         [ div []
             [ span [] [ text "What is the input string? " ]
             , input
-                [ placeholder "Enter your name"
+                [ placeholder "Enter a string"
                 , value model.input
                 , onInput InputChanged
                 , on "keydown" (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)

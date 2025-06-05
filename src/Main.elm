@@ -7,8 +7,9 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Pages.Ex01 as Ex01
 import Pages.Ex02 as Ex02
+import Pages.Ex03 as Ex03
 import Url exposing (Url)
-import Url.Parser as Parser exposing ((</>), int, s, top)
+import Url.Parser as Parser exposing ((</>), top)
 
 
 
@@ -20,8 +21,17 @@ type alias Model =
     , currentExercise : Maybe Int
     , ex01Model : Maybe Ex01.Model
     , ex02Model : Maybe Ex02.Model
+    , ex03Model : Maybe Ex03.Model
+    }
 
-    -- 必要に応じて他のExerciseのModelを追加
+
+defaultModel : Nav.Key -> Model
+defaultModel key =
+    { key = key
+    , currentExercise = Nothing
+    , ex01Model = Nothing
+    , ex02Model = Nothing
+    , ex03Model = Nothing
     }
 
 
@@ -34,6 +44,7 @@ type Msg
     | UrlChanged Url
     | Ex01Msg Ex01.Msg
     | Ex02Msg Ex02.Msg
+    | Ex03Msg Ex03.Msg
 
 
 
@@ -83,18 +94,24 @@ init _ url key =
         route =
             Parser.parse routeParser url |> Maybe.withDefault Home
 
-        ( currentEx, initModel1, initModel2 ) =
+        model0 =
+            defaultModel key
+
+        model =
             case route of
                 Exercise 1 ->
-                    ( Just 1, Just Ex01.init, Nothing )
+                    { model0 | currentExercise = Just 1, ex01Model = Just Ex01.init }
 
                 Exercise 2 ->
-                    ( Just 2, Nothing, Just Ex02.init )
+                    { model0 | currentExercise = Just 2, ex02Model = Just Ex02.init }
+
+                Exercise 3 ->
+                    { model0 | currentExercise = Just 3, ex03Model = Just Ex03.init }
 
                 _ ->
-                    ( Nothing, Nothing, Nothing )
+                    model0
     in
-    ( { key = key, currentExercise = currentEx, ex01Model = initModel1, ex02Model = initModel2 }, Cmd.none )
+    ( model, Cmd.none )
 
 
 
@@ -116,16 +133,22 @@ update msg model =
             let
                 route =
                     Parser.parse routeParser url |> Maybe.withDefault Home
+
+                model0 =
+                    defaultModel model.key
             in
             case route of
                 Exercise 1 ->
-                    ( { model | currentExercise = Just 1, ex01Model = Just Ex01.init, ex02Model = Nothing }, Cmd.none )
+                    ( { model0 | currentExercise = Just 1, ex01Model = Just Ex01.init }, Cmd.none )
 
                 Exercise 2 ->
-                    ( { model | currentExercise = Just 2, ex01Model = Nothing, ex02Model = Just Ex02.init }, Cmd.none )
+                    ( { model0 | currentExercise = Just 2, ex02Model = Just Ex02.init }, Cmd.none )
+
+                Exercise 3 ->
+                    ( { model0 | currentExercise = Just 3, ex03Model = Just Ex03.init }, Cmd.none )
 
                 _ ->
-                    ( { model | currentExercise = Nothing, ex01Model = Nothing, ex02Model = Nothing }, Cmd.none )
+                    ( model0, Cmd.none )
 
         Ex01Msg subMsg ->
             case model.ex01Model of
@@ -147,6 +170,18 @@ update msg model =
                             Ex02.update subMsg ex02Model
                     in
                     ( { model | ex02Model = Just newModel }, Cmd.map Ex02Msg cmd )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        Ex03Msg subMsg ->
+            case model.ex03Model of
+                Just ex03Model ->
+                    let
+                        ( newModel, cmd ) =
+                            Ex03.update subMsg ex03Model
+                    in
+                    ( { model | ex03Model = Just newModel }, Cmd.map Ex03Msg cmd )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -206,6 +241,14 @@ mainPane model =
 
                     Nothing ->
                         text "Loading Ex02..."
+
+            Just 3 ->
+                case model.ex03Model of
+                    Just ex03Model ->
+                        Html.map Ex03Msg (Ex03.view ex03Model)
+
+                    Nothing ->
+                        text "Loading Ex03..."
 
             Just n ->
                 text ("Exercise " ++ String.fromInt n ++ " - Not implemented yet")
