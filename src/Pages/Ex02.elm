@@ -51,7 +51,7 @@ update msg model =
 makeOutput : String -> String
 makeOutput input =
     if input /= "" then
-        "Homer has " ++ fromInt (length input) ++ " characters."
+        input ++ " has " ++ fromInt (length input) ++ " characters."
 
     else
         ""
