@@ -7,10 +7,10 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 2: Input, Processing, and Output
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex01 [x] [Saying Hello](src/Pages/Ex01.elm)                      | | |
-| Ex02 [ ] [Counting the Number of Characters](src/Pages/Ex02.elm) | | |
-| Ex03 [ ] [Printing Quotes](src/Pages/Ex03.elm)                   | | |
-| Ex04 [ ] [Mad Lib](src/Pages/Ex04.elm)                           | | |
+| Ex01 [x] [Saying Hello](src/Pages/Ex01.elm)                      | | |1(1)
+| Ex02 [x] [Counting the Number of Characters](src/Pages/Ex02.elm) | | |1(1)
+| Ex03 [x] [Printing Quotes](src/Pages/Ex03.elm)                   | | |1(1)
+| Ex04 [x] [Mad Lib](src/Pages/Ex04.elm)                           | | |1(1)
 | Ex05 [ ] [Simple Math](src/Pages/Ex05.elm)                       | | |
 | Ex06 [ ] [Retirement Calculator](src/Pages/Ex06.elm)             | | |
 #### Chapter 3: Calculations
