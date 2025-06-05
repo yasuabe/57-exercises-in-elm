@@ -1,8 +1,11 @@
-# Elm
-elm-stuff/
-node_modules/
+# Elm compiled output
+elm.js
+main.js
+app.js
+index.js
 dist/
 build/
+elm-stuff/
 
 # Editor files
 .vscode/
