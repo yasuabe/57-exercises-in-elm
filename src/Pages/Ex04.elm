@@ -4,7 +4,7 @@ import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (on, onInput)
 import Json.Decode as Decode
-import String exposing (fromInt, length, isEmpty)
+import String exposing (isEmpty)
 
 
 

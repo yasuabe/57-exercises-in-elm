@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
+import Exercises exposing (Exercise, exercises)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -209,6 +210,7 @@ update msg model =
                     ( model, Cmd.none )
 
 
+
 -- VIEW
 
 
@@ -226,20 +228,24 @@ view model =
 
 leftPane : Html Msg
 leftPane =
-    div [ style "width" "200px", style "background-color" "#f0f0f0", style "padding" "20px" ]
+    div [ style "width" "300px", style "background-color" "#f0f0f0", style "padding" "20px" ]
         [ h3 [] [ text "Exercises" ]
-        , div [] (List.map exerciseLink (List.range 1 57))
+        , div [] (List.map exerciseLink2 exercises)
         ]
 
 
-exerciseLink : Int -> Html Msg
-exerciseLink n =
+exerciseLink2 : Exercise -> Html Msg
+exerciseLink2 { suffix, title, done } =
     let
-        paddedNumber =
-            String.padLeft 2 '0' (String.fromInt n)
+        title2 =
+            text <| suffix ++ ": " ++ title
     in
     div [ style "margin" "5px 0" ]
-        [ a [ href ("/ex" ++ paddedNumber) ] [ text ("Exercise " ++ paddedNumber) ]
+        [ if done then
+            a [ href ("/ex" ++ suffix) ] [ title2 ]
+
+          else
+            title2
         ]
 
 
