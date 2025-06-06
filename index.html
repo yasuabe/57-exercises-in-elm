@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Elm 57 Exercises</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; }
+    body { margin: 0; font-family: Arial, sans-serif; padding: 20px; }
     a { color: #1f88e5; text-decoration: none; }
     a:hover { text-decoration: underline; }
+    button { padding: 10px 20px; font-size: 16px; margin: 10px 0; }
   </style>
 </head>
 <body>
@@ -17,6 +18,81 @@
     var app = Elm.Main.init({
       node: document.getElementById('app')
     });
+
+    let db;
+
+    // データベース初期化
+    const request = indexedDB.open('ExercisesForProgrammersDB', 1);
+
+    request.onupgradeneeded = function(event) {
+      db = event.target.result;
+      db.createObjectStore('ex57Store', { keyPath: 'id', autoIncrement: true });
+    };
+
+    request.onsuccess = function(event) {
+      db = event.target.result;
+    };
+
+    if (app.ports && app.ports.writeToIndexedDB) {
+      app.ports.writeToIndexedDB.subscribe(function(data) {
+        const transaction = db.transaction(['ex57Store'], 'readwrite');
+        const objectStore = transaction.objectStore('ex57Store');
+        
+        const writeRequest = objectStore.add({
+          data: data,
+          timestamp: new Date().toISOString()
+        });
+        
+        writeRequest.onsuccess = function() {
+          if (app.ports.indexedDBResult) {
+            app.ports.indexedDBResult.send('書き込み成功: ' + data);
+          }
+        };
+      });
+    }
+    if (app.ports && app.ports.readFromIndexedDB) {
+      app.ports.readFromIndexedDB.subscribe(function() {
+        const transaction = db.transaction(['ex57Store'], 'readonly');
+        const objectStore = transaction.objectStore('ex57Store');
+        
+        const readRequest = objectStore.getAll();
+        
+        readRequest.onsuccess = function() {
+          const records = readRequest.result;
+          if (app.ports.indexedDBReadResult) {
+            try {
+              records2 = JSON.parse(JSON.stringify(records));
+              console.log('読み込み成功:', records2);
+              app.ports.indexedDBReadResult.send(records);
+            } catch (e) {
+              console.error('JSON変換エラー:', e);
+            }
+          }
+        };
+      });
+
+    }
+    if (app.ports && app.ports.deleteTodo) {
+      app.ports.deleteTodo.subscribe(function(todoId) {
+        const transaction = db.transaction(['ex57Store'], 'readwrite');
+        const objectStore = transaction.objectStore('ex57Store');
+        
+        const readRequest = objectStore.delete(todoId);
+        
+        readRequest.onsuccess = function() {
+          const records = readRequest.result;
+          if (app.ports.deleteTodoResult) {
+            try {
+              console.log("successfylly deleted: " + todoId);
+              app.ports.deleteTodoResult.send("successfylly deleted: " + todoId);
+            } catch (e) {
+              console.error('JSON変換エラー:', e);
+            }
+          }
+        };
+      });
+
+    }
   </script>
 </body>
 </html>

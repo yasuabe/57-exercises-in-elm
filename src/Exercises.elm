@@ -60,7 +60,7 @@ exercises =
     , { suffix = "50", title = "Movie Recommendations"            , done = False }
     , { suffix = "51", title = "Pushing Notes to Firebase"        , done = False }
     , { suffix = "52", title = "Creating Your Own Time Service"   , done = False }
-    , { suffix = "53", title = "Todo List"                        , done = False }
+    , { suffix = "53", title = "Todo List"                        , done = True }
     , { suffix = "54", title = "URL Shortener"                    , done = False }
     , { suffix = "55", title = "Text Sharing"                     , done = False }
     , { suffix = "56", title = "Tracking Inventory"               , done = False }

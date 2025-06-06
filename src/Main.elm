@@ -1,4 +1,4 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Array as A
 import Browser
@@ -68,6 +68,13 @@ import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), top)
 
 
+
+port writeToIndexedDB : String -> Cmd msg
+port readFromIndexedDB : () -> Cmd msg
+port deleteTodo : Int -> Cmd msg
+port indexedDBResult : (String -> msg) -> Sub msg
+port indexedDBReadResult : (List Ex53.TodoRecord -> msg) -> Sub msg
+port deleteTodoResult : (String -> msg) -> Sub msg
 
 -- MODEL
 
@@ -210,6 +217,7 @@ type Msg
     | Ex02Msg Ex02.Msg
     | Ex03Msg Ex03.Msg
     | Ex04Msg Ex04.Msg
+    | Ex53Msg Ex53.Msg
 
 
 
@@ -318,6 +326,23 @@ update msg model =
                 Exercise 4 ->
                     ( { model0 | currentExercise = Just 4, ex04Model = Just Ex04.init }, Cmd.none )
 
+                Exercise 53 ->
+                  let
+                    ( ex53Model, cmd, mbCommand) = Ex53.init
+                    portCmd = case mbCommand of
+                        Just (Ex53.WriteToIndexedDB data) ->
+                            writeToIndexedDB data
+                        Just (Ex53.DeleteTodo todoId) ->
+                            deleteTodo todoId
+                        Just (Ex53.ReadFromIndexedDB) ->
+                            readFromIndexedDB ()
+                        Nothing ->
+                            Cmd.none
+                  in
+                  ( { model0 | currentExercise = Just 53, ex53Model = Just ex53Model }
+                  , Cmd.batch [ Cmd.map Ex53Msg cmd, portCmd ]
+                  )
+
                 _ ->
                     ( model0, Cmd.none )
 
@@ -369,6 +394,28 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        Ex53Msg subMsg ->
+            case model.ex53Model of
+                Just ex53Model ->
+                    let
+                        ( newModel, cmd, maybeCommand ) =
+                            Ex53.update subMsg ex53Model
+                            
+                        portCmd = case maybeCommand of
+                            Just (Ex53.WriteToIndexedDB data) ->
+                                writeToIndexedDB data
+                            Just (Ex53.ReadFromIndexedDB) ->
+                                readFromIndexedDB ()
+                            Just (Ex53.DeleteTodo todoId) ->
+                                deleteTodo todoId
+                            Nothing ->
+                                Cmd.none
+                    in
+                    ( { model | ex53Model = Just newModel }
+                    , Cmd.batch [ Cmd.map Ex53Msg cmd, portCmd ]
+                    )
+                Nothing ->
+                    ( model, Cmd.none )
 
 
 -- VIEW
@@ -452,6 +499,9 @@ mainPane model =
             Just 4 ->
                 mapMain model 4 (\m -> m.ex04Model) Ex04.view Ex04Msg
 
+            Just 53 ->
+                mapMain model 53 (\m -> m.ex53Model) Ex53.view Ex53Msg
+
             Just n ->
                 text ("Exercise " ++ String.fromInt n ++ " - Not implemented yet")
 
@@ -468,10 +518,21 @@ mainPane model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
-
-
+subscriptions model =
+    case model.currentExercise of
+        Just 53 ->
+            Sub.batch
+                [ indexedDBResult (Ex53Msg << Ex53.WriteComplete)
+                , indexedDBReadResult (Ex53Msg << Ex53.LoadComplete)
+                , deleteTodoResult (Ex53Msg << Ex53.DeleteComplete)
+                , case model.ex53Model of
+                    Just ex53Model ->
+                        Sub.map Ex53Msg (Ex53.subscriptions ex53Model)
+                    Nothing ->
+                        Sub.none
+                ]
+        _ ->
+            Sub.none
 
 -- MAIN
 
