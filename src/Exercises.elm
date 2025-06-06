@@ -66,3 +66,7 @@ exercises =
     , { suffix = "56", title = "Tracking Inventory"               , done = False }
     , { suffix = "57", title = "Trivia App"                       , done = False }
     ]
+
+toTitle : Exercise -> String
+toTitle { suffix, title } =
+    suffix ++ ": " ++ title

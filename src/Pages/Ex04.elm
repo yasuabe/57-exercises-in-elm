@@ -8,7 +8,6 @@ import String exposing (isEmpty)
 
 
 
--- (fromInt, length)
 -- MODEL
 
 
@@ -30,8 +29,11 @@ init =
     , message = ""
     }
 
+
 toStrings : Model -> List String
-toStrings m = [ m.noun, m.verb, m.adjective, m.adverb ]
+toStrings m =
+    [ m.noun, m.verb, m.adjective, m.adverb ]
+
 
 
 -- MSG
@@ -72,6 +74,7 @@ makeOutput : Model -> String
 makeOutput model =
     if toStrings model |> List.any isEmpty then
         ""
+
     else
         "Do you " ++ model.verb ++ " your " ++ model.adjective ++ " " ++ model.noun ++ " " ++ model.adverb ++ "? That's hilarious!"
 

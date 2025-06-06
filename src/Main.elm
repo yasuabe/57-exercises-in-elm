@@ -1,8 +1,9 @@
 module Main exposing (main)
 
+import Array as A
 import Browser
 import Browser.Navigation as Nav
-import Exercises exposing (Exercise, exercises)
+import Exercises exposing (Exercise, exercises, toTitle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -235,18 +236,45 @@ leftPane =
 
 
 exerciseLink2 : Exercise -> Html Msg
-exerciseLink2 { suffix, title, done } =
+exerciseLink2 e =
     let
-        title2 =
-            text <| suffix ++ ": " ++ title
+        title =
+            text <| toTitle e
     in
     div [ style "margin" "5px 0" ]
-        [ if done then
-            a [ href ("/ex" ++ suffix) ] [ title2 ]
+        [ if e.done then
+            a [ href ("/ex" ++ e.suffix) ] [ title ]
 
           else
-            title2
+            title
         ]
+
+
+mapMain : Model -> Int -> (Model -> Maybe a) -> (a -> Html msg) -> (msg -> Msg) -> Html Msg
+mapMain model n g h msg =
+    let
+        exercise =
+            exerciseAt n
+    in
+    case g model of
+        Just exModel ->
+            div []
+                [ h1 [] [ text <| toTitle exercise ]
+                , Html.map msg (h exModel)
+                ]
+
+        Nothing ->
+            text <| "Loading " ++ exercise.title
+
+
+exerciseAt : Int -> Exercise
+exerciseAt n =
+    case A.get (n - 1) (A.fromList exercises) of
+        Just exercise ->
+            exercise
+
+        Nothing ->
+            { suffix = String.fromInt n, title = "Exercise " ++ String.fromInt n, done = False }
 
 
 mainPane : Model -> Html Msg
@@ -254,36 +282,16 @@ mainPane model =
     div [ style "flex" "1", style "padding" "20px" ]
         [ case model.currentExercise of
             Just 1 ->
-                case model.ex01Model of
-                    Just ex01Model ->
-                        Html.map Ex01Msg (Ex01.view ex01Model)
-
-                    Nothing ->
-                        text "Loading Ex01..."
+                mapMain model 1 (\m -> m.ex01Model) Ex01.view Ex01Msg
 
             Just 2 ->
-                case model.ex02Model of
-                    Just ex02Model ->
-                        Html.map Ex02Msg (Ex02.view ex02Model)
-
-                    Nothing ->
-                        text "Loading Ex02..."
+                mapMain model 2 (\m -> m.ex02Model) Ex02.view Ex02Msg
 
             Just 3 ->
-                case model.ex03Model of
-                    Just ex03Model ->
-                        Html.map Ex03Msg (Ex03.view ex03Model)
-
-                    Nothing ->
-                        text "Loading Ex03..."
+                mapMain model 3 (\m -> m.ex03Model) Ex03.view Ex03Msg
 
             Just 4 ->
-                case model.ex04Model of
-                    Just ex04Model ->
-                        Html.map Ex04Msg (Ex04.view ex04Model)
-
-                    Nothing ->
-                        text "Loading Ex04..."
+                mapMain model 4 (\m -> m.ex04Model) Ex04.view Ex04Msg
 
             Just n ->
                 text ("Exercise " ++ String.fromInt n ++ " - Not implemented yet")
