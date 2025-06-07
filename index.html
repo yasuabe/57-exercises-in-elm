@@ -4,12 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Elm 57 Exercises</title>
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; padding: 20px; }
-    a { color: #1f88e5; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    button { padding: 10px 20px; font-size: 16px; margin: 10px 0; }
-  </style>
+  <link rel="stylesheet" type="text/css" href="styles.css" /> 
 </head>
 <body>
   <div id="app"></div>
@@ -19,79 +14,49 @@
       node: document.getElementById('app')
     });
 
-    let db;
+    function createTransaction(db, storeName, mode = 'readwrite') {
+      return db.transaction([storeName], mode).objectStore(storeName);
+    }
+    function subscribeToPort(portName, callback) {
+      app.ports[portName].subscribe(callback);
+    }
 
-    // データベース初期化
     const request = indexedDB.open('ExercisesForProgrammersDB', 1);
 
     request.onupgradeneeded = function(event) {
-      db = event.target.result;
-      db.createObjectStore('ex57Store', { keyPath: 'id', autoIncrement: true });
+      event
+        .target
+        .result
+        .createObjectStore('ex57Store', { keyPath: 'id', autoIncrement: true });
     };
 
     request.onsuccess = function(event) {
-      db = event.target.result;
-    };
+      let db = event.target.result;
 
-    if (app.ports && app.ports.writeToIndexedDB) {
-      app.ports.writeToIndexedDB.subscribe(function(data) {
-        const transaction = db.transaction(['ex57Store'], 'readwrite');
-        const objectStore = transaction.objectStore('ex57Store');
-        
-        const writeRequest = objectStore.add({
+      subscribeToPort('writeToIndexedDB', function(data) {
+        const req = createTransaction(db, 'ex57Store').add({
           data: data,
           timestamp: new Date().toISOString()
         });
-        
-        writeRequest.onsuccess = function() {
-          if (app.ports.indexedDBResult) {
-            app.ports.indexedDBResult.send('書き込み成功: ' + data);
-          }
+        req.onsuccess = function() {
+          app.ports.indexedDBResult.send('written: ' + data);
         };
       });
-    }
-    if (app.ports && app.ports.readFromIndexedDB) {
-      app.ports.readFromIndexedDB.subscribe(function() {
-        const transaction = db.transaction(['ex57Store'], 'readonly');
-        const objectStore = transaction.objectStore('ex57Store');
+      subscribeToPort('readFromIndexedDB', function() {
+        const req = createTransaction(db, 'ex57Store', 'readonly').getAll();
         
-        const readRequest = objectStore.getAll();
-        
-        readRequest.onsuccess = function() {
-          const records = readRequest.result;
-          if (app.ports.indexedDBReadResult) {
-            try {
-              records2 = JSON.parse(JSON.stringify(records));
-              console.log('読み込み成功:', records2);
-              app.ports.indexedDBReadResult.send(records);
-            } catch (e) {
-              console.error('JSON変換エラー:', e);
-            }
-          }
+        req.onsuccess = function() {
+          const records = req.result;
+          app.ports.indexedDBReadResult.send(records);
         };
       });
+      subscribeToPort('deleteTodo', function(todoId) {
+        const req = createTransaction(db, 'ex57Store').delete(todoId)
 
-    }
-    if (app.ports && app.ports.deleteTodo) {
-      app.ports.deleteTodo.subscribe(function(todoId) {
-        const transaction = db.transaction(['ex57Store'], 'readwrite');
-        const objectStore = transaction.objectStore('ex57Store');
-        
-        const readRequest = objectStore.delete(todoId);
-        
-        readRequest.onsuccess = function() {
-          const records = readRequest.result;
-          if (app.ports.deleteTodoResult) {
-            try {
-              console.log("successfylly deleted: " + todoId);
-              app.ports.deleteTodoResult.send("successfylly deleted: " + todoId);
-            } catch (e) {
-              console.error('JSON変換エラー:', e);
-            }
-          }
+        req.onsuccess = function() {
+          app.ports.deleteTodoResult.send("deleted: " + todoId);
         };
       });
-
     }
   </script>
 </body>

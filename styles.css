@@ -1,0 +1,125 @@
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.left-pane {
+  width: 300px;
+  background-color: #f0f0f010;
+  padding: 20px;
+}
+
+.left-pane__titles {
+  overflow: scroll;
+  height: 90%;
+}
+a {
+  color: #1f88e5;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+    padding: 2px 5px; /* 適切なパディング */
+    border: none;
+    border-radius: 5px; /* 角丸に */
+    background-color: #007bff; /* メインのボタンの色 */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3; /* ホバー時に少し濃く */
+    transform: translateY(-1px); /* 少しだけ上に浮き上がらせる */
+}
+
+/* 削除ボタンのスタイル */
+.delete-button { /* HTML側でこのクラスを付与 */
+    background-color: #dc3545; /* 赤系の色 */
+    width: 100%;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.add-button[disabled] {
+    background-color: #6c757d; /* グレーアウトされた色 */
+    width: 100%;
+}
+.add-button {
+    width: 100%;
+}
+.todo-list-table {
+    width: 100%;
+    border-collapse: collapse; /* ボーダーを重ねる */
+    margin-top: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* テーブル全体に影 */
+    border-radius: 8px; /* テーブル全体を角丸に */
+    overflow: hidden; /* 角丸にするために必要 */
+}
+
+.todo-list-table th,
+.todo-list-table td {
+    padding: 12px 15px; /* パディングを増やす */
+    text-align: left;
+    border-bottom: 1px solid #eee4; /* 各行の下に細いボーダー */
+}
+
+.todo-list-table th {
+    background-color: #f8f8f840; /* ヘッダーの背景色 */
+    color: #555;
+    font-weight: 600;
+}
+
+.todo-list-table tr:last-child td {
+    border-bottom: none; /* 最後の行の下線は不要 */
+}
+
+/* 交互の行の背景色 */
+.todo-list-table tr:nth-child(even) {
+    background-color: #f9f9f920;
+}
+
+/* 各列の幅の調整（CSS GridやFlexboxを使う場合は不要になることが多い） */
+.todo-list-table th:nth-child(1), /* ID */
+.todo-list-table td:nth-child(1) {
+    width: 50px;
+}
+
+.todo-list-table td:nth-child(2) {
+    width: auto; /* 残りの幅を自動で調整 */
+    font-size: 16px;
+}
+
+.todo-list-table td:nth-child(3) {
+    width: 120px;
+    font-size: 14px;
+}
+
+.todo-list-table td:nth-child(4) {
+    width: 100px; /* ボタンの幅に合わせて調整 */
+    text-align: center; /* ボタンを中央寄せに */
+}
+
+.todo-list-table .todo-input {
+    width: 100%;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    width: 100%;
+}
+.todo-list-table th {
+    color: #f0f0f0;
+    text-align: center; /* ボタンを中央寄せに */
+}

@@ -68,13 +68,24 @@ import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), top)
 
 
-
 port writeToIndexedDB : String -> Cmd msg
+
+
 port readFromIndexedDB : () -> Cmd msg
+
+
 port deleteTodo : Int -> Cmd msg
+
+
 port indexedDBResult : (String -> msg) -> Sub msg
+
+
 port indexedDBReadResult : (List Ex53.TodoRecord -> msg) -> Sub msg
+
+
 port deleteTodoResult : (String -> msg) -> Sub msg
+
+
 
 -- MODEL
 
@@ -202,7 +213,7 @@ defaultModel key =
     , ex54Model = Nothing
     , ex55Model = Nothing
     , ex56Model = Nothing
-    , ex57Model = Nothing    
+    , ex57Model = Nothing
     }
 
 
@@ -327,21 +338,27 @@ update msg model =
                     ( { model0 | currentExercise = Just 4, ex04Model = Just Ex04.init }, Cmd.none )
 
                 Exercise 53 ->
-                  let
-                    ( ex53Model, cmd, mbCommand) = Ex53.init
-                    portCmd = case mbCommand of
-                        Just (Ex53.WriteToIndexedDB data) ->
-                            writeToIndexedDB data
-                        Just (Ex53.DeleteTodo todoId) ->
-                            deleteTodo todoId
-                        Just (Ex53.ReadFromIndexedDB) ->
-                            readFromIndexedDB ()
-                        Nothing ->
-                            Cmd.none
-                  in
-                  ( { model0 | currentExercise = Just 53, ex53Model = Just ex53Model }
-                  , Cmd.batch [ Cmd.map Ex53Msg cmd, portCmd ]
-                  )
+                    let
+                        ( ex53Model, cmd, mbCommand ) =
+                            Ex53.init
+
+                        portCmd =
+                            case mbCommand of
+                                Just (Ex53.WriteToIndexedDB data) ->
+                                    writeToIndexedDB data
+
+                                Just (Ex53.DeleteTodo todoId) ->
+                                    deleteTodo todoId
+
+                                Just Ex53.ReadFromIndexedDB ->
+                                    readFromIndexedDB ()
+
+                                Nothing ->
+                                    Cmd.none
+                    in
+                    ( { model0 | currentExercise = Just 53, ex53Model = Just ex53Model }
+                    , Cmd.batch [ Cmd.map Ex53Msg cmd, portCmd ]
+                    )
 
                 _ ->
                     ( model0, Cmd.none )
@@ -400,22 +417,28 @@ update msg model =
                     let
                         ( newModel, cmd, maybeCommand ) =
                             Ex53.update subMsg ex53Model
-                            
-                        portCmd = case maybeCommand of
-                            Just (Ex53.WriteToIndexedDB data) ->
-                                writeToIndexedDB data
-                            Just (Ex53.ReadFromIndexedDB) ->
-                                readFromIndexedDB ()
-                            Just (Ex53.DeleteTodo todoId) ->
-                                deleteTodo todoId
-                            Nothing ->
-                                Cmd.none
+
+                        portCmd =
+                            case maybeCommand of
+                                Just (Ex53.WriteToIndexedDB data) ->
+                                    writeToIndexedDB data
+
+                                Just Ex53.ReadFromIndexedDB ->
+                                    readFromIndexedDB ()
+
+                                Just (Ex53.DeleteTodo todoId) ->
+                                    deleteTodo todoId
+
+                                Nothing ->
+                                    Cmd.none
                     in
                     ( { model | ex53Model = Just newModel }
                     , Cmd.batch [ Cmd.map Ex53Msg cmd, portCmd ]
                     )
+
                 Nothing ->
                     ( model, Cmd.none )
+
 
 
 -- VIEW
@@ -435,14 +458,14 @@ view model =
 
 leftPane : Html Msg
 leftPane =
-    div [ style "width" "300px", style "background-color" "#f0f0f0", style "padding" "20px" ]
+    div [ class "left-pane" ]
         [ h3 [] [ text "Exercises" ]
-        , div [] (List.map exerciseLink2 exercises)
+        , div [ class "left-pane__titles" ] (List.map exerciseLink exercises)
         ]
 
 
-exerciseLink2 : Exercise -> Html Msg
-exerciseLink2 e =
+exerciseLink : Exercise -> Html Msg
+exerciseLink e =
     let
         title =
             text <| toTitle e
@@ -528,11 +551,15 @@ subscriptions model =
                 , case model.ex53Model of
                     Just ex53Model ->
                         Sub.map Ex53Msg (Ex53.subscriptions ex53Model)
+
                     Nothing ->
                         Sub.none
                 ]
+
         _ ->
             Sub.none
+
+
 
 -- MAIN
 
