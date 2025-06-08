@@ -83,7 +83,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 10: Full Programs
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex53 [ ] [Todo List](src/Pages/Ex53.elm)          | | | |
+| Ex53 [x] [Todo List](src/Pages/Ex53.elm)          |elm-hour, date | IndexedDB, time encode/decode | 5 (3)|
 | Ex54 [ ] [URL Shortener](src/Pages/Ex54.elm)      | | | |
 | Ex55 [ ] [Text Sharing](src/Pages/Ex55.elm)       | | | |
 | Ex56 [ ] [Tracking Inventory](src/Pages/Ex56.elm) | | | |
@@ -100,6 +100,8 @@ A personal project to solve the exercises from the book *Exercises for Programme
 - Elm: 0.19.1
 
 ### Dependency
+- fabiommendes/elm-hour
+- justinmimbs/date
 
 ## How to Run
 Run the following directly under the project.
