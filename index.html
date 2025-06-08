@@ -9,55 +9,11 @@
 <body>
   <div id="app"></div>
   <script src="elm.js"></script>
+  <script src="indexeddb.js"></script>
   <script>
-    var app = Elm.Main.init({
-      node: document.getElementById('app')
-    });
-
-    function createTransaction(db, storeName, mode = 'readwrite') {
-      return db.transaction([storeName], mode).objectStore(storeName);
-    }
-    function subscribeToPort(portName, callback) {
-      app.ports[portName].subscribe(callback);
-    }
-
-    const request = indexedDB.open('ExercisesForProgrammersDB', 1);
-
-    request.onupgradeneeded = function(event) {
-      event
-        .target
-        .result
-        .createObjectStore('ex57Store', { keyPath: 'id', autoIncrement: true });
-    };
-
-    request.onsuccess = function(event) {
-      let db = event.target.result;
-
-      subscribeToPort('writeToIndexedDB', function(data) {
-        const req = createTransaction(db, 'ex57Store').add({
-          data: data,
-          timestamp: new Date().toISOString()
-        });
-        req.onsuccess = function() {
-          app.ports.indexedDBResult.send('written: ' + data);
-        };
-      });
-      subscribeToPort('readFromIndexedDB', function() {
-        const req = createTransaction(db, 'ex57Store', 'readonly').getAll();
-        
-        req.onsuccess = function() {
-          const records = req.result;
-          app.ports.indexedDBReadResult.send(records);
-        };
-      });
-      subscribeToPort('deleteTodo', function(todoId) {
-        const req = createTransaction(db, 'ex57Store').delete(todoId)
-
-        req.onsuccess = function() {
-          app.ports.deleteTodoResult.send("deleted: " + todoId);
-        };
-      });
-    }
+    const app = initializeApp();
+  </script>
+  <script>
   </script>
 </body>
 </html>
