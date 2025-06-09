@@ -228,6 +228,7 @@ type Msg
     | Ex02Msg Ex02.Msg
     | Ex03Msg Ex03.Msg
     | Ex04Msg Ex04.Msg
+    | Ex47Msg Ex47.Msg
     | Ex53Msg Ex53.Msg
 
 
@@ -295,6 +296,9 @@ init _ url key =
                 Exercise 4 ->
                     { model0 | currentExercise = Just 4, ex04Model = Just Ex04.init }
 
+                Exercise 47 ->
+                    { model0 | currentExercise = Just 47, ex47Model = Just Ex47.init }
+
                 _ ->
                     model0
     in
@@ -336,6 +340,9 @@ update msg model =
 
                 Exercise 4 ->
                     ( { model0 | currentExercise = Just 4, ex04Model = Just Ex04.init }, Cmd.none )
+
+                Exercise 47 ->
+                    ( { model0 | currentExercise = Just 47, ex47Model = Just Ex47.init }, Cmd.none )
 
                 Exercise 53 ->
                     let
@@ -407,6 +414,18 @@ update msg model =
                             Ex04.update subMsg ex04Model
                     in
                     ( { model | ex04Model = Just newModel }, Cmd.map Ex04Msg cmd )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        Ex47Msg subMsg ->
+            case model.ex47Model of
+                Just ex47Model ->
+                    let
+                        ( newModel, cmd ) =
+                            Ex47.update subMsg ex47Model
+                    in
+                    ( { model | ex47Model = Just newModel }, Cmd.map Ex47Msg cmd )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -521,6 +540,9 @@ mainPane model =
 
             Just 4 ->
                 mapMain model 4 (\m -> m.ex04Model) Ex04.view Ex04Msg
+
+            Just 47 ->
+                mapMain model 47 (\m -> m.ex47Model) Ex47.view Ex47Msg
 
             Just 53 ->
                 mapMain model 53 (\m -> m.ex53Model) Ex53.view Ex53Msg

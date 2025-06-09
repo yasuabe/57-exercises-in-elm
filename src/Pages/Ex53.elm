@@ -4,7 +4,7 @@ import Date as D
 import Debug exposing (todo)
 import Hour as T
 import Html exposing (Html, button, div, input, table, tbody, td, text, th, tr)
-import Html.Attributes exposing (class, placeholder, style, value, disabled)
+import Html.Attributes exposing (class, disabled, placeholder, style, value)
 import Html.Events exposing (onClick, onInput)
 import Result exposing (toMaybe)
 import String exposing (dropRight)
@@ -116,13 +116,13 @@ subscriptions _ =
 view : Model -> Html Msg
 view model =
     div []
-        [ table [ class "todo-list-table" ]
+        [ table [ class "contents-table" ]
             [ tbody []
                 (tr []
-                    [ th [] [ text "ID" ]
-                    , th [ style "width" "70%" ] [ text "TODO" ]
-                    , th [] [ text "Created" ]
-                    , th [] [ text "" ]
+                    [ th [ style "width" "40px" ] [ text "ID" ]
+                    , th [ style "width" "auto" ] [ text "TODO" ]
+                    , th [ style "width" "100px" ] [ text "Created" ]
+                    , th [ style "width" "80px" ] [ text "" ]
                     ]
                     :: tr []
                         [ td [] []
@@ -136,11 +136,14 @@ view model =
                                 []
                             ]
                         , td [] []
-                        , td [] [ button
-                                  [ class "add-button"
-                                  , onClick Submit
-                                  , disabled (String.trim model.inputTodo == "")
-                                  ] [ text "Add" ] ]
+                        , td []
+                            [ button
+                                [ class "add-button"
+                                , onClick Submit
+                                , disabled (String.trim model.inputTodo == "")
+                                ]
+                                [ text "Add" ]
+                            ]
                         ]
                     :: List.map
                         (\todo ->

@@ -74,7 +74,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 9: Working with External Services
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex47 [ ] [Who’s in Space?](src/Pages/Ex47.elm)                | | | |
+| Ex47 [x] [Who’s in Space?](src/Pages/Ex47.elm)                | http | HTTP Client | 3(2) |
 | Ex48 [ ] [Grabbing the Weather](src/Pages/Ex48.elm)           | | | |
 | Ex49 [ ] [Flickr Photo Search](src/Pages/Ex49.elm)            | | | |
 | Ex50 [ ] [Movie Recommendations](src/Pages/Ex50.elm)          | | | |
@@ -100,8 +100,9 @@ A personal project to solve the exercises from the book *Exercises for Programme
 - Elm: 0.19.1
 
 ### Dependency
-- fabiommendes/elm-hour
-- justinmimbs/date
+- [elm/http](https://package.elm-lang.org/packages/elm/http/2.0.0/)
+- [fabiommendes/elm-hour](https://package.elm-lang.org/packages/fabiommendes/elm-hour/1.0.1/)
+- [justinmimbs/date](https://package.elm-lang.org/packages/justinmimbs/date/4.1.0/)
 
 ## How to Run
 Run the following directly under the project.
