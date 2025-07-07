@@ -9,6 +9,7 @@
 
 module Pages.Ex07 exposing (Model, Msg(..), init, update, view)
 
+import Common.Math exposing (roundToDecimals)
 import Html exposing (Html, div, input, pre, span, text)
 import Html.Attributes exposing (class, placeholder, readonly, value)
 import Html.Events exposing (onInput)
@@ -122,11 +123,6 @@ parseInput errMsg str =
 
             Nothing ->
                 Err errMsg
-
-
-roundToDecimals : Float -> Int -> Float
-roundToDecimals x p =
-    toFloat (round (x * toFloat (10 ^ p))) / 100.0
 
 
 roundToTwoDecimals : Float -> String
