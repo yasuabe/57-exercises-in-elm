@@ -16,7 +16,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 3: Calculations
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex07 [ ] [Area of a Rectangular Room](src/Pages/Ex07.elm)    | | | 
+| Ex07 [x] [Area of a Rectangular Room](src/Pages/Ex07.elm)    | | | 2(1)
 | Ex08 [ ] [Pizza Party](src/Pages/Ex08.elm)                   | | | 
 | Ex09 [ ] [Paint Calculator](src/Pages/Ex09.elm)              | | | |
 | Ex10 [ ] [Self-Checkout](src/Pages/Ex10.elm)                 | | | |
