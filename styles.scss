@@ -1,0 +1,159 @@
+// 変数
+$primary-color: #007bff;
+$primary-hover: #0056b3;
+$danger-color: #dc3545;
+$danger-hover: #c82333;
+$disabled-color: #6c757d;
+$text-color: #555;
+$background-light: rgba(240, 240, 240, 0.062745098);
+$table-border: rgba(238, 238, 238, 0.2666666667);
+$table-row-alt: rgba(249, 249, 249, 0.1254901961);
+
+// ミックスイン
+@mixin button-style($bg-color, $hover-color) {
+  padding: 2px 5px;
+  border: none;
+  border-radius: 5px;
+  background-color: $bg-color;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: $hover-color;
+    transform: translateY(-1px);
+  }
+}
+
+// グローバルスタイル
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.left-pane {
+  width: 300px;
+  background-color: $background-light;
+  padding: 20px;
+
+  &__titles {
+    overflow: scroll;
+    height: 90%;
+  }
+}
+
+a {
+  color: #1f88e5;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+button {
+  @include button-style($primary-color, $primary-hover);
+}
+
+.delete-button {
+  @include button-style($danger-color, $danger-hover);
+  width: 100%;
+}
+
+.add-button {
+  width: 100%;
+
+  &[disabled] {
+    background-color: $disabled-color;
+  }
+}
+
+.output {
+  width: 90%;
+  font-size: 16px;
+  background: inherit;
+  margin-top: 30px;
+  border: 0;
+}
+
+.inputline {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+
+  &__prompt {
+    margin-right: 15px;
+  }
+
+  &__number {
+    text-align: right;
+  }
+}
+
+.error-message {
+  color: red;
+}
+
+.contents-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid $table-border;
+  }
+
+  th {
+    background-color: $background-light;
+    color: $text-color;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:nth-child(even) {
+    background-color: $table-row-alt;
+  }
+
+  td:nth-child(2) {
+    font-size: 16px;
+  }
+
+  td:nth-child(3) {
+    font-size: 14px;
+  }
+
+  td:nth-child(4) {
+    text-align: center;
+  }
+
+  .todo-input {
+    width: 100%;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+
+  caption {
+    caption-side: bottom;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+}

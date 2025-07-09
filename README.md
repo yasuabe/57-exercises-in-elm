@@ -104,6 +104,11 @@ A personal project to solve the exercises from the book *Exercises for Programme
 - [fabiommendes/elm-hour](https://package.elm-lang.org/packages/fabiommendes/elm-hour/1.0.1/)
 - [justinmimbs/date](https://package.elm-lang.org/packages/justinmimbs/date/4.1.0/)
 
+## How to compile
+```
+$ npx sass styles.scss styles.css
+```
+
 ## How to Run
 Run the following directly under the project.
 ```
