@@ -1,0 +1,64 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Elm
+        uses: jorelali/setup-elm@v3
+        with:
+          elm-version: 0.19.1
+
+      - name: Install sass
+        run: npm install sass --save-dev
+
+      - name: Build styles.css from styles.scss
+        run: npx sass styles.scss styles.css
+
+      - name: Build Elm
+        run: npx elm make src/Main.elm --output=elm.js
+
+      - name: Prepare publish directory
+        run: |
+          mkdir public
+          rsync -av --include='index.html' --include='404.html' --include='elm.js' --include='styles.css' --include='indexeddb.js' --exclude='*' ./ ./public/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
