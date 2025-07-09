@@ -7,6 +7,8 @@ dist/
 build/
 elm-stuff/
 
+!docs/elm.js
+
 # Editor files
 .vscode/
 .idea/
