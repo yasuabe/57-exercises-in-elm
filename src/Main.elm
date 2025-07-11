@@ -229,6 +229,7 @@ type Msg
     | Ex03Msg Ex03.Msg
     | Ex04Msg Ex04.Msg
     | Ex07Msg Ex07.Msg
+    | Ex13Msg Ex13.Msg
     | Ex47Msg Ex47.Msg
     | Ex53Msg Ex53.Msg
 
@@ -300,6 +301,9 @@ init _ url key =
                 Exercise 7 ->
                     { model0 | currentExercise = Just 7, ex07Model = Just Ex07.init }
 
+                Exercise 13 ->
+                    { model0 | currentExercise = Just 13, ex13Model = Just Ex13.init }
+
                 Exercise 47 ->
                     { model0 | currentExercise = Just 47, ex47Model = Just Ex47.init }
 
@@ -347,6 +351,9 @@ update msg model =
 
                 Exercise 7 ->
                     ( { model0 | currentExercise = Just 7, ex07Model = Just Ex07.init }, Cmd.none )
+
+                Exercise 13 ->
+                    ( { model0 | currentExercise = Just 13, ex13Model = Just Ex13.init }, Cmd.none )
 
                 Exercise 47 ->
                     ( { model0 | currentExercise = Just 47, ex47Model = Just Ex47.init }, Cmd.none )
@@ -433,6 +440,18 @@ update msg model =
                             Ex07.update subMsg ex07Model
                     in
                     ( { model | ex07Model = Just newModel }, Cmd.map Ex07Msg cmd )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        Ex13Msg subMsg ->
+            case model.ex13Model of
+                Just ex13Model ->
+                    let
+                        ( newModel, cmd ) =
+                            Ex13.update subMsg ex13Model
+                    in
+                    ( { model | ex13Model = Just newModel }, Cmd.map Ex13Msg cmd )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -562,6 +581,9 @@ mainPane model =
 
             Just 7 ->
                 mapMain model 7 (\m -> m.ex07Model) Ex07.view Ex07Msg
+
+            Just 13 ->
+                mapMain model 13 (\m -> m.ex13Model) Ex13.view Ex13Msg
 
             Just 47 ->
                 mapMain model 47 (\m -> m.ex47Model) Ex47.view Ex47Msg

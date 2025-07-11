@@ -152,7 +152,7 @@ view model =
         ]
 
 
-viewNumberInput : String -> String -> String -> (String -> Msg) -> Html Msg
+viewNumberInput : String -> String -> String -> (String -> Msg) -> Html Msg -- TODO: use Common.UI.viewInputField
 viewNumberInput prompt placeholderMsg inputValue msgType =
     div [ class "inputline" ]
         [ span [ class "inputline__prompt" ] [ text prompt ]
