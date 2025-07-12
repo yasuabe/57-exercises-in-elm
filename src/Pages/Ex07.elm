@@ -10,10 +10,10 @@
 module Pages.Ex07 exposing (Model, Msg(..), init, update, view)
 
 import Common.Math exposing (roundToDecimals)
-import Html exposing (Html, div, input, pre, span, text)
-import Html.Attributes exposing (class, placeholder, readonly, value)
-import Html.Events exposing (onInput)
-import List exposing (map)
+import Common.ResultMaybe exposing (ResultMaybe, collectErrors)
+import Common.UI exposing (viewNumberInput, viewOutputBlock)
+import Html exposing (Html, div, pre)
+import Html.Attributes exposing (class, readonly)
 import Maybe exposing (map2)
 
 
@@ -21,14 +21,10 @@ import Maybe exposing (map2)
 -- MODEL
 
 
-type alias MaybeEither e a =
-    Result e (Maybe a)
-
-
 type alias Model =
     { length : String
     , width : String
-    , output : MaybeEither (List String) String
+    , output : ResultMaybe (List String) String
     }
 
 
@@ -74,17 +70,12 @@ makeOutput model =
 
         areaResult =
             case ( lengthInFeet, widthInFeet ) of
-                ( Err e1, Err e2 ) ->
-                    Err [ e1, e2 ]
-
-                ( Err e1, _ ) ->
-                    Err [ e1 ]
-
-                ( _, Err e2 ) ->
-                    Err [ e2 ]
-
                 ( Ok o1, Ok o2 ) ->
                     Ok <| map2 (*) o1 o2
+
+                _ ->
+                    Err <|
+                        collectErrors [ lengthInFeet, widthInFeet ]
     in
     { model
         | output =
@@ -107,7 +98,7 @@ makeOutput model =
     }
 
 
-parseInput : String -> String -> MaybeEither String Float
+parseInput : String -> String -> ResultMaybe String Float
 parseInput errMsg str =
     let
         trimmed =
@@ -139,12 +130,12 @@ view model =
     div []
         [ viewNumberInput
             "What is the length of the room in feet? "
-            "e.g. 12.34"
+            "e.g. 15"
             model.length
             LengthChanged
         , viewNumberInput
             "What is the width of the room in feet? "
-            "e.g. 12.34"
+            "e.g. 10"
             model.width
             WidthChanged
         , pre [ class "output", readonly True ]
@@ -152,29 +143,6 @@ view model =
         ]
 
 
-viewNumberInput : String -> String -> String -> (String -> Msg) -> Html Msg -- TODO: use Common.UI.viewInputField
-viewNumberInput prompt placeholderMsg inputValue msgType =
-    div [ class "inputline" ]
-        [ span [ class "inputline__prompt" ] [ text prompt ]
-        , input
-            [ class "inputline__number"
-            , placeholder placeholderMsg
-            , value inputValue
-            , onInput msgType
-            ]
-            []
-        ]
-
-
 viewOutputBlock : Model -> Html Msg
 viewOutputBlock model =
-    case model.output of
-        Ok (Just outputText) ->
-            pre [ class "output", readonly True ] [ text outputText ]
-
-        Ok Nothing ->
-            pre [ class "output", readonly True ] [ text "Please enter both the length and width." ]
-
-        Err messages ->
-            pre [ class "output error-message", readonly True ] <|
-                map (\errorMessage -> div [] [ text errorMessage ]) messages
+    Common.UI.viewOutputBlock model.output "Please enter both the length and width."

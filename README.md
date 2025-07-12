@@ -22,7 +22,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex10 [ ] [Self-Checkout](src/Pages/Ex10.elm)                 | | | |
 | Ex11 [ ] [Currency Conversion](src/Pages/Ex11.elm)           | | | |
 | Ex12 [ ] [Computing Simple Interest](src/Pages/Ex12.elm)     | | | 
-| Ex13 [ ] [Determining Compound Interest](src/Pages/Ex13.elm) | | | |
+| Ex13 [x] [Determining Compound Interest](src/Pages/Ex13.elm) | | | 2(2)|
 #### Chapter 4: Making Decisions
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|

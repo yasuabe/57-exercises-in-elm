@@ -1,26 +1,38 @@
 module Common.UI exposing (..)
 
-import Html exposing (Html, div, input, pre, span, text)
+import Html exposing (Attribute, Html, div, input, pre, span, text)
 import Html.Attributes exposing (class, placeholder, readonly, value)
 import Html.Events exposing (onInput)
 import List exposing (map)
+import Common.ResultMaybe exposing (ResultMaybe)
 
 
-viewInputField : String -> String -> String -> (String -> msg) -> Html msg
-viewInputField prompt placeholderMsg inputValue onInputHandler =
+viewNumberInput : String -> String -> String -> (String -> msg) -> Html msg
+viewNumberInput prompt placeholderMsg inputValue onInputHandler =
+    viewInputFieldWithHander
+        prompt
+        placeholderMsg
+        "inputline__number"
+        inputValue
+        [ onInput onInputHandler ]
+
+
+viewInputFieldWithHander : String -> String -> String -> String -> List (Attribute msg) -> Html msg
+viewInputFieldWithHander prompt placeholderMsg inputClass inputValue handlers =
     div [ class "inputline" ]
         [ span [ class "inputline__prompt" ] [ text prompt ]
         , input
-            [ class "inputline__number"
-            , placeholder placeholderMsg
-            , value inputValue
-            , onInput onInputHandler
-            ]
+            ([ class inputClass
+             , placeholder placeholderMsg
+             , value inputValue
+             ]
+                ++ handlers
+            )
             []
         ]
 
 
-viewOutputBlock : Result (List String) (Maybe String) -> String -> Html msg
+viewOutputBlock : ResultMaybe (List String) String -> String -> Html msg
 viewOutputBlock output whenEmpty =
     case output of
         Ok (Just outputText) ->

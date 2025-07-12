@@ -10,20 +10,16 @@
 module Pages.Ex13 exposing (Model, Msg(..), init, update, view)
 
 import Common.Math exposing (roundToDecimals)
-import Common.UI exposing (viewInputField, viewOutputBlock)
-import Html exposing (Html, div, input, pre, span, text)
+import Common.ResultMaybe exposing (ResultMaybe, collectErrors)
+import Common.UI exposing (viewNumberInput, viewOutputBlock)
+import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
-import List exposing (filterMap, map)
-import Maybe exposing (map2)
+import List
+import Maybe
 
 
 
 -- MODEL
--- TODO: duplication
-
-
-type alias MaybeEither e a =
-    Result e (Maybe a)
 
 
 type alias Model =
@@ -31,7 +27,7 @@ type alias Model =
     , rate : String
     , years : String
     , times : String
-    , output : Result (List String) (Maybe String)
+    , output : ResultMaybe (List String) String
     }
 
 
@@ -41,7 +37,7 @@ init =
     , rate = ""
     , years = ""
     , times = ""
-    , output = Ok <| Just "hello"
+    , output = Ok <| Nothing
     }
 
 
@@ -96,21 +92,12 @@ makeOutput model =
         calcResult =
             case ( ( principal, rate ), ( years, times ) ) of
                 ( ( Ok (Just p), Ok (Just r) ), ( Ok (Just y), Ok (Just t) ) ) ->
-                    Ok <| Just (p * (1 + (r/100)/t)^(t * y))
+                    Ok <| Just (p * (1 + (r / 100) / t) ^ (t * y))
 
                 _ ->
                     let
                         x =
-                            filterMap
-                                (\e ->
-                                    case e of
-                                        Err m ->
-                                            Just m
-
-                                        _ ->
-                                            Nothing
-                                )
-                                [ principal, rate, years, times ]
+                            collectErrors [ principal, rate, years, times ]
                     in
                     if List.isEmpty x then
                         Ok Nothing
@@ -133,7 +120,7 @@ makeOutput model =
                             ++ "compounded "
                             ++ "4"
                             ++ " times per year is $"
-                            ++ (roundToTwoDecimals amount)
+                            ++ roundToTwoDecimals amount
                             ++ "."
                     )
                 )
@@ -150,7 +137,7 @@ roundToTwoDecimals x =
 -- TODO: duplication
 
 
-parseInput : String -> String -> MaybeEither String Float
+parseInput : String -> String -> ResultMaybe String Float
 parseInput errMsg str =
     let
         trimmed =
@@ -175,22 +162,22 @@ parseInput errMsg str =
 view : Model -> Html Msg
 view model =
     div []
-        [ viewInputField
+        [ viewNumberInput
             "What is the principal principal? "
             "e.g. 1500"
             model.principal
             PrincipalChanged
-        , viewInputField
+        , viewNumberInput
             "What is the rate? "
             "e.g. 4.3"
             model.rate
             RateChanged
-        , viewInputField
+        , viewNumberInput
             "What is the number of years? "
             "e.g. 6"
             model.years
             YearsChanged
-        , viewInputField
+        , viewNumberInput
             "What is the number of times the interest is compounded per year? "
             "e.g. 4"
             model.times

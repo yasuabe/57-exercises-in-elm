@@ -10,27 +10,27 @@ suite : Test
 suite =
     describe "Common.Math"
         [ describe "roundToDecimals"
-            [ test "小数点以下2桁に丸める" <|
+            [ test "Rounds to 2 decimal places" <|
                 \_ ->
                     roundToDecimals 3.14159 2
                         |> equateFloats 3.14
-            , test "小数点以下0桁（整数に丸める）" <|
+            , test "Rounds to 0 decimal places (integer)" <|
                 \_ ->
                     roundToDecimals 3.7 0
                         |> equateFloats 4.0
-            , test "小数点以下3桁に丸める" <|
+            , test "Rounds to 3 decimal places" <|
                 \_ ->
                     roundToDecimals 1.23456 3
                         |> equateFloats 1.235
-            , test "負の数を丸める" <|
+            , test "Rounds negative numbers" <|
                 \_ ->
                     roundToDecimals -2.567 2
                         |> equateFloats -2.57
-            , test "既に指定桁数の場合" <|
+            , test "Already at specified decimal places" <|
                 \_ ->
                     roundToDecimals 5.12 2
                         |> equateFloats 5.12
-            , test "0を丸める" <|
+            , test "Rounds 0" <|
                 \_ ->
                     roundToDecimals 0.0 2
                         |> equateFloats 0.0
