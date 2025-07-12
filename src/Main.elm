@@ -230,6 +230,7 @@ type Msg
     | Ex04Msg Ex04.Msg
     | Ex07Msg Ex07.Msg
     | Ex13Msg Ex13.Msg
+    | Ex33Msg Ex33.Msg
     | Ex47Msg Ex47.Msg
     | Ex53Msg Ex53.Msg
 
@@ -304,6 +305,9 @@ init _ url key =
                 Exercise 13 ->
                     { model0 | currentExercise = Just 13, ex13Model = Just Ex13.init }
 
+                Exercise 33 ->
+                    { model0 | currentExercise = Just 33, ex33Model = Just Ex33.init } -- TODO: reduce boilerplate
+
                 Exercise 47 ->
                     { model0 | currentExercise = Just 47, ex47Model = Just Ex47.init }
 
@@ -354,6 +358,9 @@ update msg model =
 
                 Exercise 13 ->
                     ( { model0 | currentExercise = Just 13, ex13Model = Just Ex13.init }, Cmd.none )
+
+                Exercise 33 ->
+                    ( { model0 | currentExercise = Just 33, ex33Model = Just Ex33.init }, Cmd.none )
 
                 Exercise 47 ->
                     ( { model0 | currentExercise = Just 47, ex47Model = Just Ex47.init }, Cmd.none )
@@ -452,6 +459,18 @@ update msg model =
                             Ex13.update subMsg ex13Model
                     in
                     ( { model | ex13Model = Just newModel }, Cmd.map Ex13Msg cmd )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        Ex33Msg subMsg ->
+            case model.ex33Model of
+                Just ex33Model ->
+                    let
+                        ( newModel, cmd ) =
+                            Ex33.update subMsg ex33Model
+                    in
+                    ( { model | ex33Model = Just newModel }, Cmd.map Ex33Msg cmd )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -584,6 +603,9 @@ mainPane model =
 
             Just 13 ->
                 mapMain model 13 (\m -> m.ex13Model) Ex13.view Ex13Msg
+
+            Just 33 ->
+                mapMain model 33 (\m -> m.ex33Model) Ex33.view Ex33Msg
 
             Just 47 ->
                 mapMain model 47 (\m -> m.ex47Model) Ex47.view Ex47Msg

@@ -42,7 +42,7 @@ exercises =
     , { suffix = "30", title = "Multiplication Table", done = False }
     , { suffix = "31", title = "Karvonen Heart Rate", done = False }
     , { suffix = "32", title = "Guess the Number Game", done = False }
-    , { suffix = "33", title = "Magic 8 Ball", done = False }
+    , { suffix = "33", title = "Magic 8 Ball", done = True }
     , { suffix = "34", title = "Employee List Removal", done = False }
     , { suffix = "35", title = "Picking a Winner", done = False }
     , { suffix = "36", title = "Computing Statistics", done = False }
