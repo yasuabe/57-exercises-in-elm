@@ -10,7 +10,7 @@
 module Pages.Ex07 exposing (Model, Msg(..), init, update, view)
 
 import Common.Math exposing (roundToDecimals)
-import Common.ResultMaybe exposing (ResultMaybe, collectErrors)
+import Common.ResultMaybe exposing (ResultMaybe, collectErrors, parseStringToFloat)
 import Common.UI exposing (viewNumberInput, viewOutputBlock)
 import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
@@ -63,10 +63,10 @@ makeOutput : Model -> Model
 makeOutput model =
     let
         lengthInFeet =
-            parseInput "Invalid length" model.length
+            parseStringToFloat "Invalid length" model.length
 
         widthInFeet =
-            parseInput "Invalid width" model.width
+            parseStringToFloat "Invalid width" model.width
 
         areaResult =
             case ( lengthInFeet, widthInFeet ) of
@@ -96,24 +96,6 @@ makeOutput model =
                 )
                 areaResult
     }
-
-
-parseInput : String -> String -> ResultMaybe String Float
-parseInput errMsg str =
-    let
-        trimmed =
-            String.trim str
-    in
-    if String.isEmpty trimmed then
-        Ok Nothing
-
-    else
-        case String.toFloat trimmed of
-            Just x ->
-                Ok <| Just x
-
-            Nothing ->
-                Err errMsg
 
 
 roundToTwoDecimals : Float -> String

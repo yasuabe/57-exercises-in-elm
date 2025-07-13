@@ -1,9 +1,8 @@
 module Pages.Ex13Test exposing (..)
 
-import Expect
+import Expect exposing (Expectation)
 import Pages.Ex13 as Ex13
 import Test exposing (..)
-import Debug exposing (log)
 
 
 suite : Test
@@ -23,19 +22,16 @@ suite =
                                 |> Tuple.first
                                 |> Ex13.update (Ex13.TimesChanged "4")
                     in
-                    expectValidArea model "1938.84"
+                    expectValidAmount model "1938.84"
             ]
         ]
 
 
-expectValidArea : Ex13.Model -> String -> Expect.Expectation -- TODO: rename
-expectValidArea model areaInFeet =
+expectValidAmount : Ex13.Model -> String -> Expectation
+expectValidAmount model expected =
     case model.output of
         Ok (Just message) ->
-            Expect.all
-                [ \m -> Expect.equal True <| String.contains areaInFeet m
-                ]
-                (log "message: " message)
+            Expect.equal True <| String.contains expected message
 
         _ ->
             Expect.fail "unreachable: output should be Ok with a message"

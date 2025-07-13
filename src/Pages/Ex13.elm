@@ -10,7 +10,7 @@
 module Pages.Ex13 exposing (Model, Msg(..), init, update, view)
 
 import Common.Math exposing (roundToDecimals)
-import Common.ResultMaybe exposing (ResultMaybe, collectErrors)
+import Common.ResultMaybe exposing (ResultMaybe, collectErrors, parseStringToFloat)
 import Common.UI exposing (viewNumberInput, viewOutputBlock)
 import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
@@ -78,16 +78,16 @@ makeOutput : Model -> Model
 makeOutput model =
     let
         principal =
-            parseInput "Invalid principal" model.principal
+            parseStringToFloat "Invalid principal" model.principal
 
         rate =
-            parseInput "Invalid rate" model.rate
+            parseStringToFloat "Invalid rate" model.rate
 
         years =
-            parseInput "Invalid years" model.years
+            parseStringToFloat "Invalid years" model.years
 
         times =
-            parseInput "Invalid times" model.times
+            parseStringToFloat "Invalid times" model.times
 
         calcResult =
             case ( ( principal, rate ), ( years, times ) ) of
@@ -131,28 +131,6 @@ makeOutput model =
 roundToTwoDecimals : Float -> String
 roundToTwoDecimals x =
     roundToDecimals x 2 |> String.fromFloat
-
-
-
--- TODO: duplication
-
-
-parseInput : String -> String -> ResultMaybe String Float
-parseInput errMsg str =
-    let
-        trimmed =
-            String.trim str
-    in
-    if String.isEmpty trimmed then
-        Ok Nothing
-
-    else
-        case String.toFloat trimmed of
-            Just x ->
-                Ok <| Just x
-
-            Nothing ->
-                Err errMsg
 
 
 

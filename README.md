@@ -54,7 +54,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 7: Data Structures
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex33 [ ] [Magic 8 Ball](src/Pages/Ex33.elm)          | | | |
+| Ex33 [x] [Magic 8 Ball](src/Pages/Ex33.elm)          | | | 2(2)|
 | Ex34 [ ] [Employee List Removal](src/Pages/Ex34.elm) | | | |
 | Ex35 [ ] [Picking a Winner](src/Pages/Ex35.elm)      | | | |
 | Ex36 [ ] [Computing Statistics](src/Pages/Ex36.elm)  | | | |
@@ -116,10 +116,11 @@ $ npx elm-live src/Main.elm --open --pushstate -- --output=elm.js
 ```
 
 ## How to Run Test
-- TODO
+- all: `$ elm-test`
+- single: `$ elm-test tests/Pages/Ex{NN}Test.elm`
 
-### Example
-- TODO
+### GitHub Pages
+- https://yasuabe.github.io/57-exercises-in-elm/
 
 ## Notes
 - I relied on Vibe Coding just a little bit.

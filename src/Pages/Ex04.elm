@@ -1,9 +1,9 @@
 module Pages.Ex04 exposing (Model, Msg(..), init, update, view)
 
+import Common.Events exposing (submitOnEnter)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (on, onInput)
-import Json.Decode as Decode
 import String exposing (isEmpty)
 
 
@@ -89,51 +89,42 @@ view model =
         [ div []
             [ span [] [ text "What is the noun? " ]
             , input
-                [ placeholder "Enter a noun"
+                [ placeholder "eg. dog"
                 , value model.noun
                 , onInput NounChanged
-                , on "keydown" (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
+                , on "keydown" <| submitOnEnter Submit
                 ]
                 []
             ]
         , div []
             [ span [] [ text "What is the verb? " ]
             , input
-                [ placeholder "Enter the verb"
+                [ placeholder "eg. walk"
                 , value model.verb
                 , onInput VerbChanged
-                , on "keydown" (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
+                , on "keydown" <| submitOnEnter Submit
                 ]
                 []
             ]
         , div []
             [ span [] [ text "What is the adjective? " ]
             , input
-                [ placeholder "Enter an adjective"
+                [ placeholder "eg. blue"
                 , value model.adjective
                 , onInput AdjectiveChanged
-                , on "keydown" (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
+                , on "keydown" <| submitOnEnter Submit
                 ]
                 []
             ]
         , div []
             [ span [] [ text "What is the adverb? " ]
             , input
-                [ placeholder "Enter an adverb"
+                [ placeholder "bg. quickly"
                 , value model.adverb
                 , onInput AdverbChanged
-                , on "keydown" (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
+                , on "keydown" <| submitOnEnter Submit
                 ]
                 []
             ]
         , div [] [ text model.message ]
         ]
-
-
-keyDecoder : String -> Decode.Decoder Msg
-keyDecoder key =
-    if key == "Enter" then
-        Decode.succeed Submit
-
-    else
-        Decode.fail "Not Enter key"

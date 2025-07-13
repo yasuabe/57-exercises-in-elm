@@ -13,12 +13,12 @@
 module Pages.Ex33 exposing (Model, Msg(..), init, update, view)
 
 import Array exposing (Array, fromList, get)
+import Common.Events exposing (submitOnEnter)
 import Common.ResultMaybe exposing (ResultMaybe)
 import Common.UI exposing (viewInputFieldWithHandler, viewOutputBlock)
 import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
 import Html.Events exposing (on, onInput)
-import Json.Decode as Decode
 import Random
 
 
@@ -96,17 +96,8 @@ view model =
             "inputline__text"
             model.question
             [ onInput InputChanged
-            , on "keydown" (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
+            , on "keydown" <| submitOnEnter Submit
             ]
         , pre [ class "output", readonly True ]
             [ viewOutputBlock model.output "" ]
         ]
-
-
-keyDecoder : String -> Decode.Decoder Msg -- TODO: duplication
-keyDecoder key =
-    if key == "Enter" then
-        Decode.succeed Submit
-
-    else
-        Decode.fail "Not Enter key"

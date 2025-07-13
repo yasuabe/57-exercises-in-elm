@@ -1,9 +1,9 @@
 module Pages.Ex03 exposing (Model, Msg(..), init, update, view)
 
+import Common.Events exposing (submitOnEnter)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (placeholder, value)
 import Html.Events exposing (on, onInput)
-import Json.Decode as Decode
 
 
 
@@ -74,7 +74,7 @@ view model =
                 [ placeholder "Enter a quote"
                 , value model.quote
                 , onInput QuoteChanged
-                , on "keydown" (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
+                , on "keydown" <| submitOnEnter Submit
                 ]
                 []
             ]
@@ -84,18 +84,9 @@ view model =
                 [ placeholder "Enter the author"
                 , value model.author
                 , onInput AuthorChanged
-                , on "keydown" (Decode.field "key" Decode.string |> Decode.andThen keyDecoder)
+                , on "keydown" <| submitOnEnter Submit
                 ]
                 []
             ]
         , div [] [ text model.message ]
         ]
-
-
-keyDecoder : String -> Decode.Decoder Msg
-keyDecoder key =
-    if key == "Enter" then
-        Decode.succeed Submit
-
-    else
-        Decode.fail "Not Enter key"
