@@ -28,7 +28,7 @@ suite =
         ]
 
 
-expectValidArea : Ex13.Model -> String -> Expect.Expectation
+expectValidArea : Ex13.Model -> String -> Expect.Expectation -- TODO: rename
 expectValidArea model areaInFeet =
     case model.output of
         Ok (Just message) ->

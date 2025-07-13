@@ -12,10 +12,10 @@
 
 module Pages.Ex33 exposing (Model, Msg(..), init, update, view)
 
-import Array exposing (fromList, get)
+import Array exposing (Array, fromList, get)
 import Common.ResultMaybe exposing (ResultMaybe)
-import Common.UI exposing (viewInputFieldWithHander, viewOutputBlock)
-import Html exposing (Html, div, pre, text)
+import Common.UI exposing (viewInputFieldWithHandler, viewOutputBlock)
+import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
 import Html.Events exposing (on, onInput)
 import Json.Decode as Decode
@@ -26,6 +26,7 @@ import Random
 -- MODEL
 
 
+responses : Array String
 responses =
     fromList
         [ "Yes"
@@ -66,7 +67,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Submit ->
-            ( makeOutput model
+            ( model
             , Random.generate GotSelectedIndex randomMessagePicker
             )
 
@@ -82,11 +83,6 @@ randomMessagePicker =
     Random.int 0 3
 
 
-makeOutput : Model -> Model
-makeOutput model =
-    { model | output = Ok <| Just <| String.fromInt <| String.length model.question }
-
-
 
 -- VIEW
 
@@ -94,7 +90,7 @@ makeOutput model =
 view : Model -> Html Msg
 view model =
     div []
-        [ viewInputFieldWithHander
+        [ viewInputFieldWithHandler
             "What's your question? "
             "e.g. Will I be rich and famous? "
             "inputline__text"
@@ -107,7 +103,7 @@ view model =
         ]
 
 
-keyDecoder : String -> Decode.Decoder Msg
+keyDecoder : String -> Decode.Decoder Msg -- TODO: duplication
 keyDecoder key =
     if key == "Enter" then
         Decode.succeed Submit

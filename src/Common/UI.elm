@@ -9,7 +9,7 @@ import Common.ResultMaybe exposing (ResultMaybe)
 
 viewNumberInput : String -> String -> String -> (String -> msg) -> Html msg
 viewNumberInput prompt placeholderMsg inputValue onInputHandler =
-    viewInputFieldWithHander
+    viewInputFieldWithHandler
         prompt
         placeholderMsg
         "inputline__number"
@@ -17,8 +17,8 @@ viewNumberInput prompt placeholderMsg inputValue onInputHandler =
         [ onInput onInputHandler ]
 
 
-viewInputFieldWithHander : String -> String -> String -> String -> List (Attribute msg) -> Html msg
-viewInputFieldWithHander prompt placeholderMsg inputClass inputValue handlers =
+viewInputFieldWithHandler : String -> String -> String -> String -> List (Attribute msg) -> Html msg
+viewInputFieldWithHandler prompt placeholderMsg inputClass inputValue handlers =
     div [ class "inputline" ]
         [ span [ class "inputline__prompt" ] [ text prompt ]
         , input
