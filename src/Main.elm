@@ -3,10 +3,13 @@ port module Main exposing (main)
 import Array as A
 import Browser
 import Browser.Navigation as Nav
+import Dict exposing (Dict)
 import Exercises exposing (Exercise, exercises, toTitle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Json.Decode exposing (dict)
+import Maybe exposing (withDefault)
 import Pages.Ex01 as Ex01
 import Pages.Ex02 as Ex02
 import Pages.Ex03 as Ex03
@@ -217,6 +220,25 @@ defaultModel key =
     }
 
 
+type alias Params =
+    { init : Model -> Model
+    }
+
+
+dict : Dict Int Params
+dict =
+    Dict.fromList
+        [ ( 1, { init = \m -> { m | ex01Model = Just Ex01.init } } )
+        , ( 2, { init = \m -> { m | ex02Model = Just Ex02.init } } )
+        , ( 3, { init = \m -> { m | ex03Model = Just Ex03.init } } )
+        , ( 4, { init = \m -> { m | ex04Model = Just Ex04.init } } )
+        , ( 7, { init = \m -> { m | ex07Model = Just Ex07.init } } )
+        , ( 13, { init = \m -> { m | ex13Model = Just Ex13.init } } )
+        , ( 33, { init = \m -> { m | ex33Model = Just Ex33.init } } )
+        , ( 47, { init = \m -> { m | ex47Model = Just Ex47.init } } )
+        ]
+
+
 
 -- MSG
 
@@ -287,31 +309,12 @@ init _ url key =
 
         model =
             case route of
-                Exercise 1 ->
-                    { model0 | currentExercise = Just 1, ex01Model = Just Ex01.init }
+                Exercise n ->
+                    Dict.get n dict
+                        |> Maybe.map (\p -> p.init { model0 | currentExercise = Just n })
+                        |> withDefault model0
 
-                Exercise 2 ->
-                    { model0 | currentExercise = Just 2, ex02Model = Just Ex02.init }
-
-                Exercise 3 ->
-                    { model0 | currentExercise = Just 3, ex03Model = Just Ex03.init }
-
-                Exercise 4 ->
-                    { model0 | currentExercise = Just 4, ex04Model = Just Ex04.init }
-
-                Exercise 7 ->
-                    { model0 | currentExercise = Just 7, ex07Model = Just Ex07.init }
-
-                Exercise 13 ->
-                    { model0 | currentExercise = Just 13, ex13Model = Just Ex13.init }
-
-                Exercise 33 ->
-                    { model0 | currentExercise = Just 33, ex33Model = Just Ex33.init } -- TODO: reduce boilerplate
-
-                Exercise 47 ->
-                    { model0 | currentExercise = Just 47, ex47Model = Just Ex47.init }
-
-                _ ->
+                Home ->
                     model0
     in
     ( model, Cmd.none )
@@ -323,6 +326,19 @@ init _ url key =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    let
+        update_ getter subMsg updator setter mkMsg =
+            case getter model of
+                Just submodel ->
+                    let
+                        ( newModel, newCmd ) =
+                            updator subMsg submodel
+                    in
+                    ( setter model newModel, Cmd.map mkMsg newCmd )
+
+                Nothing ->
+                    ( model, Cmd.none )
+    in
     case msg of
         LinkClicked urlRequest ->
             case urlRequest of
@@ -341,30 +357,6 @@ update msg model =
                     defaultModel model.key
             in
             case route of
-                Exercise 1 ->
-                    ( { model0 | currentExercise = Just 1, ex01Model = Just Ex01.init }, Cmd.none )
-
-                Exercise 2 ->
-                    ( { model0 | currentExercise = Just 2, ex02Model = Just Ex02.init }, Cmd.none )
-
-                Exercise 3 ->
-                    ( { model0 | currentExercise = Just 3, ex03Model = Just Ex03.init }, Cmd.none )
-
-                Exercise 4 ->
-                    ( { model0 | currentExercise = Just 4, ex04Model = Just Ex04.init }, Cmd.none )
-
-                Exercise 7 ->
-                    ( { model0 | currentExercise = Just 7, ex07Model = Just Ex07.init }, Cmd.none )
-
-                Exercise 13 ->
-                    ( { model0 | currentExercise = Just 13, ex13Model = Just Ex13.init }, Cmd.none )
-
-                Exercise 33 ->
-                    ( { model0 | currentExercise = Just 33, ex33Model = Just Ex33.init }, Cmd.none )
-
-                Exercise 47 ->
-                    ( { model0 | currentExercise = Just 47, ex47Model = Just Ex47.init }, Cmd.none )
-
                 Exercise 53 ->
                     let
                         ( ex53Model, cmd, mbCommand ) =
@@ -388,104 +380,39 @@ update msg model =
                     , Cmd.batch [ Cmd.map Ex53Msg cmd, portCmd ]
                     )
 
-                _ ->
+                Exercise n ->
+                    ( Dict.get n dict
+                        |> Maybe.map (\p -> p.init { model0 | currentExercise = Just n })
+                        |> withDefault model0
+                    , Cmd.none
+                    )
+
+                Home ->
                     ( model0, Cmd.none )
 
         Ex01Msg subMsg ->
-            case model.ex01Model of
-                Just ex01Model ->
-                    let
-                        ( newModel, cmd ) =
-                            Ex01.update subMsg ex01Model
-                    in
-                    ( { model | ex01Model = Just newModel }, Cmd.map Ex01Msg cmd )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            update_ (\m -> m.ex01Model) subMsg Ex01.update (\m n -> { m | ex01Model = Just n }) Ex01Msg
 
         Ex02Msg subMsg ->
-            case model.ex02Model of
-                Just ex02Model ->
-                    let
-                        ( newModel, cmd ) =
-                            Ex02.update subMsg ex02Model
-                    in
-                    ( { model | ex02Model = Just newModel }, Cmd.map Ex02Msg cmd )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            update_ (\m -> m.ex02Model) subMsg Ex02.update (\m n -> { m | ex02Model = Just n }) Ex02Msg
 
         Ex03Msg subMsg ->
-            case model.ex03Model of
-                Just ex03Model ->
-                    let
-                        ( newModel, cmd ) =
-                            Ex03.update subMsg ex03Model
-                    in
-                    ( { model | ex03Model = Just newModel }, Cmd.map Ex03Msg cmd )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            update_ (\m -> m.ex03Model) subMsg Ex03.update (\m n -> { m | ex03Model = Just n }) Ex03Msg
 
         Ex04Msg subMsg ->
-            case model.ex04Model of
-                Just ex04Model ->
-                    let
-                        ( newModel, cmd ) =
-                            Ex04.update subMsg ex04Model
-                    in
-                    ( { model | ex04Model = Just newModel }, Cmd.map Ex04Msg cmd )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            update_ (\m -> m.ex04Model) subMsg Ex04.update (\m n -> { m | ex04Model = Just n }) Ex04Msg
 
         Ex07Msg subMsg ->
-            case model.ex07Model of
-                Just ex07Model ->
-                    let
-                        ( newModel, cmd ) =
-                            Ex07.update subMsg ex07Model
-                    in
-                    ( { model | ex07Model = Just newModel }, Cmd.map Ex07Msg cmd )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            update_ (\m -> m.ex07Model) subMsg Ex07.update (\m n -> { m | ex07Model = Just n }) Ex07Msg
 
         Ex13Msg subMsg ->
-            case model.ex13Model of
-                Just ex13Model ->
-                    let
-                        ( newModel, cmd ) =
-                            Ex13.update subMsg ex13Model
-                    in
-                    ( { model | ex13Model = Just newModel }, Cmd.map Ex13Msg cmd )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            update_ (\m -> m.ex13Model) subMsg Ex13.update (\m n -> { m | ex13Model = Just n }) Ex13Msg
 
         Ex33Msg subMsg ->
-            case model.ex33Model of
-                Just ex33Model ->
-                    let
-                        ( newModel, cmd ) =
-                            Ex33.update subMsg ex33Model
-                    in
-                    ( { model | ex33Model = Just newModel }, Cmd.map Ex33Msg cmd )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            update_ (\m -> m.ex33Model) subMsg Ex33.update (\m n -> { m | ex33Model = Just n }) Ex33Msg
 
         Ex47Msg subMsg ->
-            case model.ex47Model of
-                Just ex47Model ->
-                    let
-                        ( newModel, cmd ) =
-                            Ex47.update subMsg ex47Model
-                    in
-                    ( { model | ex47Model = Just newModel }, Cmd.map Ex47Msg cmd )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            update_ (\m -> m.ex47Model) subMsg Ex47.update (\m n -> { m | ex47Model = Just n }) Ex47Msg
 
         Ex53Msg subMsg ->
             case model.ex53Model of
