@@ -78,7 +78,7 @@ makeOutput model =
                         collectErrors [ lengthInFeet, widthInFeet ]
     in
     { model
-        | output =
+        | output = -- TODO: too deeply nested
             Result.map
                 (Maybe.map
                     (\area ->

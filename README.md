@@ -26,7 +26,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 4: Making Decisions
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex14 [ ] [Tax Calculator](src/Pages/Ex14.elm)                 | | | |
+| Ex14 [x] [Tax Calculator](src/Pages/Ex14.elm)                 | myrho/elm-round| | 3(2)|
 | Ex15 [ ] [Password Validation](src/Pages/Ex15.elm)            | | | |
 | Ex16 [ ] [Legal Driving Age](src/Pages/Ex16.elm)              | | | |
 | Ex17 [ ] [Blood Alcohol Calculator](src/Pages/Ex17.elm)       | | | |
@@ -54,7 +54,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 7: Data Structures
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex33 [x] [Magic 8 Ball](src/Pages/Ex33.elm)          | | | 2(2)|
+| Ex33 [x] [Magic 8 Ball](src/Pages/Ex33.elm)          | elm/random | random number | 3(2)|
 | Ex34 [ ] [Employee List Removal](src/Pages/Ex34.elm) | | | |
 | Ex35 [ ] [Picking a Winner](src/Pages/Ex35.elm)      | | | |
 | Ex36 [ ] [Computing Statistics](src/Pages/Ex36.elm)  | | | |

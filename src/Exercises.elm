@@ -23,7 +23,7 @@ exercises =
     , { suffix = "11", title = "Currency Conversion", done = False }
     , { suffix = "12", title = "Computing Simple Interest", done = False }
     , { suffix = "13", title = "Determining Compound Interest", done = True }
-    , { suffix = "14", title = "Tax Calculator", done = False }
+    , { suffix = "14", title = "Tax Calculator", done = True }
     , { suffix = "15", title = "Password Validation", done = False }
     , { suffix = "16", title = "Legal Driving Age", done = False }
     , { suffix = "17", title = "Blood Alcohol Calculator", done = False }

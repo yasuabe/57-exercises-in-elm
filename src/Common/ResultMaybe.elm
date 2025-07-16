@@ -7,7 +7,7 @@ type alias ResultMaybe e a =
     Result e (Maybe a)
 
 
-collectErrors : List (ResultMaybe e a) -> List e 
+collectErrors : List (ResultMaybe e a) -> List e
 collectErrors results =
     filterMap
         (\e ->
@@ -20,7 +20,24 @@ collectErrors results =
         )
         results
 
-parseString: (String -> Maybe a)-> String -> String -> ResultMaybe String a
+
+collectErrors2 : ResultMaybe e a -> ResultMaybe e b -> List e
+collectErrors2 rm1 rm2 =
+    case ( rm1, rm2 ) of
+        ( Err e1, Err e2 ) ->
+            [ e1, e2 ]
+
+        ( Err e1, _ ) ->
+            [ e1 ]
+
+        ( _, Err e2 ) ->
+            [ e2 ]
+
+        _ ->
+            []
+
+
+parseString : (String -> Maybe a) -> String -> String -> ResultMaybe String a
 parseString converter errMsg str =
     let
         trimmed =
@@ -37,5 +54,20 @@ parseString converter errMsg str =
             Nothing ->
                 Err errMsg
 
-parseStringToFloat: String -> String -> ResultMaybe String Float
-parseStringToFloat errMsg str = parseString String.toFloat errMsg str
+
+parseStringToFloat : String -> String -> ResultMaybe String Float
+parseStringToFloat =
+    parseString String.toFloat
+
+
+map : (a -> b) -> ResultMaybe e a -> ResultMaybe e b
+map f result =
+    case result of
+        Ok (Just x) ->
+            Ok (Just (f x))
+
+        Ok Nothing ->
+            Ok Nothing
+
+        Err e ->
+            Err e

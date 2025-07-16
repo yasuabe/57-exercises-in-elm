@@ -113,7 +113,7 @@ makeOutput model =
                         "$"
                             ++ "1500"
                             ++ " invested at "
-                            ++ "4.3"
+                            ++ "4.3" -- TODO: use model.rate
                             ++ "% for "
                             ++ "6"
                             ++ " years\n"
