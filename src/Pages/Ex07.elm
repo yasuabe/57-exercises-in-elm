@@ -10,7 +10,7 @@
 module Pages.Ex07 exposing (Model, Msg(..), init, update, view)
 
 import Common.Math exposing (roundToDecimals)
-import Common.ResultMaybe exposing (ResultMaybe, collectErrors, parseStringToFloat)
+import Common.ResultMaybe exposing (ResultMaybe, collectErrors, map, parseStringToFloat)
 import Common.UI exposing (viewNumberInput, viewOutputBlock)
 import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
@@ -51,12 +51,16 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        LengthChanged str ->
-            ( makeOutput { model | length = String.trim str }, Cmd.none )
+    let
+        newModel =
+            case msg of
+                LengthChanged str ->
+                    makeOutput { model | length = String.trim str }
 
-        WidthChanged str ->
-            ( makeOutput { model | width = String.trim str }, Cmd.none )
+                WidthChanged str ->
+                    makeOutput { model | width = String.trim str }
+    in
+    ( newModel, Cmd.none )
 
 
 makeOutput : Model -> Model
@@ -74,25 +78,22 @@ makeOutput model =
                     Ok <| map2 (*) o1 o2
 
                 _ ->
-                    Err <|
-                        collectErrors [ lengthInFeet, widthInFeet ]
+                    Err <| collectErrors [ lengthInFeet, widthInFeet ]
     in
     { model
-        | output = -- TODO: too deeply nested
-            Result.map
-                (Maybe.map
-                    (\area ->
-                        "You entered dimensions of "
-                            ++ model.length
-                            ++ " feet by "
-                            ++ model.width
-                            ++ " feet.\n"
-                            ++ "The area is "
-                            ++ roundToTwoDecimals area
-                            ++ " square feet\n"
-                            ++ roundToTwoDecimals (area * 0.09290304)
-                            ++ " square meters"
-                    )
+        | output =
+            map
+                (\area ->
+                    "You entered dimensions of "
+                        ++ model.length
+                        ++ " feet by "
+                        ++ model.width
+                        ++ " feet.\n"
+                        ++ "The area is "
+                        ++ roundToTwoDecimals area
+                        ++ " square feet\n"
+                        ++ roundToTwoDecimals (area * 0.09290304)
+                        ++ " square meters"
                 )
                 areaResult
     }

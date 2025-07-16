@@ -1,3 +1,12 @@
+-- Ex13: Determining Compound Interest
+--
+-- - Prompt the user for principal amount, interest rate (as a percentage), number of years, and compounding frequency per year.
+-- - Convert the interest rate by dividing it by 100.
+-- - Use the compound interest formula to compute the final amount.
+-- - Round up fractions of a cent to the next penny.
+-- - Format the output as money.
+
+
 module Pages.Ex13Test exposing (..)
 
 import Expect exposing (Expectation)
@@ -7,20 +16,21 @@ import Test exposing (..)
 
 suite : Test
 suite =
+    let
+        update msg m =
+            m |> Ex13.update msg |> Tuple.first
+    in
     describe "Ex13 Module"
         [ describe "update"
             [ test "Change events should update the output" <|
                 \_ ->
                     let
-                        ( model, _ ) =
+                        model =
                             Ex13.init
-                                |> Ex13.update (Ex13.PrincipalChanged "1500")
-                                |> Tuple.first
-                                |> Ex13.update (Ex13.RateChanged "4.3")
-                                |> Tuple.first
-                                |> Ex13.update (Ex13.YearsChanged "6")
-                                |> Tuple.first
-                                |> Ex13.update (Ex13.TimesChanged "4")
+                                |> update (Ex13.PrincipalChanged "1500")
+                                |> update (Ex13.RateChanged "4.3")
+                                |> update (Ex13.YearsChanged "6")
+                                |> update (Ex13.TimesChanged "4")
                     in
                     expectValidAmount model "1938.84"
             ]

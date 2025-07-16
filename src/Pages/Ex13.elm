@@ -10,13 +10,11 @@
 module Pages.Ex13 exposing (Model, Msg(..), init, update, view)
 
 import Common.Math exposing (roundToDecimals)
-import Common.ResultMaybe exposing (ResultMaybe, collectErrors, parseStringToFloat)
+import Common.ResultMaybe exposing (ResultMaybe, collectErrors, map, parseStringToFloat)
 import Common.UI exposing (viewNumberInput, viewOutputBlock)
 import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
 import List
-import Maybe
-
 
 
 -- MODEL
@@ -92,7 +90,7 @@ makeOutput model =
         calcResult =
             case ( ( principal, rate ), ( years, times ) ) of
                 ( ( Ok (Just p), Ok (Just r) ), ( Ok (Just y), Ok (Just t) ) ) ->
-                    Ok <| Just (p * (1 + (r / 100) / t) ^ (t * y))
+                    Ok <| Just ( ( p, r ), ( y, t, p * (1 + (r / 100) / t) ^ (t * y) ) )
 
                 _ ->
                     let
@@ -107,22 +105,20 @@ makeOutput model =
     in
     { model
         | output =
-            Result.map
-                (Maybe.map
-                    (\amount ->
-                        "$"
-                            ++ "1500"
-                            ++ " invested at "
-                            ++ "4.3" -- TODO: use model.rate
-                            ++ "% for "
-                            ++ "6"
-                            ++ " years\n"
-                            ++ "compounded "
-                            ++ "4"
-                            ++ " times per year is $"
-                            ++ roundToTwoDecimals amount
-                            ++ "."
-                    )
+            map
+                (\( ( p, r ), ( y, t, amount ) ) ->
+                    "$"
+                        ++ String.fromFloat p
+                        ++ " invested at "
+                        ++ String.fromFloat r
+                        ++ "% for "
+                        ++ String.fromFloat y
+                        ++ " years\n"
+                        ++ "compounded "
+                        ++ String.fromFloat t
+                        ++ " times per year is $"
+                        ++ roundToTwoDecimals amount
+                        ++ "."
                 )
                 calcResult
     }
