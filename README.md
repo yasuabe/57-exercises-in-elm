@@ -35,7 +35,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex20 [ ] [Multistate Sales Tax Calculator](src/Pages/Ex20.elm)| | | |
 | Ex21 [ ] [Numbers to Names](src/Pages/Ex21.elm)               | | | |
 | Ex22 [ ] [Comparing Numbers](src/Pages/Ex22.elm)              | | | |
-| Ex23 [ ] [Troubleshooting Car Issues](src/Pages/Ex23.elm)     | | | |
+| Ex23 [x] [Troubleshooting Car Issues](src/Pages/Ex23.elm)     | | decision tree | 4(3)|
 #### Chapter 5: Functions
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
