@@ -234,6 +234,7 @@ dict =
         , ( 4, { init = \m -> { m | ex04Model = Just Ex04.init } } )
         , ( 7, { init = \m -> { m | ex07Model = Just Ex07.init } } )
         , ( 13, { init = \m -> { m | ex13Model = Just Ex13.init } } )
+        , ( 23, { init = \m -> { m | ex23Model = Just Ex23.init } } )
         , ( 14, { init = \m -> { m | ex14Model = Just Ex14.init } } )
         , ( 33, { init = \m -> { m | ex33Model = Just Ex33.init } } )
         , ( 47, { init = \m -> { m | ex47Model = Just Ex47.init } } )
@@ -254,6 +255,7 @@ type Msg
     | Ex07Msg Ex07.Msg
     | Ex13Msg Ex13.Msg
     | Ex14Msg Ex14.Msg
+    | Ex23Msg Ex23.Msg
     | Ex33Msg Ex33.Msg
     | Ex47Msg Ex47.Msg
     | Ex53Msg Ex53.Msg
@@ -413,6 +415,9 @@ update msg model =
         Ex14Msg subMsg ->
             update_ (\m -> m.ex14Model) subMsg Ex14.update (\m n -> { m | ex14Model = Just n }) Ex14Msg
 
+        Ex23Msg subMsg ->
+            update_ (\m -> m.ex23Model) subMsg Ex23.update (\m n -> { m | ex23Model = Just n }) Ex23Msg
+
         Ex33Msg subMsg ->
             update_ (\m -> m.ex33Model) subMsg Ex33.update (\m n -> { m | ex33Model = Just n }) Ex33Msg
 
@@ -538,6 +543,9 @@ mainPane model =
 
             Just 14 ->
                 mapMain model 14 (\m -> m.ex14Model) Ex14.view Ex14Msg
+
+            Just 23 ->
+                mapMain model 23 (\m -> m.ex23Model) Ex23.view Ex23Msg
 
             Just 33 ->
                 mapMain model 33 (\m -> m.ex33Model) Ex33.view Ex33Msg
