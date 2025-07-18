@@ -1,7 +1,7 @@
 module Pages.Ex23 exposing (Diagnosis, LastStep(..), Model, Msg(..), init, traverse, update, view)
 
 import Html exposing (Html, div, input, label, span, text)
-import Html.Attributes exposing (checked, name, style, type_)
+import Html.Attributes exposing (checked, class, name, style, type_)
 import Html.Events exposing (onClick)
 import List exposing (indexedMap, length)
 import Maybe exposing (withDefault)
@@ -59,31 +59,19 @@ type alias Diagnosis =
     }
 
 
-sample : Diagnosis
-sample =
-    { steps =
-        [ ( "question a", True )
-        , ( "looooooooooooooooooong question", False )
-        ]
-    , lastStep = Solution "You are a human."
-    }
-
-
 type alias Model =
     { decisions : List Bool }
 
 
 init : Model
 init =
-    { decisions = []
-    }
+    { decisions = [] }
 
 
 traverse : List Bool -> Diagnosis
 traverse decisions =
     let
-        f : List Answer -> List Bool -> Tree String -> Diagnosis
-        f answers decisions_ tree =
+        loop answers decisions_ tree =
             case ( decisions_, tree ) of
                 ( _, Leaf msg ) ->
                     { steps = answers, lastStep = Solution msg }
@@ -92,22 +80,20 @@ traverse decisions =
                     { steps = answers, lastStep = Question msg }
 
                 ( False :: ds, Node msg _ r ) ->
-                    f (answers ++ [ ( msg, False ) ]) ds r
+                    loop (answers ++ [ ( msg, False ) ]) ds r
 
                 ( True :: ds, Node msg l _ ) ->
-                    f (answers ++ [ ( msg, True ) ]) ds l
+                    loop (answers ++ [ ( msg, True ) ]) ds l
     in
-    f [] decisions decisionTree
+    loop [] decisions decisionTree
 
 
 
--- Ok { steps = [], lastStep = Question "" }
 -- MSG
 
 
 type Msg
-    = Submit
-    | SelectAnswer Int Bool
+    = SelectAnswer Int Bool
 
 
 
@@ -117,13 +103,8 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Submit ->
-            ( init
-            , Cmd.none
-            )
-
         SelectAnswer index answer ->
-            ( { decisions = (List.take index <| model.decisions) ++ [answer] }, Cmd.none )
+            ( { decisions = (List.take index <| model.decisions) ++ [ answer ] }, Cmd.none )
 
 
 
@@ -132,58 +113,44 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ div []
-            [ span [] [ text "header" ]
-            ]
-        , renderDiagnosis model.decisions
-        ]
+    div [] [ renderDiagnosis model.decisions ]
 
 
+renderYesNo : Int -> Maybe Bool -> List (Html Msg)
+renderYesNo n check =
+    let
+        ( yes, no ) =
+            Maybe.map (\b -> ( [ checked b ], [ checked (not b) ] )) check
+                |> withDefault ( [], [] )
 
--- TODO: define a function to render radio buttons
+        radio b =
+            [ type_ "radio", name <| String.fromInt n, onClick (SelectAnswer n b) ]
+    in
+    [ input (radio True ++ yes) []
+    , label [] [ text "Yes" ]
+    , input (radio False ++ no) []
+    , label [] [ text "No" ]
+    ]
 
 
 renderDiagnosis : List Bool -> Html Msg
 renderDiagnosis decisions =
     let
-        f : Int -> Maybe Bool -> List (Html Msg)
-        f n check =
-            let
-                ( yes, no ) =
-                    Maybe.map (\b -> ( [ checked b ], [ checked (not b) ] )) check
-                        |> withDefault ( [], [] )
-
-                number =
-                    String.fromInt n
-            in
-            [ input ([ type_ "radio", name number, onClick (SelectAnswer n True) ] ++ yes) []
-            , label [] [ text "yes" ]
-            , input ([ type_ "radio", name number, onClick (SelectAnswer n False)  ] ++ no) []
-            , label [] [ text "no" ]
-            ]
-
-        diagnosis : Diagnosis
         diagnosis =
             traverse decisions
 
-        lastRow : Html Msg
         lastRow =
             case diagnosis.lastStep of
                 Question q ->
-                    div []
-                        (span [] [ text q ] :: f (length diagnosis.steps) Nothing)
+                    div [ class "inputline" ] <| span [] [ text q ] :: renderYesNo (length diagnosis.steps) Nothing
 
                 Solution s ->
-                    div [] [ text s ]
+                    div [ style "font-weight" "bold", style "margin-top" "20px", style "color" "#007bff" ]
+                        [ span [] [ text "Diagnosis: " ], text s ]
 
-        steps : List (Html Msg)
         steps =
             indexedMap
-                (\n ( q, a ) ->
-                    div []
-                        (span [] [ text q ] :: (f n <| Just a))
-                )
+                (\n ( q, a ) -> div [ class "inputline" ] <| span [] [ text q ] :: (renderYesNo n <| Just a))
                 diagnosis.steps
     in
     div [] <| steps ++ [ lastRow ]
