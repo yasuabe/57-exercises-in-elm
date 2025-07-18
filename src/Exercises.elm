@@ -1,5 +1,7 @@
 module Exercises exposing (..)
 
+import Dict exposing (Dict)
+
 
 type alias Exercise =
     { suffix : String
@@ -68,6 +70,21 @@ exercises =
     , { suffix = "56", title = "Tracking Inventory", done = False }
     , { suffix = "57", title = "Trivia App", done = False }
     ]
+
+
+chapters : Dict String String
+chapters =
+    Dict.fromList
+        [ ( "01", "Chapter 2: Input, Processing, and Output" )
+        , ( "07", "Chapter 3: Calculations" )
+        , ( "14", "Chapter 4: Making Decisions" )
+        , ( "24", "Chapter 5: Functions" )
+        , ( "28", "Chapter 6: Repetition" )
+        , ( "33", "Chapter 7: Data Structures" )
+        , ( "41", "Chapter 8: Working with Files" )
+        , ( "47", "Chapter 9: Working with External Services" )
+        , ( "53", "Chapter 10: Full Programs" )
+        ]
 
 
 toTitle : Exercise -> String

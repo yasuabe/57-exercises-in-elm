@@ -46,6 +46,14 @@ body {
     overflow: scroll;
     height: 90%;
   }
+  &__chapter-title {
+     font-size: 16px;
+     font-weight: bold;
+     margin-top: 16px;
+   }
+  &__exercise-title {
+     margin: 5px auto 5px 1em;
+  }
 }
 
 a {

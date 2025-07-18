@@ -4,7 +4,7 @@ import Array as A
 import Browser
 import Browser.Navigation as Nav
 import Dict exposing (Dict)
-import Exercises exposing (Exercise, exercises, toTitle)
+import Exercises exposing (Exercise, chapters, exercises, toTitle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -225,8 +225,8 @@ type alias Params =
     }
 
 
-dict : Dict Int Params
-dict =
+initDict : Dict Int Params
+initDict =
     Dict.fromList
         [ ( 1, { init = \m -> { m | ex01Model = Just Ex01.init } } )
         , ( 2, { init = \m -> { m | ex02Model = Just Ex02.init } } )
@@ -314,7 +314,7 @@ init _ url key =
         model =
             case route of
                 Exercise n ->
-                    Dict.get n dict
+                    Dict.get n initDict
                         |> Maybe.map (\p -> p.init { model0 | currentExercise = Just n })
                         |> withDefault model0
 
@@ -385,7 +385,7 @@ update msg model =
                     )
 
                 Exercise n ->
-                    ( Dict.get n dict
+                    ( Dict.get n initDict
                         |> Maybe.map (\p -> p.init { model0 | currentExercise = Just n })
                         |> withDefault model0
                     , Cmd.none
@@ -473,23 +473,31 @@ leftPane : Html Msg
 leftPane =
     div [ class "left-pane" ]
         [ h3 [] [ text "Exercises" ]
-        , div [ class "left-pane__titles" ] (List.map exerciseLink exercises)
+        , hr [] []
+        , div [ class "left-pane__titles" ] (List.concatMap exerciseLink exercises)
         ]
 
 
-exerciseLink : Exercise -> Html Msg
+exerciseLink : Exercise -> List (Html Msg)
 exerciseLink e =
     let
         title =
             text <| toTitle e
-    in
-    div [ style "margin" "5px 0" ]
-        [ if e.done then
-            a [ href ("/ex" ++ e.suffix) ] [ title ]
 
-          else
-            title
-        ]
+        chapter =
+            Dict.get e.suffix chapters
+                |> Maybe.map (\c -> [ div [ class "left-pane__chapter-title" ] [ text c ] ])
+                |> Maybe.withDefault []
+    in
+    chapter
+        ++ [ div [ class "left-pane__exercise-title" ]
+                [ if e.done then
+                    a [ href ("/ex" ++ e.suffix) ] [ title ]
+
+                  else
+                    title
+                ]
+           ]
 
 
 mapMain : Model -> Int -> (Model -> Maybe a) -> (a -> Html msg) -> (msg -> Msg) -> Html Msg
