@@ -39,7 +39,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 5: Functions
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex24 [ ] [Anagram Checker](src/Pages/Ex24.elm)                 | | | |
+| Ex24 [x] [Anagram Checker](src/Pages/Ex24.elm)                 | | | 3(2) |
 | Ex25 [ ] [Password Strength Indicator](src/Pages/Ex25.elm)     | | | |
 | Ex26 [ ] [Months to Pay Off a Credit Card](src/Pages/Ex26.elm) | | | |
 | Ex27 [ ] [Validating Inputs](src/Pages/Ex27.elm)               | | | |
