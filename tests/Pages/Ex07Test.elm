@@ -11,16 +11,12 @@ suite =
         [ describe "init"
             [ test "should initialize with empty length, width and area" <|
                 \_ ->
-                    let
-                        model =
-                            Ex07.init
-                    in
                     Expect.all
                         [ \m -> Expect.equal "" m.length
                         , \m -> Expect.equal "" m.width
                         , \m -> Expect.equal (Ok Nothing) m.output
                         ]
-                        model
+                        Ex07.init
             ]
         , describe "update"
             [ test "Change events should update the output" <|
@@ -42,8 +38,8 @@ expectValidArea model areaInFeet areaInMeters =
     case model.output of
         Ok (Just message) ->
             Expect.all
-                [ \m -> Expect.equal True <| String.contains areaInFeet m -- TODO: use common test utility function
-                , \m -> Expect.equal True <| String.contains areaInMeters m
+                [ Expect.equal True << String.contains areaInFeet
+                , Expect.equal True << String.contains areaInMeters
                 ]
                 message
 

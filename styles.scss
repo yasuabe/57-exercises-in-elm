@@ -1,4 +1,4 @@
-// 変数
+// Variables
 $primary-color: #007bff;
 $primary-hover: #0056b3;
 $danger-color: #dc3545;
@@ -8,8 +8,11 @@ $text-color: #555;
 $background-light: rgba(240, 240, 240, 0.062745098);
 $table-border: rgba(238, 238, 238, 0.2666666667);
 $table-row-alt: rgba(249, 249, 249, 0.1254901961);
+$font-size-smaller: 14px;
+$font-size-base: 16px;
+$font-size-larger: 18px;
 
-// ミックスイン
+// Mixins
 @mixin button-style($bg-color, $hover-color) {
   padding: 2px 5px;
   border: none;
@@ -26,7 +29,7 @@ $table-row-alt: rgba(249, 249, 249, 0.1254901961);
   }
 }
 
-// グローバルスタイル
+// Global styles
 :root {
   color-scheme: dark;
 }
@@ -84,7 +87,7 @@ button {
 
 .output {
   width: 90%;
-  font-size: 16px; // TODO: duplication -> variable
+  font-size: $font-size-base;
   background: inherit;
   margin-top: 30px;
   border: 0;
@@ -92,7 +95,7 @@ button {
 
 .description {
   width: 90%;
-  font-size: 16px; // TODO: duplication -> variable
+  font-size: $font-size-base;
   background: inherit;
   margin: 12px 0;
   border: 0;
@@ -151,11 +154,11 @@ button {
   }
 
   td:nth-child(2) {
-    font-size: 16px;
+    font-size: $font-size-base;
   }
 
   td:nth-child(3) {
-    font-size: 14px;
+    font-size: $font-size-smaller;
   }
 
   td:nth-child(4) {
@@ -165,13 +168,13 @@ button {
   .todo-input {
     width: 100%;
     padding: 5px;
-    font-size: 16px;
+    font-size: $font-size-base;
     border-radius: 5px;
   }
 
   caption {
     caption-side: bottom;
-    font-size: 18px;
+    font-size: $font-size-larger;
     font-weight: bold;
     padding: 10px;
     margin-bottom: 10px;
