@@ -35,7 +35,7 @@ exercises =
     , { suffix = "21", title = "Numbers to Names", done = False }
     , { suffix = "22", title = "Comparing Numbers", done = False }
     , { suffix = "23", title = "Troubleshooting Car Issues", done = True }
-    , { suffix = "24", title = "Anagram Checker", done = False }
+    , { suffix = "24", title = "Anagram Checker", done = True }
     , { suffix = "25", title = "Password Strength Indicator", done = False }
     , { suffix = "26", title = "Months to Pay Off a Credit Card", done = False }
     , { suffix = "27", title = "Validating Inputs", done = False }

@@ -42,7 +42,7 @@ expectValidArea model areaInFeet areaInMeters =
     case model.output of
         Ok (Just message) ->
             Expect.all
-                [ \m -> Expect.equal True <| String.contains areaInFeet m
+                [ \m -> Expect.equal True <| String.contains areaInFeet m -- TODO: use common test utility function
                 , \m -> Expect.equal True <| String.contains areaInMeters m
                 ]
                 message

@@ -84,9 +84,17 @@ button {
 
 .output {
   width: 90%;
-  font-size: 16px;
+  font-size: 16px; // TODO: duplication -> variable
   background: inherit;
   margin-top: 30px;
+  border: 0;
+}
+
+.description {
+  width: 90%;
+  font-size: 16px; // TODO: duplication -> variable
+  background: inherit;
+  margin: 12px 0;
   border: 0;
 }
 
