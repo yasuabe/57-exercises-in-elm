@@ -1,11 +1,12 @@
 module Pages.Ex24 exposing (Model, Msg(..), init, update, view)
 
+import Common.Function exposing (on)
 import Common.ResultMaybe exposing (ResultMaybe)
 import Common.StringEx as StringEx exposing (quote, sort)
 import Common.UI exposing (viewTextInput)
 import Html exposing (Html, div, pre, text)
 import Html.Attributes exposing (class, readonly)
-import List exposing (length)
+import String exposing (isEmpty, length)
 
 
 
@@ -54,35 +55,32 @@ update msg model =
     ( newModel, Cmd.none )
 
 
+isAnagram : Model  -> Bool
+isAnagram { first, second } =
+    let
+        normalize =
+            String.toLower >> sort
+    in
+    on (==) normalize first second
+
+
 makeOutput : Model -> Model
 makeOutput model =
     let
         quote =
             StringEx.quote '"'
 
-        normalize str =
-            str |> String.trim |> String.toLower |> sort
-
-        firstString =
-            normalize model.first
-
-        secondString =
-            normalize model.second
-
         output =
-            if firstString == "" || secondString == "" then
+            if on (||) isEmpty model.first model.second then
                 Ok Nothing
 
-            else if String.length firstString /= String.length secondString then
+            else if on (/=) length model.first model.second then
                 Err [ "The two strings must have the same length to be anagrams." ]
 
             else
                 let
-                    areAnagrams =
-                        firstString == secondString
-
                     maybeNot =
-                        if areAnagrams then
+                        if isAnagram model then
                             ""
 
                         else
