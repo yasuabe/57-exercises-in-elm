@@ -100,15 +100,15 @@ view model =
     div []
         [ viewDescriptionBlock
         , viewTextInput
+            FirstChanged
             "What is the first? "
             "e.g. note"
             model.first
-            FirstChanged
         , viewTextInput
+            SecondChanged
             "What is the second? "
             "e.g. tone"
             model.second
-            SecondChanged
         , pre [ class "output", readonly True ]
             [ viewOutputBlock model ]
         ]

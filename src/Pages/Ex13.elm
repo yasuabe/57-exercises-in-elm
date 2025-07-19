@@ -137,25 +137,25 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewNumberInput
+            PrincipalChanged
             "What is the principal principal? "
             "e.g. 1500"
             model.principal
-            PrincipalChanged
         , viewNumberInput
+            RateChanged
             "What is the rate? "
             "e.g. 4.3"
             model.rate
-            RateChanged
         , viewNumberInput
+            YearsChanged
             "What is the number of years? "
             "e.g. 6"
             model.years
-            YearsChanged
         , viewNumberInput
+            TimesChanged
             "What is the number of times the interest is compounded per year? "
             "e.g. 4"
             model.times
-            TimesChanged
         , pre [ class "output", readonly True ]
             [ viewOutputBlock model.output "fill all fields"
             ]

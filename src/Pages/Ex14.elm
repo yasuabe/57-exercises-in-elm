@@ -116,22 +116,22 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewNumberInput
+            AmountChanged
             "What is the order amount? "
             "e.g. 10"
             model.orderAmount
-            AmountChanged
         , viewStateInput
+            StateChanged
             "What is the state? "
             "e.g. WI"
             model.state
-            StateChanged
         , pre [ class "output", readonly True ]
             [ viewOutputBlock model.output "Enter order amount and state" ]
         ]
 
 
-viewStateInput : String -> String -> String -> (String -> msg) -> Html msg
-viewStateInput prompt placeHolder inputValue onInputHandler =
+viewStateInput : (String -> msg) -> String -> String -> String -> Html msg
+viewStateInput onInputHandler prompt placeHolder inputValue =
     div [ class "inputline" ]
         [ span [ class "inputline__prompt" ] [ text prompt ]
         , input

@@ -114,6 +114,11 @@ button {
     text-align: right;
   }
 
+  &__number--invalid {
+    text-align: right;
+    background-color: #dc354599;
+  }
+
   &__text {
     text-align: left;
   }

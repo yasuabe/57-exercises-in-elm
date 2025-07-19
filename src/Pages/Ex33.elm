@@ -91,13 +91,13 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewInputFieldWithHandler
-            "What's your question? "
-            "e.g. Will I be rich and famous? "
             "inputline__text"
-            model.question
             [ onInput InputChanged
             , on "keydown" <| submitOnEnter Submit
             ]
+            "What's your question? "
+            "e.g. Will I be rich and famous? "
+            model.question
         , pre [ class "output", readonly True ]
             [ viewOutputBlock model.output "" ]
         ]

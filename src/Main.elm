@@ -8,7 +8,6 @@ import Exercises exposing (Exercise, chapters, exercises, toTitle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Json.Decode exposing (dict)
 import Maybe exposing (withDefault)
 import Pages.Ex01 as Ex01
 import Pages.Ex02 as Ex02
@@ -234,9 +233,10 @@ initDict =
         , ( 4, { init = \m -> { m | ex04Model = Just Ex04.init } } )
         , ( 7, { init = \m -> { m | ex07Model = Just Ex07.init } } )
         , ( 13, { init = \m -> { m | ex13Model = Just Ex13.init } } )
+        , ( 14, { init = \m -> { m | ex14Model = Just Ex14.init } } )
         , ( 23, { init = \m -> { m | ex23Model = Just Ex23.init } } )
         , ( 24, { init = \m -> { m | ex24Model = Just Ex24.init } } )
-        , ( 14, { init = \m -> { m | ex14Model = Just Ex14.init } } )
+        , ( 28, { init = \m -> { m | ex28Model = Just Ex28.init } } )
         , ( 33, { init = \m -> { m | ex33Model = Just Ex33.init } } )
         , ( 47, { init = \m -> { m | ex47Model = Just Ex47.init } } )
         ]
@@ -258,6 +258,7 @@ type Msg
     | Ex14Msg Ex14.Msg
     | Ex23Msg Ex23.Msg
     | Ex24Msg Ex24.Msg
+    | Ex28Msg Ex28.Msg
     | Ex33Msg Ex33.Msg
     | Ex47Msg Ex47.Msg
     | Ex53Msg Ex53.Msg
@@ -423,6 +424,9 @@ update msg model =
         Ex24Msg subMsg ->
             update_ (\m -> m.ex24Model) subMsg Ex24.update (\m n -> { m | ex24Model = Just n }) Ex24Msg
 
+        Ex28Msg subMsg ->
+            update_ (\m -> m.ex28Model) subMsg Ex28.update (\m n -> { m | ex28Model = Just n }) Ex28Msg
+
         Ex33Msg subMsg ->
             update_ (\m -> m.ex33Model) subMsg Ex33.update (\m n -> { m | ex33Model = Just n }) Ex33Msg
 
@@ -562,6 +566,9 @@ mainPane model =
 
             Just 24 ->
                 mapMain model 24 (\m -> m.ex24Model) Ex24.view Ex24Msg
+
+            Just 28 ->
+                mapMain model 28 (\m -> m.ex28Model) Ex28.view Ex28Msg
 
             Just 33 ->
                 mapMain model 33 (\m -> m.ex33Model) Ex33.view Ex33Msg

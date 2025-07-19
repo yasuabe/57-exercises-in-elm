@@ -7,8 +7,8 @@ import Html.Events exposing (onInput)
 import List exposing (map)
 
 
-viewInputFieldWithHandler : String -> String -> String -> String -> List (Attribute msg) -> Html msg
-viewInputFieldWithHandler prompt placeholderMsg inputClass inputValue handlers =
+viewInputFieldWithHandler : String -> List (Attribute msg) -> String -> String -> String -> Html msg
+viewInputFieldWithHandler inputClass handlers prompt placeholderMsg inputValue =
     div [ class "inputline" ]
         [ span [ class "inputline__prompt" ] [ text prompt ]
         , input
@@ -22,22 +22,19 @@ viewInputFieldWithHandler prompt placeholderMsg inputClass inputValue handlers =
         ]
 
 
-viewSimpleInput : String -> String -> String -> String -> (String -> msg) -> Html msg
-viewSimpleInput style_ prompt placeholderMsg inputValue onInputHandler =
+viewSimpleInput : String -> (String -> msg) -> String -> String -> String -> Html msg
+viewSimpleInput inputClass onInputHandler =
     viewInputFieldWithHandler
-        prompt
-        placeholderMsg
-        style_
-        inputValue
+        inputClass
         [ onInput onInputHandler ]
 
 
-viewNumberInput : String -> String -> String -> (String -> msg) -> Html msg
+viewNumberInput : (String -> msg) -> String -> String -> String -> Html msg
 viewNumberInput =
     viewSimpleInput "inputline__number"
 
 
-viewTextInput : String -> String -> String -> (String -> msg) -> Html msg
+viewTextInput : (String -> msg) -> String -> String -> String -> Html msg
 viewTextInput =
     viewSimpleInput "inputline__text"
 

@@ -39,7 +39,7 @@ exercises =
     , { suffix = "25", title = "Password Strength Indicator", done = False }
     , { suffix = "26", title = "Months to Pay Off a Credit Card", done = False }
     , { suffix = "27", title = "Validating Inputs", done = False }
-    , { suffix = "28", title = "Adding Numbers", done = False }
+    , { suffix = "28", title = "Adding Numbers", done = True }
     , { suffix = "29", title = "Handling Bad Input", done = False }
     , { suffix = "30", title = "Multiplication Table", done = False }
     , { suffix = "31", title = "Karvonen Heart Rate", done = False }

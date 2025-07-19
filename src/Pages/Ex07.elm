@@ -112,15 +112,15 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewNumberInput
+            LengthChanged
             "What is the length of the room in feet? "
             "e.g. 15"
             model.length
-            LengthChanged
         , viewNumberInput
+            WidthChanged
             "What is the width of the room in feet? "
             "e.g. 10"
             model.width
-            WidthChanged
         , pre [ class "output", readonly True ]
             [ viewOutputBlock model ]
         ]
