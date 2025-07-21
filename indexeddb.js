@@ -62,12 +62,6 @@ class IndexedDBManager {
     });
   };
 }
-
-window.initializeApp = function() {
-  const app = Elm.Main.init({
-    node: document.getElementById('app'),
-  })
-  console.log('App initialized: port = ' + JSON.stringify(app.ports));
+export function initializeIndexedDB(app) {
   new IndexedDBManager(app);
-  return app;
-};
+}

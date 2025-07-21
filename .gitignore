@@ -2,12 +2,9 @@
 elm.js
 main.js
 app.js
-index.js
 dist/
 build/
 elm-stuff/
-
-!docs/elm.js
 
 # Editor files
 .vscode/
