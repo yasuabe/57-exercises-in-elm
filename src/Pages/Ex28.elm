@@ -1,3 +1,10 @@
+-- # Ex28: Adding Numbers
+-- ・ Prompt the user to enter five numbers.
+-- ・ Use a counted loop to handle repeated prompting.
+-- ・ Compute the total of the entered numbers.
+-- ・ Display the total at the end.
+
+
 module Pages.Ex28 exposing (Model, Msg(..), init, update, view)
 
 import Array exposing (Array, repeat, set, toList)
@@ -14,14 +21,14 @@ import String exposing (isEmpty, toInt, trim)
 
 
 type alias Model =
-    { inputNumbers : Array String
-    , output : Int
+    { inputStrings : Array String
+    , total : Int
     }
 
 
 init : Model
 init =
-    { inputNumbers = repeat 5 "", output = 0 }
+    { inputStrings = repeat 5 "", total = 0 }
 
 
 
@@ -40,14 +47,14 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NumberChanged n str ->
-            ( makeOutput { model | inputNumbers = set n (trim str) model.inputNumbers }
+            ( updateTotal { model | inputStrings = set n (trim str) model.inputStrings }
             , Cmd.none
             )
 
 
-makeOutput : Model -> Model
-makeOutput model =
-    { model | output = toList model.inputNumbers |> filterMap toInt |> sum }
+updateTotal : Model -> Model
+updateTotal model =
+    { model | total = model.inputStrings |> toList |> filterMap toInt |> sum }
 
 
 
@@ -55,19 +62,23 @@ makeOutput model =
 
 
 view : Model -> Html Msg
-view { inputNumbers, output } =
-    div [] <| (indexedMap renderNumberInput <| toList inputNumbers) ++ [ viewOutputBlock output ]
+view { inputStrings, total } =
+    div [] <|
+        (indexedMap renderInput <| toList inputStrings)
+            ++ viewOutputBlock total
 
 
-renderNumberInput : Int -> String -> Html Msg
-renderNumberInput n value =
+renderInput : Int -> String -> Html Msg
+renderInput n value =
     let
         class =
             if isEmpty value then
                 "inputline__number"
 
             else
-                toInt value |> Maybe.map (always "inputline__number") |> withDefault "inputline__number--invalid"
+                toInt value
+                    |> Maybe.map (always "inputline__number")
+                    |> withDefault "inputline__number--invalid"
     in
     viewSimpleInput
         class
@@ -77,7 +88,8 @@ renderNumberInput n value =
         value
 
 
-viewOutputBlock : Int -> Html Msg
+viewOutputBlock : Int -> List (Html Msg)
 viewOutputBlock output =
-    pre [ class "output", readonly True ]
+    [ pre [ class "output", readonly True ]
         [ div [] [ text <| String.fromInt output ] ]
+    ]
