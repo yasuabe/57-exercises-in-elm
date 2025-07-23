@@ -65,7 +65,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 8: Working with Files
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex41 [ ] [Name Sorter](src/Pages/Ex41.elm)           | | | |
+| Ex41 [x] [Name Sorter](src/Pages/Ex41.elm)           |elm/file | file upload/download, async operation (Task) | 4(2)|
 | Ex42 [ ] [Parsing a Data File](src/Pages/Ex42.elm)   | | | |
 | Ex43 [ ] [Website Generator](src/Pages/Ex43.elm)     | | | |
 | Ex44 [ ] [Product Search](src/Pages/Ex44.elm)        | | | |

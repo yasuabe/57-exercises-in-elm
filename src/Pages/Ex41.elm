@@ -1,8 +1,19 @@
+-- Ex41: Name Sorter
+--
+-- - Read a list of names from a file.
+-- - Sort the names alphabetically.
+-- - Output:
+--    - Total number of names.
+--    - A separator line.
+--    - The sorted names.
+-- - Do not hard-code the number of names.
+
+
 module Pages.Ex41 exposing (Model, Msg(..), init, update, view)
 
 import File exposing (File)
-import File.Select as Select
 import File.Download as Download
+import File.Select as Select
 import Html exposing (Html, button, div, pre, text)
 import Html.Events exposing (onClick)
 import Maybe exposing (withDefault)
@@ -34,8 +45,8 @@ type Msg
     = NameCsvRequested
     | GotFiles File
     | FileLoaded String
-    | Sort String
-    | Download String
+    | SortNames String
+    | DownloadSorted String
 
 
 
@@ -54,13 +65,13 @@ update msg model =
         FileLoaded content ->
             ( { model | source = Just content }, Cmd.none )
 
-        Sort content ->
-            ( {model| sorted = Just <| makeSortedContent content}, Cmd.none )
+        SortNames content ->
+            ( { model | sorted = Just <| makeSortedContent content }, Cmd.none )
 
-        Download sorted ->
-            ( model,
-                Download.string "sorted.txt" "text/plain" sorted
-             )
+        DownloadSorted sorted ->
+            ( model
+            , Download.string "sorted.txt" "text/plain" sorted
+            )
 
 
 makeSortedContent : String -> String
@@ -71,13 +82,22 @@ makeSortedContent content =
                 |> List.filter ((/=) "")
                 |> List.map String.trim
                 |> List.sort
-        total = String.fromInt (List.length lines)
-        header = "Total of " ++ total ++ " Names"
-        separator = "-----------------"
+
+        total =
+            String.fromInt (List.length lines)
+
+        header =
+            "Total: " ++ total ++ " Names"
+
+        separator =
+            "-----------------"
     in
-    [header, separator]
-        ++ lines
+    header
+        :: separator
+        :: lines
         |> String.join "\n"
+
+
 
 -- VIEW
 
@@ -94,12 +114,12 @@ view model =
 viewSourceFile : String -> List (Html Msg)
 viewSourceFile content =
     [ pre [] [ text content ]
-    , button [ onClick (Sort content) ] [ text "Sort" ]
+    , button [ onClick (SortNames content) ] [ text "Sort Names" ]
     ]
 
 
 viewSortedContent : String -> List (Html Msg)
 viewSortedContent sorted =
     [ pre [] [ text sorted ]
-    , button [ onClick (Download sorted) ] [ text "Download" ]
+    , button [ onClick (DownloadSorted sorted) ] [ text "Download Sorted Names" ]
     ]
