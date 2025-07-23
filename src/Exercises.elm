@@ -52,7 +52,7 @@ exercises =
     , { suffix = "38", title = "Filtering Values", done = False }
     , { suffix = "39", title = "Sorting Records", done = False }
     , { suffix = "40", title = "Filtering Records", done = False }
-    , { suffix = "41", title = "Name Sorter", done = False }
+    , { suffix = "41", title = "Name Sorter", done = True }
     , { suffix = "42", title = "Parsing a Data File", done = False }
     , { suffix = "43", title = "Website Generator", done = False }
     , { suffix = "44", title = "Product Search", done = False }

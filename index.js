@@ -1,4 +1,5 @@
 import { initializeIndexedDB } from './indexeddb.js';
+import { initializeLibrary } from './lib.js';
 
 window.initializeApp = function () {
   const app = Elm.Main.init({
@@ -8,6 +9,7 @@ window.initializeApp = function () {
   console.log('App initialized: port = ' + JSON.stringify(app.ports));
 
   initializeIndexedDB(app);
+  initializeLibrary(app);
 
   return app;
 };
