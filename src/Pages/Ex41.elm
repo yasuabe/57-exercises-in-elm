@@ -11,6 +11,7 @@
 
 module Pages.Ex41 exposing (Model, Msg(..), init, update, view)
 
+import Common.MaybeEx exposing (mapToList)
 import File exposing (File)
 import File.Download as Download
 import File.Select as Select
@@ -106,8 +107,8 @@ view : Model -> Html Msg
 view model =
     div []
         (button [ onClick NameCsvRequested ] [ text "Load Names File" ]
-            :: (Maybe.map viewSourceFile model.source |> withDefault [])
-            ++ (Maybe.map viewSortedContent model.sorted |> withDefault [])
+            :: mapToList viewSourceFile model.source
+            ++ mapToList viewSortedContent model.sorted
         )
 
 

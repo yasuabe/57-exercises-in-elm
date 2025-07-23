@@ -3,6 +3,7 @@ port module Main exposing (main)
 import Array as A
 import Browser
 import Browser.Navigation as Nav
+import Common.MaybeEx exposing (mapToList)
 import Dict exposing (Dict)
 import Exercises exposing (Exercise, chapters, exercises, toTitle)
 import Html exposing (..)
@@ -500,8 +501,8 @@ exerciseLink e =
 
         chapter =
             Dict.get e.suffix chapters
-                |> Maybe.map (\c -> [ div [ class "left-pane__chapter-title" ] [ text c ] ])
-                |> Maybe.withDefault []
+                |> mapToList (\c -> [ div [ class "left-pane__chapter-title" ] [ text c ] ])
+
     in
     chapter
         ++ [ div [ class "left-pane__exercise-title" ]
