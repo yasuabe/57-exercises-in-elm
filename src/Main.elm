@@ -3,7 +3,7 @@ port module Main exposing (main)
 import Array as A
 import Browser
 import Browser.Navigation as Nav
-import Common.MaybeEx exposing (mapToList)
+import Common.MaybeEx exposing (filter, mapToList)
 import Dict exposing (Dict)
 import Exercises exposing (Exercise, chapters, exercises, toTitle)
 import Html exposing (..)
@@ -67,6 +67,7 @@ import Pages.Ex54 as Ex54
 import Pages.Ex55 as Ex55
 import Pages.Ex56 as Ex56
 import Pages.Ex57 as Ex57
+import String exposing (fromInt, toInt)
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), top)
 
@@ -290,7 +291,7 @@ exerciseParser =
         \segment ->
             if String.startsWith "ex" segment && String.length segment >= 3 then
                 String.dropLeft 2 segment
-                    |> String.toInt
+                    |> toInt
                     |> Maybe.andThen
                         (\n ->
                             if n >= 1 && n <= 57 then
@@ -477,24 +478,24 @@ view model =
     { title = "Elm 57 Exercises"
     , body =
         [ div [ style "display" "flex", style "height" "100vh" ]
-            [ leftPane
+            [ leftPane model
             , mainPane model
             ]
         ]
     }
 
 
-leftPane : Html Msg
-leftPane =
+leftPane : Model -> Html Msg
+leftPane model =
     div [ class "left-pane" ]
         [ h3 [] [ text "Exercises" ]
         , hr [] []
-        , div [ class "left-pane__titles" ] (List.concatMap exerciseLink exercises)
+        , div [ class "left-pane__titles" ] (List.concatMap (exerciseLink model.currentExercise) exercises)
         ]
 
 
-exerciseLink : Exercise -> List (Html Msg)
-exerciseLink e =
+exerciseLink : Maybe Int -> Exercise -> List (Html Msg)
+exerciseLink currentExercise e =
     let
         title =
             text <| toTitle e
@@ -503,9 +504,15 @@ exerciseLink e =
             Dict.get e.suffix chapters
                 |> mapToList (\c -> [ div [ class "left-pane__chapter-title" ] [ text c ] ])
 
+        titleClass =
+            if Maybe.map2 (==) (toInt e.suffix) currentExercise == Just True then
+                "left-pane__exercise-title left-pane__exercise-title--current"
+
+            else
+                "left-pane__exercise-title"
     in
     chapter
-        ++ [ div [ class "left-pane__exercise-title" ]
+        ++ [ div [ class titleClass ]
                 [ if e.done then
                     a [ href ("/ex" ++ e.suffix) ] [ title ]
 
@@ -539,7 +546,7 @@ exerciseAt n =
             exercise
 
         Nothing ->
-            { suffix = String.fromInt n, title = "Exercise " ++ String.fromInt n, done = False }
+            { suffix = fromInt n, title = "Exercise " ++ fromInt n, done = False }
 
 
 mainPane : Model -> Html Msg
@@ -576,6 +583,9 @@ mainPane model =
             Just 28 ->
                 mapMain model 28 (\m -> m.ex28Model) Ex28.view Ex28Msg
 
+            Just 33 ->
+                mapMain model 33 (\m -> m.ex33Model) Ex33.view Ex33Msg
+
             Just 41 ->
                 mapMain model 41 (\m -> m.ex41Model) Ex41.view Ex41Msg
 
@@ -586,7 +596,7 @@ mainPane model =
                 mapMain model 53 (\m -> m.ex53Model) Ex53.view Ex53Msg
 
             Just n ->
-                text ("Exercise " ++ String.fromInt n ++ " - Not implemented yet")
+                text ("Exercise " ++ fromInt n ++ " - Not implemented yet")
 
             Nothing ->
                 div []

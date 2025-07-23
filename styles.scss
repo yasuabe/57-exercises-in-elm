@@ -57,6 +57,10 @@ body {
   &__exercise-title {
      margin: 5px auto 5px 1em;
   }
+  &__exercise-title--current {
+     text-decoration: underline;
+     font-weight: bold;
+  }
 }
 
 a {
