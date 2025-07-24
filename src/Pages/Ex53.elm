@@ -106,7 +106,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Sub.none -- TODO: is this needed? If so, implement it to listen for IndexedDB changes or other events.
 
 
 

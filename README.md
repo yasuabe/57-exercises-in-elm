@@ -79,7 +79,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex49 [ ] [Flickr Photo Search](src/Pages/Ex49.elm)            | | | |
 | Ex50 [ ] [Movie Recommendations](src/Pages/Ex50.elm)          | | | |
 | Ex51 [ ] [Pushing Notes to Firebase](src/Pages/Ex51.elm)      | | | |
-| Ex52 [ ] [Creating Your Own Time Service](src/Pages/Ex52/)    | | | |
+| Ex52 [ ] [Creating Your Own Time Service](src/Pages/Ex52.elm)    | | | |
 #### Chapter 10: Full Programs
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|

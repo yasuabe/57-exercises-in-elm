@@ -90,6 +90,10 @@ port indexedDBReadResult : (List Ex53.TodoRecord -> msg) -> Sub msg
 port deleteTodoResult : (String -> msg) -> Sub msg
 
 
+port timeReceived : (String -> msg) -> Sub msg
+
+
+
 
 -- MODEL
 
@@ -242,6 +246,7 @@ initDict =
         , ( 33, { init = \m -> { m | ex33Model = Just Ex33.init } } )
         , ( 41, { init = \m -> { m | ex41Model = Just Ex41.init } } )
         , ( 47, { init = \m -> { m | ex47Model = Just Ex47.init } } )
+        , ( 52, { init = \m -> { m | ex52Model = Just Ex52.init } } )
         ]
 
 
@@ -265,6 +270,7 @@ type Msg
     | Ex33Msg Ex33.Msg
     | Ex41Msg Ex41.Msg
     | Ex47Msg Ex47.Msg
+    | Ex52Msg Ex52.Msg
     | Ex53Msg Ex53.Msg
 
 
@@ -440,6 +446,9 @@ update msg model =
         Ex47Msg subMsg ->
             update_ (\m -> m.ex47Model) subMsg Ex47.update (\m n -> { m | ex47Model = Just n }) Ex47Msg
 
+        Ex52Msg subMsg ->
+            update_ (\m -> m.ex52Model) subMsg Ex52.update (\m n -> { m | ex52Model = Just n }) Ex52Msg
+
         Ex53Msg subMsg ->
             case model.ex53Model of
                 Just ex53Model ->
@@ -592,6 +601,9 @@ mainPane model =
             Just 47 ->
                 mapMain model 47 (\m -> m.ex47Model) Ex47.view Ex47Msg
 
+            Just 52 ->
+                mapMain model 52 (\m -> m.ex52Model) Ex52.view Ex52Msg
+
             Just 53 ->
                 mapMain model 53 (\m -> m.ex53Model) Ex53.view Ex53Msg
 
@@ -613,6 +625,17 @@ mainPane model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.currentExercise of
+        Just 52 ->
+            Sub.batch
+                [ timeReceived (Ex52Msg << Ex52.TimeReceived)
+                , case model.ex52Model of
+                    Just ex52Model ->
+                        Sub.map Ex52Msg (Ex52.subscriptions ex52Model)
+
+                    Nothing ->
+                        Sub.none
+                ]
+
         Just 53 ->
             Sub.batch
                 [ indexedDBResult (Ex53Msg << Ex53.WriteComplete)

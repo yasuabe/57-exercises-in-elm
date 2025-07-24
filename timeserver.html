@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Time Broadcaster</title>
+</head>
+<body>
+  <h1>Time Broadcaster</h1>
+  <p>Sending time updates...</p>
+  <script>
+    const timeChannel = new BroadcastChannel('time_channel');
+
+    timeChannel.onmessage = (event) => {
+      if (event.data === 'request_time') {
+        const currentTime = new Date().toLocaleTimeString();
+        timeChannel.postMessage(currentTime);
+        console.log("Broadcasted time:", currentTime);
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,7 +1,19 @@
-module Pages.Ex52 exposing (Model, Msg(..), init, update, view)
+-- # Ex52: Creating Your Own Time Service
+--
+-- - Build a minimal web server that returns the current time as JSON: { "currentTime": "2050-01-24 15:06:26" }.
+-- - Build a client that fetches this JSON, parses it, and displays the time in a readable format.
+-- - Server must set Content-Type: application/json.
+-- - Keep server code minimal.
 
 
-import Html exposing (Html, div, text)
+port module Pages.Ex52 exposing (Model, Msg(..), init, subscriptions, update, view)
+
+import Html exposing (Html, a, button, div, text)
+import Html.Attributes exposing (class, href, target)
+import Html.Events exposing (onClick)
+
+
+port requestTime : () -> Cmd msg
 
 
 
@@ -9,12 +21,13 @@ import Html exposing (Html, div, text)
 
 
 type alias Model =
-    {}
+    { timestamp : String
+    }
 
 
 init : Model
 init =
-    {}
+    { timestamp = "" }
 
 
 
@@ -23,6 +36,7 @@ init =
 
 type Msg
     = Submit
+    | TimeReceived String
 
 
 
@@ -30,12 +44,23 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg _ =
+update msg model =
     case msg of
         Submit ->
-            ( init
-            , Cmd.none
-            )
+            ( model, requestTime () )
+
+        TimeReceived t ->
+            ( { model | timestamp = t }, Cmd.none )
+
+
+
+-- SUBSCRIPTIONS
+-- TODO: is this needed? If so, implement it to listen for IndexedDB changes or other events.
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
 
 
 
@@ -43,7 +68,9 @@ update msg _ =
 
 
 view : Model -> Html Msg
-view _ =
+view model =
     div []
-        [ div [] [ text "not implemented" ]
+        [ a [ href "timeserver.html", target "_blank", class "button-like" ] [ text "Time Service" ]
+        , div [ class "inputline" ] [ button [ onClick Submit, class "button-like" ] [ text "Request Current Time" ] ]
+        , div [ class "output" ] [ text <| "timestamp: " ++ model.timestamp ]
         ]

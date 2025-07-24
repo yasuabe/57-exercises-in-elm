@@ -49,17 +49,20 @@ body {
     overflow: scroll;
     height: 90%;
   }
+
   &__chapter-title {
-     font-size: 16px;
-     font-weight: bold;
-     margin-top: 16px;
-   }
-  &__exercise-title {
-     margin: 5px auto 5px 1em;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 16px;
   }
+
+  &__exercise-title {
+    margin: 5px auto 5px 1em;
+  }
+
   &__exercise-title--current {
-     text-decoration: underline;
-     font-weight: bold;
+    text-decoration: underline;
+    font-weight: bold;
   }
 }
 
@@ -188,4 +191,23 @@ button {
     padding: 10px;
     margin-bottom: 10px;
   }
+}
+
+.button-like {
+  display: inline-block;
+  padding: 2px 5px;
+  font-size: $font-size-base;
+  color: white;
+  background-color: #007BFF;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-like:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
 }
