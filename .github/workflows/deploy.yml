@@ -38,6 +38,9 @@ jobs:
       - name: Build styles.css from styles.scss
         run: npx sass styles.scss styles.css
 
+      - name: Copy Env.elm to src
+        run: cp config/Env.elm src/Env.elm
+
       - name: Build Main.elm
         run: npx elm make src/Main.elm --output=elm.js
 

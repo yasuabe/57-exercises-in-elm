@@ -18,6 +18,7 @@ import Iso8601
 import Json.Decode as Decode exposing (Decoder, decodeString)
 import String exposing (fromInt)
 import Time exposing (Posix)
+import Env exposing (baseUrl)
 
 
 port requestTime : () -> Cmd msg
@@ -95,7 +96,7 @@ view model =
     in
     div []
         [ div [ class "inputline" ]
-            [ a [ href "timeserver.html", target "_blank", class "button-like" ] [ text "Launch Time Service" ] ]
+            [ a [ href (baseUrl ++ "timeserver.html"), target "_blank", class "button-like" ] [ text "Launch Time Service" ] ]
         , div [ class "inputline" ] [ button [ onClick Submit, class "button-like" ] [ text "Request Current Time" ] ]
         , div [ class "output" ] [ text outputText ]
         ]

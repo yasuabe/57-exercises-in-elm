@@ -70,3 +70,7 @@ node_modules/
 # Ignore generated CSS files
 *.css
 *.css.map
+
+# config files
+Env.elm
+!config/Env.elm
