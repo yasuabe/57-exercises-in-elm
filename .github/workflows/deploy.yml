@@ -38,13 +38,16 @@ jobs:
       - name: Build styles.css from styles.scss
         run: npx sass styles.scss styles.css
 
-      - name: Build Elm
+      - name: Build Main.elm
         run: npx elm make src/Main.elm --output=elm.js
+
+      - name: Build TimeServer.elm
+        run: npx elm make src/TimeServer.elm --output=timeserver-elm.js
 
       - name: Prepare publish directory
         run: |
           mkdir public
-          rsync -av --include='index.html' --include='404.html' --include='elm.js' --include='styles.css' --include='indexeddb.js' --exclude='*' ./ ./public/
+          rsync -av --include='index.html' --include='timeserver2.html' --include='404.html' --include='index.js' --include='lib.js' --include='elm.js' --include='timeserver-elm.js' --include='styles.css' --include='indexeddb.js' --exclude='*' ./ ./public/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
