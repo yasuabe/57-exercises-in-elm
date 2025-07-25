@@ -1,8 +1,22 @@
-module TimeServer exposing (..)
+port module TimeServer exposing (..)
 
 import Browser
 import Html exposing (..)
 import Html.Events exposing (..)
+import Iso8601
+import Json.Encode as E
+import Task
+import Time exposing (Posix, Zone, utc)
+
+
+
+-- exposing (Value)
+
+
+port responseTime : String -> Cmd msg
+
+
+port timeRequested : (String -> msg) -> Sub msg
 
 
 
@@ -24,12 +38,16 @@ main =
 
 
 type alias Model =
-    {}
+    { zone : Zone
+    , time : Posix
+    }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( {}, Cmd.none )
+    ( Model utc (Time.millisToPosix 0)
+    , Task.perform AdjustTimeZone Time.here
+    )
 
 
 
@@ -37,14 +55,26 @@ init _ =
 
 
 type Msg
-    = Dummy
+    = AdjustTimeZone Zone
+    | Accept String
+    | CurrentTime Posix
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Dummy ->
-            ( model, Cmd.none )
+        AdjustTimeZone zone ->
+            ( { model | zone = zone }, Cmd.none )
+
+        Accept _ ->
+            ( model
+            , responseTime <|
+                E.encode 0 <|
+                    E.object [ ( "currentTime", E.string <| Iso8601.fromTime model.time ) ]
+            )
+
+        CurrentTime time ->
+            ( { model | time = time }, Cmd.none )
 
 
 
@@ -52,8 +82,11 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+subscriptions _ =
+    Sub.batch
+        [ timeRequested Accept
+        , Time.every 1000 CurrentTime
+        ]
 
 
 
@@ -64,5 +97,9 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Time Broadcaster" ]
-        , p [] [ text " Sending time updates..." ]
+        , p [] [ text <| Iso8601.fromTime model.time ]
         ]
+
+
+
+-- HELPER FUNCTIONS

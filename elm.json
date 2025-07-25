@@ -17,7 +17,8 @@
             "elm/url": "1.0.0",
             "fabiommendes/elm-hour": "1.0.1",
             "justinmimbs/date": "4.1.0",
-            "myrho/elm-round": "1.0.5"
+            "myrho/elm-round": "1.0.5",
+            "rtfeldman/elm-iso8601-date-strings": "1.1.4"
         },
         "indirect": {
             "elm/bytes": "1.0.8",

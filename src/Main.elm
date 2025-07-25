@@ -3,7 +3,7 @@ port module Main exposing (main)
 import Array as A
 import Browser
 import Browser.Navigation as Nav
-import Common.MaybeEx exposing (filter, mapToList)
+import Common.MaybeEx exposing (mapToList)
 import Dict exposing (Dict)
 import Exercises exposing (Exercise, chapters, exercises, toTitle)
 import Html exposing (..)
