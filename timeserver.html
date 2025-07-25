@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Time Broadcaster</title>
-</head>
-<body>
-  <h1>Time Broadcaster</h1>
-  <p>Sending time updates...</p>
-  <script>
-    const timeChannel = new BroadcastChannel('time_channel');
 
-    timeChannel.onmessage = (event) => {
-      if (event.data === 'request_time') {
-        const currentTime = new Date().toLocaleTimeString();
-        timeChannel.postMessage(currentTime);
-        console.log("Broadcasted time:", currentTime);
-      }
-    };
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ex52: Time Server</title>
+  <link rel="stylesheet" type="text/css" href="styles.css" /> 
+
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="timeserver-elm.js"></script>
+  <script type="module">
+    import { initializeTimeServer } from './timeserver.js';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const app = Elm.TimeServer.init({
+        node: document.getElementById('app'),
+      });
+      initializeTimeServer(app);
+    });
   </script>
 </body>
+
 </html>

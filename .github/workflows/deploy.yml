@@ -47,7 +47,7 @@ jobs:
       - name: Prepare publish directory
         run: |
           mkdir public
-          rsync -av --include='index.html' --include='timeserver2.html' --include='404.html' --include='index.js' --include='lib.js' --include='elm.js' --include='timeserver-elm.js' --include='styles.css' --include='indexeddb.js' --exclude='*' ./ ./public/
+          rsync -av --include='index.html' --include='timeserver.html' --include='timeserver.js' --include='404.html' --include='index.js' --include='lib.js' --include='elm.js' --include='timeserver-elm.js' --include='styles.css' --include='indexeddb.js' --exclude='*' ./ ./public/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

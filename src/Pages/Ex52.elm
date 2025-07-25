@@ -94,7 +94,8 @@ view model =
             either formatPosix identity model.timestamp
     in
     div []
-        [ div [ class "inputline" ] [ a [ href "timeserver.html", target "_blank", class "button-like" ] [ text "Time Service" ] ]
+        [ div [ class "inputline" ]
+            [ a [ href "timeserver.html", target "_blank", class "button-like" ] [ text "Launch Time Service" ] ]
         , div [ class "inputline" ] [ button [ onClick Submit, class "button-like" ] [ text "Request Current Time" ] ]
         , div [ class "output" ] [ text outputText ]
         ]

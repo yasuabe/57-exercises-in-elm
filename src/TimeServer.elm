@@ -96,7 +96,7 @@ subscriptions _ =
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Time Broadcaster" ]
+        [ h1 [] [ text "Time Server" ]
         , p [] [ text <| Iso8601.fromTime model.time ]
         ]
 
