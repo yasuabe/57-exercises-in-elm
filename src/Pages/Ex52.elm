@@ -9,8 +9,9 @@
 port module Pages.Ex52 exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Common.Format exposing (..)
-import Common.ResultEx exposing (either)
+import Common.ResultEx as ResultEx exposing (either)
 import Common.TimeEx exposing (decompose, toEnglishMonth)
+import Env exposing (baseUrl)
 import Html exposing (Html, a, button, div, text)
 import Html.Attributes exposing (class, href, target)
 import Html.Events exposing (onClick)
@@ -18,7 +19,6 @@ import Iso8601
 import Json.Decode as Decode exposing (Decoder, decodeString)
 import String exposing (fromInt)
 import Time exposing (Posix)
-import Env exposing (baseUrl)
 
 
 port requestTime : () -> Cmd msg
@@ -29,13 +29,11 @@ port requestTime : () -> Cmd msg
 
 
 type alias CurrentTime =
-    { currentTime : Posix
-    }
+    { currentTime : Posix }
 
 
 type alias Model =
-    { timestamp : Result String Posix
-    }
+    { timestamp : Result String Posix }
 
 
 init : Model
@@ -48,7 +46,7 @@ init =
 
 
 type Msg
-    = Submit
+    = RequestTime
     | TimeReceived String
 
 
@@ -59,20 +57,16 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Submit ->
+        RequestTime ->
             ( model, requestTime () )
 
-        TimeReceived t ->
+        TimeReceived timeString ->
             let
-                a =
-                    case decodeString currentTimeDecoder t of
-                        Ok time ->
-                            Ok time.currentTime
-
-                        Err err ->
-                            Err (Decode.errorToString err)
+                decoded =
+                    decodeString currentTimeDecoder timeString
+                        |> ResultEx.mapEither .currentTime Decode.errorToString
             in
-            ( { model | timestamp = a }, Cmd.none )
+            ( { model | timestamp = decoded }, Cmd.none )
 
 
 
@@ -95,10 +89,15 @@ view model =
             either formatPosix identity model.timestamp
     in
     div []
-        [ div [ class "inputline" ]
+        [ div
+            [ class "inputline" ]
             [ a [ href (baseUrl ++ "timeserver.html"), target "_blank", class "button-like" ] [ text "Launch Time Service" ] ]
-        , div [ class "inputline" ] [ button [ onClick Submit, class "button-like" ] [ text "Request Current Time" ] ]
-        , div [ class "output" ] [ text outputText ]
+        , div
+            [ class "inputline" ]
+            [ button [ onClick RequestTime, class "button-like" ] [ text "Request Current Time" ] ]
+        , div
+            [ class "output" ]
+            [ text outputText ]
         ]
 
 

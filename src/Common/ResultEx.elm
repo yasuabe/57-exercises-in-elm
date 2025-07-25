@@ -14,3 +14,13 @@ either okFn errFn x =
 fromEither : Result a a -> a
 fromEither =
     either identity identity
+
+
+mapEither : (a -> c) -> (e -> b) -> Result e a -> Result b c
+mapEither okFn errFn x = 
+    case x of
+        Ok v ->
+            Ok (okFn v)
+
+        Err e ->
+            Err (errFn e)

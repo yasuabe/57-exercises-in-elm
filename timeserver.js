@@ -11,7 +11,7 @@ class TimeServer {
         this.timeChannel.postMessage(time);
       });
       this.timeChannel.onmessage = (event) => {
-        this.app.ports.timeRequested.send(""); // TODO: replace "" with appropriate value
+        this.app.ports.timeRequested.send(null);
       };
     } catch (error) {
       console.error('Error initializing Timeserver:', error);

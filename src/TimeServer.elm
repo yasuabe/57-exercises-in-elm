@@ -16,7 +16,7 @@ import Time exposing (Posix, Zone, utc)
 port responseTime : String -> Cmd msg
 
 
-port timeRequested : (String -> msg) -> Sub msg
+port timeRequested : (() -> msg) -> Sub msg
 
 
 
@@ -56,7 +56,7 @@ init _ =
 
 type Msg
     = AdjustTimeZone Zone
-    | Accept String
+    | Accept ()
     | CurrentTime Posix
 
 
