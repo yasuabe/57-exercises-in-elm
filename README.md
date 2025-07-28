@@ -75,7 +75,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
 | Ex47 [x] [Who’s in Space?](src/Pages/Ex47.elm)                | http | HTTP Client | 3(2) |
-| Ex48 [ ] [Grabbing the Weather](src/Pages/Ex48.elm)           | | | |
+| Ex48 [x] [Grabbing the Weather](src/Pages/Ex48.elm)           | http | SessionStorage, HTTP Client| 4(3) |
 | Ex49 [ ] [Flickr Photo Search](src/Pages/Ex49.elm)            | | | |
 | Ex50 [ ] [Movie Recommendations](src/Pages/Ex50.elm)          | | | |
 | Ex51 [ ] [Pushing Notes to Firebase](src/Pages/Ex51.elm)      | | | |

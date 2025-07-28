@@ -59,7 +59,7 @@ exercises =
     , { suffix = "45", title = "Word Finder", done = False }
     , { suffix = "46", title = "Word Frequency Finder", done = False }
     , { suffix = "47", title = "Who’s in Space?", done = True }
-    , { suffix = "48", title = "Grabbing the Weather", done = False }
+    , { suffix = "48", title = "Grabbing the Weather", done = True }
     , { suffix = "49", title = "Flickr Photo Search", done = False }
     , { suffix = "50", title = "Movie Recommendations", done = False }
     , { suffix = "51", title = "Pushing Notes to Firebase", done = False }

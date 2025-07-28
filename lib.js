@@ -6,7 +6,7 @@ class Lib {
   }
   async init() {
     try {
-      this.timeChannel= new BroadcastChannel('time_channel');
+      this.timeChannel = new BroadcastChannel('time_channel');
 
       this.app.ports.requestTime.subscribe(() => {
         this.timeChannel.postMessage('request_time');
@@ -19,8 +19,26 @@ class Lib {
       console.error('Error initializing Timeserver:', error);
     }
   }
-} 
+}
+class SessionStorage {
+  constructor(app) {
+    this.app = app;
+    this.init();
+  }
+  async init() {
+    this.app.ports.getItem.subscribe((key) => {
+      const value = sessionStorage.getItem(key);
+      console.log('getItem', key, value);
+      const result = value ? JSON.parse(value) : null;
+      this.app.ports.itemReceived.send(result ? result : {});
+    });
+    // this.app.ports.setItem.subscribe(([key, value]) => {
+    //   sessionStorage.setItem(key, JSON.stringify(value));
+    // });
+  }
+}
 
 export function initializeLibrary(app) {
   new Lib(app);
+  new SessionStorage(app);
 }

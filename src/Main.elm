@@ -4,6 +4,7 @@ import Array as A
 import Browser
 import Browser.Navigation as Nav
 import Common.MaybeEx exposing (mapToList)
+import Common.SessionStorage as SS exposing (itemReceived)
 import Dict exposing (Dict)
 import Exercises exposing (Exercise, chapters, exercises, toTitle)
 import Html exposing (..)
@@ -68,6 +69,7 @@ import Pages.Ex55 as Ex55
 import Pages.Ex56 as Ex56
 import Pages.Ex57 as Ex57
 import String exposing (fromInt, toInt)
+import Task
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), top)
 
@@ -91,7 +93,6 @@ port deleteTodoResult : (String -> msg) -> Sub msg
 
 
 port timeReceived : (String -> msg) -> Sub msg
-
 
 
 
@@ -246,6 +247,7 @@ initDict =
         , ( 33, { init = \m -> { m | ex33Model = Just Ex33.init } } )
         , ( 41, { init = \m -> { m | ex41Model = Just Ex41.init } } )
         , ( 47, { init = \m -> { m | ex47Model = Just Ex47.init } } )
+        , ( 48, { init = \m -> { m | ex48Model = Just Ex48.init } } )
         , ( 52, { init = \m -> { m | ex52Model = Just Ex52.init } } )
         ]
 
@@ -270,6 +272,7 @@ type Msg
     | Ex33Msg Ex33.Msg
     | Ex41Msg Ex41.Msg
     | Ex47Msg Ex47.Msg
+    | Ex48Msg Ex48.Msg
     | Ex52Msg Ex52.Msg
     | Ex53Msg Ex53.Msg
 
@@ -333,8 +336,16 @@ init _ url key =
 
                 Home ->
                     model0
+
+        command =
+            case route of
+                Exercise 48 ->
+                    Task.perform (Ex48Msg << always Ex48.LoadConfig) <| Task.succeed ()
+
+                _ ->
+                    Cmd.none
     in
-    ( model, Cmd.none )
+    ( model, command )
 
 
 
@@ -445,6 +456,9 @@ update msg model =
 
         Ex47Msg subMsg ->
             update_ (\m -> m.ex47Model) subMsg Ex47.update (\m n -> { m | ex47Model = Just n }) Ex47Msg
+
+        Ex48Msg subMsg ->
+            update_ (\m -> m.ex48Model) subMsg Ex48.update (\m n -> { m | ex48Model = Just n }) Ex48Msg
 
         Ex52Msg subMsg ->
             update_ (\m -> m.ex52Model) subMsg Ex52.update (\m n -> { m | ex52Model = Just n }) Ex52Msg
@@ -601,6 +615,9 @@ mainPane model =
             Just 47 ->
                 mapMain model 47 (\m -> m.ex47Model) Ex47.view Ex47Msg
 
+            Just 48 ->
+                mapMain model 48 (\m -> m.ex48Model) Ex48.view Ex48Msg
+
             Just 52 ->
                 mapMain model 52 (\m -> m.ex52Model) Ex52.view Ex52Msg
 
@@ -625,6 +642,9 @@ mainPane model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.currentExercise of
+        Just 48 ->
+            SS.itemReceived (Ex48Msg << Ex48.SessionStorageItemReceived)
+
         Just 52 ->
             Sub.batch
                 [ timeReceived (Ex52Msg << Ex52.TimeReceived)
