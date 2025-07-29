@@ -124,9 +124,10 @@ makeOutput model =
     }
 
 
+-- TODO: remove x 
 roundToTwoDecimals : Float -> String
 roundToTwoDecimals x =
-    roundToDecimals x 2 |> String.fromFloat
+    roundToDecimals 2 x |> String.fromFloat
 
 
 

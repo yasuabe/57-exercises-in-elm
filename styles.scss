@@ -40,6 +40,10 @@ body {
   padding: 20px;
 }
 
+label {
+  padding: 0 10px 0 2px;
+}
+
 .left-pane {
   width: 300px;
   background-color: $background-light;
@@ -98,6 +102,7 @@ button {
   background: inherit;
   margin-top: 30px;
   border: 0;
+  line-height: 2;
 }
 
 .description {
@@ -108,9 +113,12 @@ button {
   border: 0;
 }
 
+.inputblock{
+  margin-bottom: 40px;
+}
 .inputline {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 50px;
   font-weight: bold;
 
   &__prompt {
@@ -128,6 +136,15 @@ button {
 
   &__text {
     text-align: left;
+    margin-right: 10px;
+    vertical-align: top;
+    margin-bottom: 1px;
+  }
+  &__button {
+    vertical-align: bottom;
+  }
+  &__label {
+    vertical-align: bottom;
   }
 }
 
