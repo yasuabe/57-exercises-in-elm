@@ -28,13 +28,11 @@ class SessionStorage {
   async init() {
     this.app.ports.getItem.subscribe((key) => {
       const value = sessionStorage.getItem(key);
-      console.log('getItem', key, value);
-      const result = value ? JSON.parse(value) : null;
-      this.app.ports.itemReceived.send(result ? result : {});
+      this.app.ports.itemReceived.send(value ? JSON.parse(value) : {});
     });
-    // this.app.ports.setItem.subscribe(([key, value]) => {
-    //   sessionStorage.setItem(key, JSON.stringify(value));
-    // });
+    this.app.ports.setItem.subscribe(([key, value]) => {
+      sessionStorage.setItem(key, JSON.stringify(value));
+    });
   }
 }
 

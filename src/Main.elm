@@ -408,6 +408,11 @@ update msg model =
                     , Cmd.batch [ Cmd.map Ex53Msg cmd, portCmd ]
                     )
 
+                Exercise 48 ->
+                    ( { model0 | currentExercise = Just 48, ex48Model = Just Ex48.init }
+                    , Task.perform (Ex48Msg << always Ex48.LoadConfig) <| Task.succeed ()
+                    )
+
                 Exercise n ->
                     ( Dict.get n initDict
                         |> Maybe.map (\p -> p.init { model0 | currentExercise = Just n })
@@ -648,7 +653,7 @@ subscriptions model =
         Just 52 ->
             Sub.batch
                 [ timeReceived (Ex52Msg << Ex52.TimeReceived)
-                , case model.ex52Model of
+                , case model.ex52Model of -- TODO: streamline
                     Just ex52Model ->
                         Sub.map Ex52Msg (Ex52.subscriptions ex52Model)
 

@@ -4,19 +4,26 @@ import Common.Events exposing (submitOnEnter)
 import Common.HttpEx exposing (errorToString)
 import Common.Math exposing (roundToDecimals)
 import Common.ResultMaybe as RM exposing (ResultMaybe)
-import Common.SessionStorage exposing (getItem)
+import Common.SessionStorage exposing (getItem, setItem)
 import Common.UI exposing (viewOutputBlock)
-import Dict exposing (Dict)
+import Dict
 import Html exposing (Html, button, div, fieldset, input, label, legend, text)
 import Html.Attributes exposing (checked, class, for, id, name, placeholder, style, type_, value)
 import Html.Events exposing (on, onClick, onInput)
 import Http
 import Json.Decode as D
+import Json.Encode as E
 import List
 
 
 
 -- MODEL
+
+
+type TempScale
+    = C
+    | F
+    | K
 
 
 type alias WeatherData =
@@ -28,8 +35,9 @@ type alias WeatherData =
 type alias Model =
     { apiKey : Maybe String
     , input : String
+    , tmpApiKey : String
     , weatherData : ResultMaybe String WeatherData
-    , scale : String
+    , scale : TempScale
     }
 
 
@@ -37,8 +45,9 @@ init : Model
 init =
     { apiKey = Nothing
     , input = ""
+    , tmpApiKey = "<API_KEY>"
     , weatherData = Ok Nothing
-    , scale = "C"
+    , scale = C
     }
 
 
@@ -52,13 +61,25 @@ kelvinToCelsius kelvin =
     kelvin - 273.15 |> roundToDecimals 1
 
 
-tempScaleDict : Dict String { id : String, text : String, func : Float -> Float }
-tempScaleDict =
-    Dict.fromList
-        [ ( "C", { id = "celsius", text = "Celsius", func = kelvinToCelsius } )
-        , ( "F", { id = "fahrenheit", text = "Fahrenheit", func = kelvinToFahrenheit } )
-        , ( "K", { id = "kelvin", text = "Kelvin", func = roundToDecimals 1 } )
-        ]
+toTempScale : String -> TempScale
+toTempScale scale =
+    [ ( "celsius", C ), ( "fahrenheit", F ), ( "kelvin", K ) ]
+        |> Dict.fromList
+        |> Dict.get scale
+        |> Maybe.withDefault C
+
+
+getScaleInfo : TempScale -> { id : String, text : String, func : Float -> Float }
+getScaleInfo scale =
+    case scale of
+        C ->
+            { id = "celsius", text = "Celsius", func = kelvinToCelsius }
+
+        F ->
+            { id = "fahrenheit", text = "Fahrenheit", func = kelvinToFahrenheit }
+
+        K ->
+            { id = "kelvin", text = "Kelvin", func = roundToDecimals 1 }
 
 
 
@@ -72,6 +93,8 @@ type Msg
     | SessionStorageItemReceived D.Value
     | GotData (Result String WeatherData)
     | ScaleChanged String
+    | ApiKeyChanged String
+    | RegisterApiKey
 
 
 
@@ -97,14 +120,31 @@ update msg model =
             ( { model | weatherData = Result.map Just response }, Cmd.none )
 
         ScaleChanged scale ->
-            always ( { model | scale = scale }, Cmd.none ) (Debug.log "Scale changed to: " scale)
+            ( { model | scale = toTempScale scale }, Cmd.none )
+
+        ApiKeyChanged apiKey ->
+            ( { model | tmpApiKey = apiKey }, Cmd.none )
+
+        RegisterApiKey ->
+            ( { model | apiKey = Just model.tmpApiKey }, registerApiKey model.tmpApiKey )
 
 
 decodeConfig : D.Value -> Maybe String
 decodeConfig =
     D.decodeValue (D.field "apiKey" D.string)
         >> Result.mapError (\e -> Debug.log "Error decoding apiKey: " (D.errorToString e))
+        -- TODO : streamline
         >> Result.toMaybe
+
+
+registerApiKey : String -> Cmd Msg
+registerApiKey apiKey =
+    case apiKey of
+        "" ->
+            Cmd.none
+
+        key ->
+            setItem ( "Ex53", E.object [ ( "apiKey", E.string key ) ] )
 
 
 
@@ -165,15 +205,30 @@ viewInputBlock apiKey =
                 ]
 
         Nothing ->
-            div [ class "error-message" ] [ text "API key is missing. Please set it in session storage." ]
+            div
+                [ class "error-message" ]
+                [ text "API key is missing. Please set it in session storage."
+                , input
+                    [ type_ "text"
+                    , placeholder "Enter API key for openweathermap"
+                    , onInput ApiKeyChanged
+                    ]
+                    []
+                , button
+                    [ type_ "text"
+                    , onClick RegisterApiKey
+                    ]
+                    [ text "Set API key" ]
+                ]
 
 
 viewFetchResult : Model -> Html Msg
 viewFetchResult { weatherData, scale } =
     let
         tempScale =
-            Dict.get scale tempScaleDict |> Maybe.withDefault { id = "unknown", text = "Unknown", func = roundToDecimals 1 }
+            getScaleInfo scale
 
+        -- TODO : ResultEx.either
         output : ResultMaybe (List String) String
         output =
             Result.mapError List.singleton weatherData
@@ -185,15 +240,19 @@ viewFetchResult { weatherData, scale } =
                             ]
                     )
 
-        options =
-            List.concatMap
-                (\( key, v ) ->
-                    [ input [ type_ "radio", name "scale", id v.id, value key, onInput ScaleChanged, checked (scale == key) ] []
-                    , label [ for v.id ] [ text v.text ]
-                    ]
-                )
-                (Dict.toList tempScaleDict)
+        makeScaleRadio key =
+            let
+                v =
+                    getScaleInfo key
+            in
+            [ input [ type_ "radio", name "scale", id v.id, value v.id, onInput ScaleChanged, checked (scale == key) ] []
+            , label [ for v.id ] [ text v.text ]
+            ]
 
+        options =
+            List.concatMap makeScaleRadio [ C, F, K ]
+
+        -- TODO: ResultEx.foldMap
         scaleRadio : List (Html Msg)
         scaleRadio =
             case weatherData of
