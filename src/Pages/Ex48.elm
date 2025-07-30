@@ -7,7 +7,7 @@ import Common.ResultMaybe as RM exposing (ResultMaybe)
 import Common.SessionStorage exposing (getItem, setItem)
 import Common.UI exposing (viewOutputBlock)
 import Dict
-import Html exposing (Html, button, div, fieldset, input, label, legend, text)
+import Html exposing (Html, button, div, fieldset, input, label, legend, pre, text)
 import Html.Attributes exposing (checked, class, for, id, name, placeholder, style, type_, value)
 import Html.Events exposing (on, onClick, onInput)
 import Http
@@ -132,8 +132,7 @@ update msg model =
 decodeConfig : D.Value -> Maybe String
 decodeConfig =
     D.decodeValue (D.field "apiKey" D.string)
-        >> Result.mapError (\e -> Debug.log "Error decoding apiKey: " (D.errorToString e))
-        -- TODO : streamline
+        >> Result.mapError (D.errorToString >> Debug.log "Error decoding apiKey: ")
         >> Result.toMaybe
 
 
@@ -206,19 +205,23 @@ viewInputBlock apiKey =
 
         Nothing ->
             div
-                [ class "error-message" ]
-                [ text "API key is missing. Please set it in session storage."
-                , input
-                    [ type_ "text"
-                    , placeholder "Enter API key for openweathermap"
-                    , onInput ApiKeyChanged
+                []
+                [ pre
+                    [ class "error-message"]
+                    [ text "OpenWeatherMap API key is missing. \nPlease set it in session storage." ]
+                , div []
+                    [ input
+                        [ type_ "text"
+                        , placeholder "Enter API key for OpenWeatherMap"
+                        , onInput ApiKeyChanged
+                        ]
+                        []
+                    , button
+                        [ type_ "text"
+                        , onClick RegisterApiKey
+                        ]
+                        [ text "Set API key" ]
                     ]
-                    []
-                , button
-                    [ type_ "text"
-                    , onClick RegisterApiKey
-                    ]
-                    [ text "Set API key" ]
                 ]
 
 
@@ -228,10 +231,9 @@ viewFetchResult { weatherData, scale } =
         tempScale =
             getScaleInfo scale
 
-        -- TODO : ResultEx.either
-        output : ResultMaybe (List String) String
         output =
-            Result.mapError List.singleton weatherData
+            weatherData
+                |> Result.mapError List.singleton
                 |> RM.map
                     (\w ->
                         String.join "\n"
@@ -245,26 +247,32 @@ viewFetchResult { weatherData, scale } =
                 v =
                     getScaleInfo key
             in
-            [ input [ type_ "radio", name "scale", id v.id, value v.id, onInput ScaleChanged, checked (scale == key) ] []
+            [ input
+                [ type_ "radio"
+                , name "scale"
+                , id v.id
+                , value v.id
+                , onInput ScaleChanged
+                , checked (scale == key)
+                ]
+                []
             , label [ for v.id ] [ text v.text ]
             ]
 
         options =
             List.concatMap makeScaleRadio [ C, F, K ]
 
-        -- TODO: ResultEx.foldMap
-        scaleRadio : List (Html Msg)
         scaleRadio =
-            case weatherData of
-                Ok (Just _) ->
-                    [ fieldset
-                        []
-                        [ legend [] [ text "temperature scales" ]
-                        , div [ class "scale-radio" ] options
+            weatherData
+                |> RM.map
+                    (always
+                        [ fieldset
+                            []
+                            [ legend [] [ text "Temperature Scale" ]
+                            , div [ class "scale-radio" ] options
+                            ]
                         ]
-                    ]
-
-                _ ->
-                    []
+                    )
+                |> RM.withDefault []
     in
     div [] (scaleRadio ++ [ viewOutputBlock output "No data available" ])

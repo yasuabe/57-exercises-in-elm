@@ -71,3 +71,12 @@ map f result =
 
         Err e ->
             Err e
+
+withDefault : a -> ResultMaybe e a -> a
+withDefault default result =
+    case result of
+        Ok (Just x) ->
+            x
+
+        _ ->
+            default

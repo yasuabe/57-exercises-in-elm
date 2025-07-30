@@ -43,6 +43,13 @@ body {
 label {
   padding: 0 10px 0 2px;
 }
+button {
+  vertical-align: bottom;
+}
+input {
+  vertical-align: middle;
+  margin-right: 10px;
+}
 
 .left-pane {
   width: 300px;
@@ -150,6 +157,8 @@ button {
 
 .error-message {
   color: red;
+  margin: 10px 0;
+  line-height: 2;
 }
 
 .contents-table {
