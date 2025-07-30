@@ -75,6 +75,12 @@ input {
     text-decoration: underline;
     font-weight: bold;
   }
+  &__filter-label {
+    font-size: $font-size-smaller;
+    font-weight: bold;
+    margin-right: 10px;
+    vertical-align: bottom;
+  }
 }
 
 a {

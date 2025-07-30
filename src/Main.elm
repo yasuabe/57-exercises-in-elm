@@ -7,6 +7,7 @@ import Common.MaybeEx as MaybeEx exposing (filter, fromFilter, mapToList)
 import Common.SessionStorage as SS exposing (itemReceived)
 import Dict exposing (Dict)
 import Exercises exposing (Exercise, chapters, exercises, toTitle)
+import Hour exposing (Time(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -102,6 +103,7 @@ port timeReceived : (String -> msg) -> Sub msg
 type alias Model =
     { key : Nav.Key
     , currentExercise : Maybe Int
+    , showAll : Bool
     , ex01Model : Maybe Ex01.Model
     , ex02Model : Maybe Ex02.Model
     , ex03Model : Maybe Ex03.Model
@@ -166,6 +168,7 @@ defaultModel : Nav.Key -> Model
 defaultModel key =
     { key = key
     , currentExercise = Nothing
+    , showAll = False
     , ex01Model = Nothing
     , ex02Model = Nothing
     , ex03Model = Nothing
@@ -259,6 +262,7 @@ initDict =
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url
+    | ToggleShowAll String
     | Ex01Msg Ex01.Msg
     | Ex02Msg Ex02.Msg
     | Ex03Msg Ex03.Msg
@@ -364,6 +368,9 @@ update msg model =
 
                 Browser.External href ->
                     ( model, Nav.load href )
+
+        ToggleShowAll selection ->
+            ( { model | showAll = "all" == selection }, Cmd.none )
 
         UrlChanged url ->
             let
@@ -504,16 +511,39 @@ view model =
 leftPane : Model -> Html Msg
 leftPane model =
     div [ class "left-pane" ]
-        [ h3 [] [ text "Exercises" ]
+        [ h2 [] [ text "57 Exercises" ]
+        , viewFilter model
         , hr [] []
         , div
             [ class "left-pane__titles" ]
-            (List.concatMap (exerciseLink model.currentExercise) exercises)
+            (List.concatMap (exerciseLink model) exercises)
         ]
 
 
-exerciseLink : Maybe Int -> Exercise -> List (Html Msg)
-exerciseLink currentExercise e =
+viewFilter : Model -> Html Msg
+viewFilter { showAll } =
+    let
+        mkRadio id_ value_ label_ checked_ =
+            [ input
+                [ id id_
+                , type_ "radio"
+                , name "filter"
+                , value value_
+                , checked checked_
+                , onInput ToggleShowAll
+                ]
+                []
+            , label [ class "left-pane__filter-label", for id_ ] [ text label_ ]
+            ]
+    in
+    div []
+        (mkRadio "radio-all" "all" "All" showAll
+            ++ mkRadio "radio-completed" "completed" "Completed" (not showAll)
+        )
+
+
+exerciseLink : Model -> Exercise -> List (Html Msg)
+exerciseLink { showAll, currentExercise } e =
     let
         title =
             text <| toTitle e
@@ -534,8 +564,11 @@ exerciseLink currentExercise e =
                 [ if e.done then
                     a [ href ("/ex" ++ e.suffix) ] [ title ]
 
-                  else
+                  else if showAll then
                     title
+
+                  else
+                    div [ style "display" "none" ] [ title ]
                 ]
            ]
 
