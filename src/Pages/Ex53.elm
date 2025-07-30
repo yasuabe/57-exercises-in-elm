@@ -1,4 +1,4 @@
-module Pages.Ex53 exposing (Ex53Command(..), Model, Msg(..), TodoRecord, init, subscriptions, update, view)
+module Pages.Ex53 exposing (Ex53Command(..), Model, Msg(..), TodoRecord, init, update, view)
 
 import Date as D
 import Debug exposing (todo)
@@ -98,15 +98,6 @@ update msg model =
             , Cmd.none
             , Nothing
             )
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none -- TODO: is this needed? If so, implement it to listen for IndexedDB changes or other events.
 
 
 

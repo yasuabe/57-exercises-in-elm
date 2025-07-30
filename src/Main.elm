@@ -3,7 +3,7 @@ port module Main exposing (main)
 import Array as A
 import Browser
 import Browser.Navigation as Nav
-import Common.MaybeEx exposing (mapToList)
+import Common.MaybeEx as MaybeEx exposing (filter, fromFilter, mapToList)
 import Common.SessionStorage as SS exposing (itemReceived)
 import Dict exposing (Dict)
 import Exercises exposing (Exercise, chapters, exercises, toTitle)
@@ -68,7 +68,7 @@ import Pages.Ex54 as Ex54
 import Pages.Ex55 as Ex55
 import Pages.Ex56 as Ex56
 import Pages.Ex57 as Ex57
-import String exposing (fromInt, toInt)
+import String as S exposing (fromInt, toInt)
 import Task
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), top)
@@ -297,21 +297,10 @@ routeParser =
 exerciseParser : Parser.Parser (Int -> a) a
 exerciseParser =
     Parser.custom "EXERCISE" <|
-        \segment ->
-            if String.startsWith "ex" segment && String.length segment >= 3 then
-                String.dropLeft 2 segment
-                    |> toInt
-                    |> Maybe.andThen
-                        (\n ->
-                            if n >= 1 && n <= 57 then
-                                Just n
-
-                            else
-                                Nothing
-                        )
-
-            else
-                Nothing
+        MaybeEx.fromFilter (\s -> S.startsWith "ex" s && S.length s >= 3)
+            >> Maybe.map (S.dropLeft 2)
+            >> Maybe.andThen toInt
+            >> MaybeEx.filter (\n -> n >= 1 && n <= 57)
 
 
 
@@ -424,49 +413,49 @@ update msg model =
                     ( model0, Cmd.none )
 
         Ex01Msg subMsg ->
-            update_ (\m -> m.ex01Model) subMsg Ex01.update (\m n -> { m | ex01Model = Just n }) Ex01Msg
+            update_ .ex01Model subMsg Ex01.update (\m n -> { m | ex01Model = Just n }) Ex01Msg
 
         Ex02Msg subMsg ->
-            update_ (\m -> m.ex02Model) subMsg Ex02.update (\m n -> { m | ex02Model = Just n }) Ex02Msg
+            update_ .ex02Model subMsg Ex02.update (\m n -> { m | ex02Model = Just n }) Ex02Msg
 
         Ex03Msg subMsg ->
-            update_ (\m -> m.ex03Model) subMsg Ex03.update (\m n -> { m | ex03Model = Just n }) Ex03Msg
+            update_ .ex03Model subMsg Ex03.update (\m n -> { m | ex03Model = Just n }) Ex03Msg
 
         Ex04Msg subMsg ->
-            update_ (\m -> m.ex04Model) subMsg Ex04.update (\m n -> { m | ex04Model = Just n }) Ex04Msg
+            update_ .ex04Model subMsg Ex04.update (\m n -> { m | ex04Model = Just n }) Ex04Msg
 
         Ex07Msg subMsg ->
-            update_ (\m -> m.ex07Model) subMsg Ex07.update (\m n -> { m | ex07Model = Just n }) Ex07Msg
+            update_ .ex07Model subMsg Ex07.update (\m n -> { m | ex07Model = Just n }) Ex07Msg
 
         Ex13Msg subMsg ->
-            update_ (\m -> m.ex13Model) subMsg Ex13.update (\m n -> { m | ex13Model = Just n }) Ex13Msg
+            update_ .ex13Model subMsg Ex13.update (\m n -> { m | ex13Model = Just n }) Ex13Msg
 
         Ex14Msg subMsg ->
-            update_ (\m -> m.ex14Model) subMsg Ex14.update (\m n -> { m | ex14Model = Just n }) Ex14Msg
+            update_ .ex14Model subMsg Ex14.update (\m n -> { m | ex14Model = Just n }) Ex14Msg
 
         Ex23Msg subMsg ->
-            update_ (\m -> m.ex23Model) subMsg Ex23.update (\m n -> { m | ex23Model = Just n }) Ex23Msg
+            update_ .ex23Model subMsg Ex23.update (\m n -> { m | ex23Model = Just n }) Ex23Msg
 
         Ex24Msg subMsg ->
-            update_ (\m -> m.ex24Model) subMsg Ex24.update (\m n -> { m | ex24Model = Just n }) Ex24Msg
+            update_ .ex24Model subMsg Ex24.update (\m n -> { m | ex24Model = Just n }) Ex24Msg
 
         Ex28Msg subMsg ->
-            update_ (\m -> m.ex28Model) subMsg Ex28.update (\m n -> { m | ex28Model = Just n }) Ex28Msg
+            update_ .ex28Model subMsg Ex28.update (\m n -> { m | ex28Model = Just n }) Ex28Msg
 
         Ex33Msg subMsg ->
-            update_ (\m -> m.ex33Model) subMsg Ex33.update (\m n -> { m | ex33Model = Just n }) Ex33Msg
+            update_ .ex33Model subMsg Ex33.update (\m n -> { m | ex33Model = Just n }) Ex33Msg
 
         Ex41Msg subMsg ->
-            update_ (\m -> m.ex41Model) subMsg Ex41.update (\m n -> { m | ex41Model = Just n }) Ex41Msg
+            update_ .ex41Model subMsg Ex41.update (\m n -> { m | ex41Model = Just n }) Ex41Msg
 
         Ex47Msg subMsg ->
-            update_ (\m -> m.ex47Model) subMsg Ex47.update (\m n -> { m | ex47Model = Just n }) Ex47Msg
+            update_ .ex47Model subMsg Ex47.update (\m n -> { m | ex47Model = Just n }) Ex47Msg
 
         Ex48Msg subMsg ->
-            update_ (\m -> m.ex48Model) subMsg Ex48.update (\m n -> { m | ex48Model = Just n }) Ex48Msg
+            update_ .ex48Model subMsg Ex48.update (\m n -> { m | ex48Model = Just n }) Ex48Msg
 
         Ex52Msg subMsg ->
-            update_ (\m -> m.ex52Model) subMsg Ex52.update (\m n -> { m | ex52Model = Just n }) Ex52Msg
+            update_ .ex52Model subMsg Ex52.update (\m n -> { m | ex52Model = Just n }) Ex52Msg
 
         Ex53Msg subMsg ->
             case model.ex53Model of
@@ -505,10 +494,9 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Elm 57 Exercises"
     , body =
-        [ div [ style "display" "flex", style "height" "100vh" ]
-            [ leftPane model
-            , mainPane model
-            ]
+        [ div
+            [ style "display" "flex", style "height" "100vh" ]
+            [ leftPane model, mainPane model ]
         ]
     }
 
@@ -518,7 +506,9 @@ leftPane model =
     div [ class "left-pane" ]
         [ h3 [] [ text "Exercises" ]
         , hr [] []
-        , div [ class "left-pane__titles" ] (List.concatMap (exerciseLink model.currentExercise) exercises)
+        , div
+            [ class "left-pane__titles" ]
+            (List.concatMap (exerciseLink model.currentExercise) exercises)
         ]
 
 
@@ -551,16 +541,16 @@ exerciseLink currentExercise e =
 
 
 mapMain : Model -> Int -> (Model -> Maybe a) -> (a -> Html msg) -> (msg -> Msg) -> Html Msg
-mapMain model n g h msg =
+mapMain model exerciseNumber subModel subView msg =
     let
         exercise =
-            exerciseAt n
+            exerciseAt exerciseNumber
     in
-    case g model of
+    case subModel model of
         Just exModel ->
             div []
                 [ h1 [] [ text <| toTitle exercise ]
-                , Html.map msg (h exModel)
+                , Html.map msg (subView exModel)
                 ]
 
         Nothing ->
@@ -568,13 +558,11 @@ mapMain model n g h msg =
 
 
 exerciseAt : Int -> Exercise
-exerciseAt n =
-    case A.get (n - 1) (A.fromList exercises) of
-        Just exercise ->
-            exercise
-
-        Nothing ->
-            { suffix = fromInt n, title = "Exercise " ++ fromInt n, done = False }
+exerciseAt exerciseNumber =
+    A.fromList exercises
+        |> A.get (exerciseNumber - 1)
+        |> Maybe.withDefault
+            { suffix = fromInt exerciseNumber, title = "Exercise " ++ fromInt exerciseNumber, done = False }
 
 
 mainPane : Model -> Html Msg
@@ -582,52 +570,52 @@ mainPane model =
     div [ style "flex" "1", style "padding" "20px" ]
         [ case model.currentExercise of
             Just 1 ->
-                mapMain model 1 (\m -> m.ex01Model) Ex01.view Ex01Msg
+                mapMain model 1 .ex01Model Ex01.view Ex01Msg
 
             Just 2 ->
-                mapMain model 2 (\m -> m.ex02Model) Ex02.view Ex02Msg
+                mapMain model 2 .ex02Model Ex02.view Ex02Msg
 
             Just 3 ->
-                mapMain model 3 (\m -> m.ex03Model) Ex03.view Ex03Msg
+                mapMain model 3 .ex03Model Ex03.view Ex03Msg
 
             Just 4 ->
-                mapMain model 4 (\m -> m.ex04Model) Ex04.view Ex04Msg
+                mapMain model 4 .ex04Model Ex04.view Ex04Msg
 
             Just 7 ->
-                mapMain model 7 (\m -> m.ex07Model) Ex07.view Ex07Msg
+                mapMain model 7 .ex07Model Ex07.view Ex07Msg
 
             Just 13 ->
-                mapMain model 13 (\m -> m.ex13Model) Ex13.view Ex13Msg
+                mapMain model 13 .ex13Model Ex13.view Ex13Msg
 
             Just 14 ->
-                mapMain model 14 (\m -> m.ex14Model) Ex14.view Ex14Msg
+                mapMain model 14 .ex14Model Ex14.view Ex14Msg
 
             Just 23 ->
-                mapMain model 23 (\m -> m.ex23Model) Ex23.view Ex23Msg
+                mapMain model 23 .ex23Model Ex23.view Ex23Msg
 
             Just 24 ->
-                mapMain model 24 (\m -> m.ex24Model) Ex24.view Ex24Msg
+                mapMain model 24 .ex24Model Ex24.view Ex24Msg
 
             Just 28 ->
-                mapMain model 28 (\m -> m.ex28Model) Ex28.view Ex28Msg
+                mapMain model 28 .ex28Model Ex28.view Ex28Msg
 
             Just 33 ->
-                mapMain model 33 (\m -> m.ex33Model) Ex33.view Ex33Msg
+                mapMain model 33 .ex33Model Ex33.view Ex33Msg
 
             Just 41 ->
-                mapMain model 41 (\m -> m.ex41Model) Ex41.view Ex41Msg
+                mapMain model 41 .ex41Model Ex41.view Ex41Msg
 
             Just 47 ->
-                mapMain model 47 (\m -> m.ex47Model) Ex47.view Ex47Msg
+                mapMain model 47 .ex47Model Ex47.view Ex47Msg
 
             Just 48 ->
-                mapMain model 48 (\m -> m.ex48Model) Ex48.view Ex48Msg
+                mapMain model 48 .ex48Model Ex48.view Ex48Msg
 
             Just 52 ->
-                mapMain model 52 (\m -> m.ex52Model) Ex52.view Ex52Msg
+                mapMain model 52 .ex52Model Ex52.view Ex52Msg
 
             Just 53 ->
-                mapMain model 53 (\m -> m.ex53Model) Ex53.view Ex53Msg
+                mapMain model 53 .ex53Model Ex53.view Ex53Msg
 
             Just n ->
                 text ("Exercise " ++ fromInt n ++ " - Not implemented yet")
@@ -651,27 +639,13 @@ subscriptions model =
             SS.itemReceived (Ex48Msg << Ex48.SessionStorageItemReceived)
 
         Just 52 ->
-            Sub.batch
-                [ timeReceived (Ex52Msg << Ex52.TimeReceived)
-                , case model.ex52Model of -- TODO: streamline
-                    Just ex52Model ->
-                        Sub.map Ex52Msg (Ex52.subscriptions ex52Model)
-
-                    Nothing ->
-                        Sub.none
-                ]
+            timeReceived (Ex52Msg << Ex52.TimeReceived)
 
         Just 53 ->
             Sub.batch
                 [ indexedDBResult (Ex53Msg << Ex53.WriteComplete)
                 , indexedDBReadResult (Ex53Msg << Ex53.LoadComplete)
                 , deleteTodoResult (Ex53Msg << Ex53.DeleteComplete)
-                , case model.ex53Model of
-                    Just ex53Model ->
-                        Sub.map Ex53Msg (Ex53.subscriptions ex53Model)
-
-                    Nothing ->
-                        Sub.none
                 ]
 
         _ ->

@@ -6,7 +6,7 @@
 -- - Keep server code minimal.
 
 
-port module Pages.Ex52 exposing (Model, Msg(..), init, subscriptions, update, view)
+port module Pages.Ex52 exposing (Model, Msg(..), init, update, view)
 
 import Common.Format exposing (..)
 import Common.ResultEx as ResultEx exposing (either)
@@ -67,15 +67,6 @@ update msg model =
                         |> ResultEx.mapEither .currentTime Decode.errorToString
             in
             ( { model | timestamp = decoded }, Cmd.none )
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
 
 
 

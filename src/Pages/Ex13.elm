@@ -117,17 +117,11 @@ makeOutput model =
                         ++ "compounded "
                         ++ String.fromFloat t
                         ++ " times per year is $"
-                        ++ roundToTwoDecimals amount
+                        ++ (roundToDecimals 2 amount |> String.fromFloat)
                         ++ "."
                 )
                 calcResult
     }
-
-
--- TODO: remove x 
-roundToTwoDecimals : Float -> String
-roundToTwoDecimals x =
-    roundToDecimals 2 x |> String.fromFloat
 
 
 

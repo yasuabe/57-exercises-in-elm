@@ -17,7 +17,7 @@ fromEither =
 
 
 mapEither : (a -> c) -> (e -> b) -> Result e a -> Result b c
-mapEither okFn errFn x = 
+mapEither okFn errFn x =
     case x of
         Ok v ->
             Ok (okFn v)
