@@ -68,7 +68,7 @@ exercises =
     , { suffix = "54", title = "URL Shortener", done = False }
     , { suffix = "55", title = "Text Sharing", done = False }
     , { suffix = "56", title = "Tracking Inventory", done = False }
-    , { suffix = "57", title = "Trivia App", done = False }
+    , { suffix = "57", title = "Trivia App", done = True }
     ]
 
 

@@ -230,8 +230,7 @@ defaultModel key =
 
 
 type alias Params =
-    { init : Model -> Model
-    }
+    { init : Model -> Model }
 
 
 initDict : Dict Int Params
@@ -252,6 +251,7 @@ initDict =
         , ( 47, { init = \m -> { m | ex47Model = Just Ex47.init } } )
         , ( 48, { init = \m -> { m | ex48Model = Just Ex48.init } } )
         , ( 52, { init = \m -> { m | ex52Model = Just Ex52.init } } )
+        , ( 57, { init = \m -> { m | ex57Model = Just Ex57.init } } )
         ]
 
 
@@ -279,6 +279,7 @@ type Msg
     | Ex48Msg Ex48.Msg
     | Ex52Msg Ex52.Msg
     | Ex53Msg Ex53.Msg
+    | Ex57Msg Ex57.Msg
 
 
 
@@ -492,6 +493,9 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        Ex57Msg subMsg ->
+            update_ .ex57Model subMsg Ex57.update (\m n -> { m | ex57Model = Just n }) Ex57Msg
+
 
 
 -- VIEW
@@ -649,6 +653,9 @@ mainPane model =
 
             Just 53 ->
                 mapMain model 53 .ex53Model Ex53.view Ex53Msg
+
+            Just 57 ->
+                mapMain model 57 .ex57Model Ex57.view Ex57Msg
 
             Just n ->
                 text ("Exercise " ++ fromInt n ++ " - Not implemented yet")

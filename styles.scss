@@ -23,6 +23,7 @@ $font-size-larger: 18px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 
+  &:disabled,
   &:hover {
     background-color: $hover-color;
     transform: translateY(-1px);
@@ -43,12 +44,18 @@ body {
 label {
   padding: 0 10px 0 2px;
 }
+
 button {
   vertical-align: bottom;
 }
-input {
+
+input [type="text"] {
   vertical-align: middle;
   margin-right: 10px;
+}
+
+input [type="radio"] {
+  vertical-align: text-top;
 }
 
 .left-pane {
@@ -75,6 +82,7 @@ input {
     text-decoration: underline;
     font-weight: bold;
   }
+
   &__filter-label {
     font-size: $font-size-smaller;
     font-weight: bold;
@@ -126,9 +134,10 @@ button {
   border: 0;
 }
 
-.inputblock{
+.inputblock {
   margin-bottom: 40px;
 }
+
 .inputline {
   display: block;
   margin-bottom: 10px;
@@ -153,9 +162,11 @@ button {
     vertical-align: top;
     margin-bottom: 1px;
   }
+
   &__button {
     vertical-align: bottom;
   }
+
   &__label {
     vertical-align: bottom;
   }
@@ -242,4 +253,31 @@ button {
 .button-like:hover {
   background-color: #0056b3;
   transform: translateY(-1px);
+}
+
+// Additional styles for specific exercises
+.ex57 {
+  &__disabled-text {
+    color: $disabled-color;
+  }
+  &__correct-answer {
+    color: #00ff00;
+    font-weight: bold;
+  }
+  &__wrong-answer {
+    color: red;
+    font-weight: bold;
+  }
+  &__missed-correct-answer {
+    color: #338833;
+  }
+  &__wrong-answer::after {
+    content: "← wrong";
+    font-size: 80%;
+  }
+  &__missed-correct-answer::after {
+    content: "← correct";
+    font-size: 80%;
+  }
+
 }
