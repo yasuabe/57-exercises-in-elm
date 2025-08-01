@@ -88,7 +88,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex54 [ ] [URL Shortener](src/Pages/Ex54.elm)      | | | |
 | Ex55 [ ] [Text Sharing](src/Pages/Ex55.elm)       | | | |
 | Ex56 [ ] [Tracking Inventory](src/Pages/Ex56.elm) | | | |
-| Ex57 [ ] [Trivia App](src/Pages/Ex57.elm)         | | | |
+| Ex57 [x] [Trivia App](src/Pages/Ex57.elm)         |elm-community/random-extra, maybe-extra, list-extra | state machine, randomness | 4(3) |
 
 - ※ [ ] Completed, [ ] Pending
 - ※ Lv. (level): p(q), where:
