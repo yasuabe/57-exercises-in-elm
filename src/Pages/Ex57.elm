@@ -16,23 +16,20 @@ import Task
 -- MODEL
 
 
-type alias Model =
-    { sequence : List Int
-    , currentQuestion : Maybe ( Int, List Int )
-    , selection : Maybe Int
-    , correct : Maybe Bool
-    , finished : Bool
-    }
+type alias CurrentQuestion =
+    ( Int, List Int )
+
+
+type Model
+    = NotStarted
+    | InProgress CurrentQuestion ( List Int, List Int ) (Maybe Int)
+    | Answered CurrentQuestion ( List Int, List Int ) Int
+    | Finished ( List Int, List Int )
 
 
 init : Model
 init =
-    { sequence = []
-    , currentQuestion = Nothing
-    , selection = Nothing
-    , correct = Nothing
-    , finished = False
-    }
+    NotStarted
 
 
 
@@ -42,8 +39,8 @@ init =
 type Msg
     = Shuffle
     | ShuffleComplete (List Int)
-    | Distract
-    | DistractComplete (List Int)
+    | Distract ( List Int, List Int )
+    | DistractComplete ( List Int, List Int ) (List Int)
     | OptionSelected Int
     | Submit
     | Continue
@@ -55,74 +52,110 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        Shuffle ->
+    case ( msg, model ) of
+        ( Shuffle, _ ) ->
             ( init, generate ShuffleComplete (shuffle <| List.range 0 4) )
 
-        ShuffleComplete shuffled ->
-            ( { model | sequence = shuffled }, Task.perform (always Distract) (Task.succeed ()) )
+        ( ShuffleComplete shuffled, _ ) ->
+            onShuffleComplete shuffled
 
-        Distract ->
-            case model.sequence of
-                [] ->
-                    ( { model | currentQuestion = Nothing }, Cmd.none )
+        ( Distract sequence, _ ) ->
+            onDistract model sequence
 
-                _ ->
-                    ( model, generate DistractComplete (shuffle (List.range 0 3)) )
+        ( DistractComplete sequence distractors, _ ) ->
+            onDistractComplete sequence distractors model
 
-        DistractComplete distractors ->
-            case model.sequence of
-                q :: qs ->
-                    ( { model | currentQuestion = Just ( q, distractors ), sequence = qs }, Cmd.none )
+        ( OptionSelected number, InProgress current qs _ ) ->
+            onOptionSelected number current qs
 
-                [] ->
-                    ( model, Cmd.none )
+        ( Submit, InProgress current qs (Just selection) ) ->
+            ( Answered current qs selection, Cmd.none )
 
-        OptionSelected number ->
-            ( { model | selection = Just number }, Cmd.none )
+        ( Continue, Answered ( cur, _ ) sequence selected ) ->
+            onContinue sequence cur selected
 
-        Submit ->
-            ( { model | correct = Maybe.map ((==) 0) model.selection }, Cmd.none )
-
-        Continue ->
-            case ( model.sequence, model.correct ) of
-                ( _ :: _, Just True ) ->
-                    ( { model | selection = Nothing, correct = Nothing }
-                    , Task.perform (always Distract) (Task.succeed ())
-                    )
-
-                ( _, _ ) ->
-                    ( { model | finished = True }, Cmd.none )
+        ( _, _ ) ->
+            ( model, Cmd.none )
 
 
+onShuffleComplete : List Int -> ( Model, Cmd Msg )
+onShuffleComplete shuffled =
+    ( init, Task.perform Distract (Task.succeed ( shuffled, [] )) )
 
--- Here you would handle the shuffled list if needed
+
+onDistract : Model -> ( List Int, List Int ) -> ( Model, Cmd Msg )
+onDistract model questions =
+    case questions of
+        ( _ :: _, _ ) ->
+            ( model, generate (DistractComplete questions) (shuffle (List.range 0 3)) )
+
+        _ ->
+            ( model, Cmd.none )
+
+
+onDistractComplete : ( List Int, List Int ) -> List Int -> Model -> ( Model, Cmd Msg )
+onDistractComplete ( sequence, solved ) distractors model =
+    case sequence of
+        q :: qs ->
+            ( InProgress ( q, distractors ) ( qs, solved ) Nothing
+            , Cmd.none
+            )
+
+        [] ->
+            -- TODO: check if this is really needed
+            ( model, Cmd.none )
+
+
+onOptionSelected : Int -> CurrentQuestion -> ( List Int, List Int ) -> ( Model, Cmd Msg )
+onOptionSelected number current qs =
+    ( InProgress current qs (Just number), Cmd.none )
+
+
+onContinue : ( List Int, List Int ) -> Int -> Int -> ( Model, Cmd Msg )
+onContinue ( sequence, solved ) cur selected =
+    case ( sequence, selected ) of
+        ( _ :: _, 0 ) ->
+            ( init, Task.perform Distract (Task.succeed ( sequence, cur :: solved )) )
+
+        ( _ :: _, _ ) ->
+            ( Finished ( cur :: sequence, solved ), Cmd.none )
+
+        ( [], _ ) ->
+            ( Finished ( [], cur :: solved ), Cmd.none )
+
+
+
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
-    case ( model.currentQuestion, model.correct, model.finished ) of
-        ( Nothing, _, False ) ->
-            div []
-                [ div []
-                    [ text "Click to shuffle the sequence"
-                    , Html.button [ onClick Shuffle ] [ text "Play" ]
-                    ]
-                ]
+    case model of
+        NotStarted ->
+            viewInitialScreen
 
-        ( Just ( q, distractors ), Nothing, False ) ->
-            viewShowQuestion ( q, distractors, model.selection )
+        InProgress ( q, distractors ) _ selection ->
+            viewShowQuestion q distractors selection
 
-        ( Just ( q, distractors ), Just _, False ) ->
-            viewShowResult ( q, distractors, model.selection )
+        Answered ( q, distractors ) _ selection ->
+            viewShowResult ( q, distractors, selection )
 
-        ( _, _, True ) ->
-            viewEndSession model
+        Finished questions ->
+            viewEndSession questions
 
 
-viewShowQuestion : ( Int, List Int, Maybe Int ) -> Html Msg
-viewShowQuestion ( questionNumber, shuffledDistractors, selection ) =
+viewInitialScreen : Html Msg
+viewInitialScreen =
+    div []
+        [ div [ class "inputline" ]
+            [ text "Click to start the trivia session" ]
+        , div []
+            [ Html.button [ onClick Shuffle ] [ text "Start" ] ]
+        ]
+
+
+viewShowQuestion : Int -> List Int -> Maybe Int -> Html Msg
+viewShowQuestion questionNumber shuffledDistractors selection =
     let
         x =
             Array.get questionNumber triviaData
@@ -172,7 +205,7 @@ viewShowQuestion ( questionNumber, shuffledDistractors, selection ) =
                 ]
 
 
-viewShowResult : ( Int, List Int, Maybe Int ) -> Html Msg
+viewShowResult : ( Int, List Int, Int ) -> Html Msg
 viewShowResult ( questionNumber, shuffledDistractors, selection ) =
     let
         x =
@@ -198,12 +231,13 @@ viewShowResult ( questionNumber, shuffledDistractors, selection ) =
                     [ ol []
                         (List.map
                             (\( number, optionText ) ->
+                                -- TODO: too deeply nested, consider refactoring
                                 let
                                     index =
                                         String.fromInt number
 
                                     class_ =
-                                        if Just number == selection then
+                                        if number == selection then
                                             if number == 0 then
                                                 "ex57__correct-answer"
 
@@ -223,7 +257,7 @@ viewShowResult ( questionNumber, shuffledDistractors, selection ) =
                                         , name "options"
                                         , value index
                                         , disabled True
-                                        , checked (Just number == selection)
+                                        , checked (number == selection)
                                         , onClick (OptionSelected number)
                                         ]
                                         []
@@ -232,35 +266,64 @@ viewShowResult ( questionNumber, shuffledDistractors, selection ) =
                             )
                             options
                         )
-                    , button [ onClick Continue, disabled (isNothing selection) ]
-                        [ text "Continue" ]
+                    , button [ onClick Continue ] [ text "Continue" ]
                     ]
                 ]
 
 
-viewEndSession : Model -> Html Msg
-viewEndSession model =
-    case model.correct of
-        Just True ->
+viewResultList : List Int -> List Int -> Html Msg
+viewResultList rest solved =
+    let
+        greens =
+            List.repeat (List.length solved) "ex57__correct-question"
+
+        classes =
+            if List.isEmpty rest then
+                greens
+
+            else
+                greens ++ ("ex57__wrong-question" :: List.repeat (List.length rest - 1) "ex57__disabled-text")
+
+        questions =
+            solved
+                ++ rest
+                |> List.filterMap (\n -> Array.get n triviaData |> Maybe.map .question)
+                |> LE.zip classes
+    in
+    questions
+        |> List.map
+            (\(class_,  question  ) ->
+                li [ class class_ ] [ text question ]
+            )
+        |> ol []
+
+
+viewEndSession : ( List Int, List Int ) -> Html Msg
+viewEndSession ( rest, solved ) =
+    let
+        resultList =
+            viewResultList rest solved
+    in
+    case rest of
+        [] ->
             div []
-                [ text "Congratulations! You answered all questions correctly."
-                , button [ onClick Shuffle ]
-                    [ text "Play Again" ]
+                [ resultList
+                , text "Congratulations! You answered all questions correctly."
+                , button [ onClick Shuffle ] [ text "Play Again" ]
                 ]
 
-        Just False ->
-            let
-                correctCount =
-                    Array.length triviaData - List.length model.sequence - 1
-            in
-            div []
-                [ text ("You answered " ++ String.fromInt correctCount ++ " questions correctly. Better luck next time!")
-                , button [ onClick Shuffle ]
-                    [ text "Try Again" ]
+        r :: rs ->
+            div [ class "output" ]
+                [ resultList
+                , div []
+                    [ text
+                        ("You answered "
+                            ++ String.fromInt (List.length solved)
+                            ++ " questions correctly."
+                        )
+                    ]
+                , div [] [ button [ onClick Shuffle ] [ text "Try Again" ] ]
                 ]
-
-        Nothing ->
-            div [] [ text "No trivia data available." ]
 
 
 
