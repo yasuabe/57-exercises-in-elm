@@ -72,6 +72,31 @@ map f result =
         Err e ->
             Err e
 
+
+map2 : (x -> y -> r) -> ResultMaybe e x -> ResultMaybe e y -> ResultMaybe e r
+map2 f x_ y_ =
+    case ( x_, y_ ) of
+        ( Err e, _ ) ->
+            Err e
+
+        ( _, Err e ) ->
+            Err e
+
+        ( Ok Nothing, _ ) ->
+            Ok Nothing
+
+        ( _, Ok Nothing ) ->
+            Ok Nothing
+
+        ( Ok (Just x), Ok (Just y) ) ->
+            Ok (Just (f x y))
+
+
+map3 : (x -> y -> z -> r) -> ResultMaybe e x -> ResultMaybe e y -> ResultMaybe e z -> ResultMaybe e r
+map3 f x_ y_ z_ =
+    map2 (\b c -> b c) (map2 f x_ y_) z_
+
+
 withDefault : a -> ResultMaybe e a -> a
 withDefault default result =
     case result of

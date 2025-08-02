@@ -179,10 +179,13 @@ button {
   }
 }
 
-.error-message {
+pre.error-message {
   color: red;
   margin: 10px 0;
   line-height: 2;
+}
+.error-message {
+  color: red;
 }
 
 .contents-table {

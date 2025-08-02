@@ -1,6 +1,6 @@
 module Common.ResultMaybeTest exposing (..)
 
-import Common.ResultMaybe exposing (collectErrors, collectErrors2, map, withDefault)
+import Common.ResultMaybe exposing (collectErrors, collectErrors2, map, map2, map3, withDefault)
 import Expect exposing (..)
 import Test exposing (..)
 
@@ -38,6 +38,21 @@ suite =
             , test "Err e is preserved" <|
                 \_ ->
                     map String.fromFloat (Err "error") |> equal (Err "error")
+            ]
+        , describe "map2"
+            [ test "apply function f to (Ok Just x, Ok Just y)" <|
+                \_ ->
+                    map2 (+) (Ok <| Just 3.14) (Ok <| Just 2.71) |> equal (Ok <| Just 5.85)
+            ]
+        , describe "map3"
+            [ test "apply function to (Ok Just x, Ok Just y, Ok Just z)" <|
+                \_ ->
+                    map3
+                        (\a b c -> ( a, b, c ))
+                        (Ok <| Just 3.14)
+                        (Ok <| Just 2.71)
+                        (Ok <| Just 1.41)
+                        |> equal (Ok <| Just ( 3.14, 2.71, 1.41 ))
             ]
         , describe "withDefault"
             [ test "return default value if the result is Err" <|
