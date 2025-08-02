@@ -41,6 +41,12 @@ body {
   font-family: Arial, sans-serif;
   padding: 20px;
 }
+main {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 600px;
+}
 
 label {
   padding: 0 10px 0 2px;
@@ -122,7 +128,7 @@ button {
   width: 90%;
   font-size: $font-size-base;
   background: inherit;
-  margin-top: 30px;
+  margin-top: 10px;
   border: 0;
   line-height: 2;
 }
@@ -282,11 +288,11 @@ button {
   }
   &__correct-question {
     color: #22aa22;
-    font-weight: bold;
+    font-weight: normal;
   }
   &__wrong-question {
     color: red;
-    font-weight: bold;
+    font-weight: normal;
   }
 
 }

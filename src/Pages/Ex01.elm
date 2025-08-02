@@ -2,7 +2,7 @@ module Pages.Ex01 exposing (Model, Msg(..), init, update, view)
 
 import Common.Events exposing (submitOnEnter)
 import Html exposing (Html, div, input, span, text)
-import Html.Attributes exposing (placeholder, value)
+import Html.Attributes exposing (placeholder, value, class)
 import Html.Events exposing (on, onInput)
 
 
@@ -62,7 +62,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ div []
+        [ div [ class "inputline" ]
             [ span [] [ text "What is your name? " ]
             , input
                 [ placeholder "Enter your name"

@@ -3,8 +3,9 @@ port module Main exposing (main)
 import Array as A
 import Browser
 import Browser.Navigation as Nav
-import Common.MaybeEx as MaybeEx exposing (filter, fromFilter, mapToList)
-import Common.SessionStorage as SS exposing (itemReceived)
+import Common.Format exposing (padZeros)
+import Common.MaybeEx as MaybeEx exposing (mapToList)
+import Common.SessionStorage as SS
 import Dict exposing (Dict)
 import Exercises exposing (Exercise, chapters, exercises, toTitle)
 import Hour exposing (Time(..))
@@ -577,21 +578,29 @@ exerciseLink { showAll, currentExercise } e =
            ]
 
 
-mapMain : Model -> Int -> (Model -> Maybe a) -> (a -> Html msg) -> (msg -> Msg) -> Html Msg
+mapMain : Model -> Int -> (Model -> Maybe a) -> (a -> Html msg) -> (msg -> Msg) -> List (Html Msg)
 mapMain model exerciseNumber subModel subView msg =
     let
         exercise =
             exerciseAt exerciseNumber
+
+        sourceUrl =
+            "https://github.com/yasuabe/57-exercises-in-elm/blob/main/src/Pages/Ex"
+                ++ padZeros 2 exerciseNumber
+                ++ ".elm"
     in
     case subModel model of
         Just exModel ->
-            div []
+            [ header []
                 [ h1 [] [ text <| toTitle exercise ]
-                , Html.map msg (subView exModel)
+                , a [ href sourceUrl, target "_blank" ] [ text "Source" ]
+                , hr [] []
                 ]
+            , main_ [] [ Html.map msg (subView exModel) ]
+            ]
 
         Nothing ->
-            text <| "Loading " ++ exercise.title
+            [ text <| "Loading " ++ exercise.title ]
 
 
 exerciseAt : Int -> Exercise
@@ -605,7 +614,7 @@ exerciseAt exerciseNumber =
 mainPane : Model -> Html Msg
 mainPane model =
     div [ style "flex" "1", style "padding" "20px" ]
-        [ case model.currentExercise of
+        (case model.currentExercise of
             Just 1 ->
                 mapMain model 1 .ex01Model Ex01.view Ex01Msg
 
@@ -658,14 +667,13 @@ mainPane model =
                 mapMain model 57 .ex57Model Ex57.view Ex57Msg
 
             Just n ->
-                text ("Exercise " ++ fromInt n ++ " - Not implemented yet")
+                [ text ("Exercise " ++ fromInt n ++ " - Not implemented yet") ]
 
             Nothing ->
-                div []
-                    [ h1 [] [ text "Welcome to Elm 57 Exercises" ]
-                    , p [] [ text "Select an exercise from the left panel." ]
-                    ]
-        ]
+                [ h1 [] [ text "Welcome to Elm 57 Exercises" ]
+                , p [] [ text "Select an exercise from the left panel." ]
+                ]
+        )
 
 
 
