@@ -1,5 +1,16 @@
 module Pages.Ex57 exposing (Model, Msg(..), init, update, view)
 
+-- # Ex57: Trivia App
+--
+-- - Load questions, correct answers, and wrong answers from a local file.
+-- - Randomize both:
+--   - Question selection.
+--   - Answer order (correct + distractors).
+-- - Ends on first incorrect answer or all correct.
+-- - Track number of correct answers.
+-- ## Constraint:
+-- - Use a local file (not Redis or RDB) to store the question data.
+
 import Array
 import Html exposing (Html, button, div, input, label, li, ol, text)
 import Html.Attributes exposing (checked, class, disabled, for, id, name, type_, value)
