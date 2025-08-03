@@ -49,7 +49,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex28 [x] [Adding Numbers](src/Pages/Ex28.elm)        | | | 3(2)|
 | Ex29 [ ] [Handling Bad Input](src/Pages/Ex29.elm)    | | | |
 | Ex30 [ ] [Multiplication Table](src/Pages/Ex30.elm)  | | | |
-| Ex31 [ ] [Karvonen Heart Rate](src/Pages/Ex31.elm)   | | | |
+| Ex31 [x] [Karvonen Heart Rate](src/Pages/Ex31.elm)   | | | |
 | Ex32 [ ] [Guess the Number Game](src/Pages/Ex32.elm) | | | |
 #### Chapter 7: Data Structures
 | Exercise | dependencies | Memo  | Lv.  |

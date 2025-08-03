@@ -268,6 +268,25 @@ pre.error-message {
 }
 
 // Additional styles for specific exercises
+.ex31 {
+  &__table {
+    margin-top: 20px;
+    width: 300px;
+  }
+
+  &__tr:nth-child(even) {
+    background-color: $table-row-alt;
+  }
+
+  &__th-intensity {
+    width: 50%
+  }
+
+  &__th-rate {
+    width: 50%
+  }
+}
+
 .ex57 {
   &__disabled-text {
     color: $disabled-color;

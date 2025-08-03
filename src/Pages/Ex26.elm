@@ -75,6 +75,7 @@ type Msg
 -- UPDATE
 
 
+-- TODO: duplicated code with Ex31.elm
 convertStringToRM : String -> ResultMaybe String Int
 convertStringToRM str =
     case String.toInt str of
@@ -89,6 +90,7 @@ convertStringToRM str =
                 Err str
 
 
+-- TODO: duplicated code with Ex31.elm
 withNone : Model -> ( Model, Cmd Msg )
 withNone model =
     ( model, Cmd.none )
