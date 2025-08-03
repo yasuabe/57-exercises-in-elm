@@ -1,8 +1,9 @@
-module Pages.Ex03 exposing (Model, Msg(..), init, update, view)
+module Pages.Ex03 exposing (Model, Msg(..), init, makeOutput, update, view)
 
-import Common.Events exposing (onEnter)
-import Html exposing (Html, div, input, span, text)
-import Html.Attributes exposing (placeholder, value)
+import Common.Events exposing (withNone)
+import Common.MaybeEx exposing (fromMaybe, toMaybe)
+import Html exposing (Html, div, input, kbd, span, text)
+import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onInput)
 
 
@@ -11,18 +12,22 @@ import Html.Events exposing (onInput)
 
 
 type alias Model =
-    { quote : String
-    , author : String
-    , message : String
+    { quote : Maybe String
+    , author : Maybe String
     }
 
 
 init : Model
 init =
-    { quote = ""
-    , author = ""
-    , message = ""
-    }
+    Model Nothing Nothing
+
+
+makeOutput : Model -> Maybe String
+makeOutput model =
+    Maybe.map2
+        (\author quote -> author ++ " says, " ++ "\"" ++ quote ++ "\"")
+        model.author
+        model.quote
 
 
 
@@ -32,7 +37,6 @@ init =
 type Msg
     = QuoteChanged String
     | AuthorChanged String
-    | Submit
 
 
 
@@ -43,50 +47,54 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AuthorChanged str ->
-            ( { model | author = str }, Cmd.none )
+            withNone { model | author = toMaybe str }
 
         QuoteChanged str ->
-            ( { model | quote = str }, Cmd.none )
-
-        Submit ->
-            ( { model | message = makeOutput model }, Cmd.none )
-
-
-makeOutput : Model -> String
-makeOutput model =
-    if model.quote /= "" && model.author /= "" then
-        model.author ++ " says, " ++ "\"" ++ model.quote ++ "\""
-
-    else
-        ""
+            withNone { model | quote = toMaybe str }
 
 
 
 -- VIEW
 
 
+viewOutput : Model -> Html Msg
+viewOutput model =
+    case makeOutput model of
+        Just output ->
+            div [ class "output" ] [ text output ]
+
+        Nothing ->
+            div [ class "output" ]
+                [ text "Enter both fields and press "
+                , kbd [] [ text "Enter" ]
+                ]
+
+
+viewInputLine : String -> String -> Maybe String -> (String -> Msg) -> Html Msg
+viewInputLine label placeholder_ value_ onChange =
+    div [ class "inputline" ]
+        [ span [ class "inputline__prompt", style "width" "24%" ] [ text label ]
+        , input
+            [ placeholder placeholder_
+            , value <| fromMaybe value_
+            , onInput onChange
+            ]
+            []
+        ]
+
+
 view : Model -> Html Msg
 view model =
-    div []
-        [ div []
-            [ span [] [ text "What is the quote? " ]
-            , input
-                [ placeholder "Enter a quote"
-                , value model.quote
-                , onInput QuoteChanged
-                , onEnter Submit
-                ]
-                []
-            ]
-        , div []
-            [ span [] [ text "Who said it? " ]
-            , input
-                [ placeholder "Enter the author"
-                , value model.author
-                , onInput AuthorChanged
-                , onEnter Submit
-                ]
-                []
-            ]
-        , div [] [ text model.message ]
+    div [ style "width" "100%" ]
+        [ viewInputLine
+            "What is the quote? "
+            "Enter a quote"
+            model.quote
+            QuoteChanged
+        , viewInputLine
+            "Who said it? "
+            "Enter the author"
+            model.author
+            AuthorChanged
+        , viewOutput model
         ]

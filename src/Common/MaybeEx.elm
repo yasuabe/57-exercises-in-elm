@@ -28,3 +28,16 @@ fromFilter predicate value =
 
     else
         Nothing
+
+
+-- Maybe String
+
+toMaybe : String -> Maybe String
+toMaybe =
+    fromFilter (String.isEmpty >> not)
+
+
+fromMaybe : Maybe String -> String
+fromMaybe =
+    Maybe.withDefault ""
+
