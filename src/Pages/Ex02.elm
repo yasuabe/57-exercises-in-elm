@@ -1,28 +1,38 @@
-module Pages.Ex02 exposing (Model, Msg(..), init, update, view)
+module Pages.Ex02 exposing (Model, Msg(..), init, makeOutput, update, view)
 
-import Common.Events exposing (onEnter)
-import Html exposing (Html, div, input, span, text)
-import Html.Attributes exposing (placeholder, value)
-import Html.Events exposing (onInput)
+import Common.Events exposing (onEnter2)
+import Common.MaybeEx as ME
+import Html exposing (Html, div, input, kbd, span, text)
+import Html.Attributes exposing (class, placeholder, value)
 import String exposing (fromInt, length)
 
 
 
--- (fromInt, length)
 -- MODEL
 
 
 type alias Model =
-    { input : String
-    , message : String
-    }
+    Maybe String
 
 
 init : Model
 init =
-    { input = ""
-    , message = ""
-    }
+    Nothing
+
+
+fromString : String -> Model
+fromString =
+    ME.fromFilter (String.isEmpty >> not)
+
+
+toString : Model -> String
+toString =
+    Maybe.withDefault ""
+
+
+makeOutput : Model -> Maybe String
+makeOutput =
+    Maybe.map (\s -> s ++ " has " ++ fromInt (length s) ++ " characters.")
 
 
 
@@ -30,8 +40,7 @@ init =
 
 
 type Msg
-    = InputChanged String
-    | Submit
+    = Submit String
 
 
 
@@ -39,40 +48,40 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg _ =
     case msg of
-        InputChanged str ->
-            ( { model | input = str }, Cmd.none )
-
-        Submit ->
-            ( { model | message = makeOutput model.input }, Cmd.none )
-
-
-makeOutput : String -> String
-makeOutput input =
-    if input /= "" then
-        input ++ " has " ++ fromInt (length input) ++ " characters."
-
-    else
-        ""
+        Submit str ->
+            ( fromString str, Cmd.none )
 
 
 
 -- VIEW
 
 
+viewOutput : Model -> Html Msg
+viewOutput model =
+    case makeOutput model of
+        Just countResult ->
+            div [ class "output" ] [ text countResult ]
+
+        Nothing ->
+            div [ class "output" ]
+                [ text "Enter some string and press "
+                , kbd [] [ text "Enter" ]
+                ]
+
+
 view : Model -> Html Msg
 view model =
     div []
-        [ div []
-            [ span [] [ text "What is the input string? " ]
+        [ div [ class "inputline" ]
+            [ span [ class "inputline__prompt" ] [ text "What is the input string? " ]
             , input
                 [ placeholder "eg. Homer"
-                , value model.input
-                , onInput InputChanged
-                , onEnter Submit
+                , value <| toString model
+                , onEnter2 Submit
                 ]
                 []
             ]
-        , div [] [ text model.message ]
+        , viewOutput model
         ]

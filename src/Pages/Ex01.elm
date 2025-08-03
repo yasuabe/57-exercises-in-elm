@@ -1,4 +1,4 @@
-module Pages.Ex01 exposing (Model, Msg(..), init, update, view)
+module Pages.Ex01 exposing (Model, Msg(..), init, update, view, makeGreeting)
 
 import Common.Events exposing (onEnter2)
 import Common.MaybeEx as ME
