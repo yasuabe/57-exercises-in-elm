@@ -19,7 +19,7 @@ suite =
                     ]
             ]
         , describe "generateTable"
-            [ test "should generate list of intensity target heart rates" <|
+            [ test "should generate a list of target heart rates for different intensities" <|
                 \_ ->
                     generateTable 65 22
                         |> List.map (Tuple.mapBoth round round)

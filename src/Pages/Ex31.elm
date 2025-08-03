@@ -129,15 +129,10 @@ viewInputField title placeholder_ inputHandler modelValue toString =
                 (always <| style "background-color" "inherit")
                 (always <| class "error-message")
     in
-    div [ class "inputline", style "width" "100%" ]
-        [ span
-            [ style "width" "20%"
-            , style "display" "inline-block"
-            ]
-            [ text title ]
+    div [ class "inputline" ]
+        [ span [ class "ex31__inputline-label" ] [ text title ]
         , input
-            [ style "text-align" "right"
-            , style "width" "104px"
+            [ class "inputline__number ex31__inputline-input"
             , placeholder placeholder_
             , onInput inputHandler
             , value (toString modelValue)
@@ -165,44 +160,31 @@ viewIntField title placeholder_ inputHandler modelValue =
 viewIntensityRange : (String -> msg) -> ResultMaybe String Int -> Html msg
 viewIntensityRange inputHandler intensity =
     div [ class "inputline", style "width" "100%" ]
-        [ span
-            [ style "width" "20%"
-            , style "display" "inline-block"
+        [ span [ class "ex31__inputline-label" ] [ text "Intensity:" ]
+        , div
+            [ class "ex31__intensity-range-component" ]
+            [ input
+                [ type_ "range"
+                , class "ex31__intensity-range"
+                , onInput inputHandler
+                , HA.min "55"
+                , HA.max "95"
+                , HA.step "5"
+                , value (toStringFromRMInt intensity)
+                ]
+                []
+            , span
+                [ class "ex31__intensity" ]
+                [ text (toStringFromRMInt intensity ++ "%") ]
             ]
-            [ text "Intensity:" ]
-        , input
-            [ type_ "range"
-            , style "vertical-align" "middle"
-            , style "width" "78px"
-            , onInput inputHandler
-            , HA.min "55"
-            , HA.max "95"
-            , HA.step "5"
-            , value (toStringFromRMInt intensity)
-            ]
-            []
-        , span
-            [ style "display" "inline-block"
-            , style "text-align" "right"
-            , style "font-weight" "normal"
-            ]
-            [ text (toStringFromRMInt intensity ++ "%") ]
         ]
 
 
 viewHeartRateRow : String -> Html msg
 viewHeartRateRow heartRate =
     div [ class "inputline", style "width" "100%" ]
-        [ span
-            [ style "width" "20%"
-            , style "display" "inline-block"
-            ]
-            [ text "Heart Rate:" ]
-        , span
-            [ style "text-align" "right"
-            , style "width" "104px"
-            ]
-            [ text heartRate ]
+        [ span [ class "ex31__inputline-label" ] [ text "Heart Rate:" ]
+        , span [ class "ex31__heart-rate" ] [ text heartRate ]
         ]
 
 
@@ -227,9 +209,7 @@ viewTable model =
     case rmPairs of
         Ok (Just pairs) ->
             table [ class "ex31__table" ]
-                [ Html.tbody []
-                    (tableHeader :: List.map makeTr pairs)
-                ]
+                [ Html.tbody [] (tableHeader :: List.map makeTr pairs) ]
 
         _ ->
             div [ style "display" "none" ] []
@@ -263,8 +243,8 @@ view : Model -> Html Msg
 view model =
     div [ style "width" "100%" ]
         [ div []
-            [ viewIntField "Resting Pulse:" "eg. 65" RestingHRChanged model.restingHR
-            , viewIntField "Age:" "eg. 22" AgeChanged model.age
+            [ viewIntField "Resting Pulse:" "e.g. 65" RestingHRChanged model.restingHR
+            , viewIntField "Age:" "e.g. 22" AgeChanged model.age
             , viewIntensityRange IntensityChanged model.intensity
             ]
         , div []

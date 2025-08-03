@@ -269,6 +269,36 @@ pre.error-message {
 
 // Additional styles for specific exercises
 .ex31 {
+  &__inputline-label {
+    width: 20%;
+    display: inline-block;
+    margin-right: 16px;
+  }
+  &__inputline-input {
+    width: 104px;
+  }
+
+  &__intensity-range-component {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  &__intensity-range {
+    width: 104px;
+    display: block;
+  }
+
+  &__intensity {
+    font-size: $font-size-smaller;
+    display: block;
+    margin-top: 2px;
+    text-align: center;
+    font-weight: normal;
+  }
+
+  &__heart-rate {
+    font-weight: normal;
+  }
+
   &__table {
     margin-top: 20px;
     width: 300px;

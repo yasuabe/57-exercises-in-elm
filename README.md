@@ -49,7 +49,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex28 [x] [Adding Numbers](src/Pages/Ex28.elm)        | | | 3(2)|
 | Ex29 [ ] [Handling Bad Input](src/Pages/Ex29.elm)    | | | |
 | Ex30 [ ] [Multiplication Table](src/Pages/Ex30.elm)  | | | |
-| Ex31 [x] [Karvonen Heart Rate](src/Pages/Ex31.elm)   | | | |
+| Ex31 [x] [Karvonen Heart Rate](src/Pages/Ex31.elm)   | elm-community/basics-extra | range control | 3(2)|
 | Ex32 [ ] [Guess the Number Game](src/Pages/Ex32.elm) | | | |
 #### Chapter 7: Data Structures
 | Exercise | dependencies | Memo  | Lv.  |
@@ -110,6 +110,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 - [elm/random](https://package.elm-lang.org/packages/elm/random/1.0.0/)
 - [elm/time](https://package.elm-lang.org/packages/elm/time/1.0.0/)
 - [elm/url](https://package.elm-lang.org/packages/elm/url/1.0.0/)
+- [elm-community/basics-extra](https://package.elm-lang.org/packages/elm-community/basics-extra/4.1.0/)
 - [elm-community/list-extra](https://package.elm-lang.org/packages/elm-community/list-extra/8.7.0/)
 - [elm-community/maybe-extra](https://package.elm-lang.org/packages/elm-community/maybe-extra/5.3.0/)
 - [elm-community/random-extra](https://package.elm-lang.org/packages/elm-community/random-extra/3.2.0/)
