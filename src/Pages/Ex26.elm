@@ -3,18 +3,20 @@
 -- - Prompt the user for credit card balance, APR (as a percentage), and monthly payment.
 -- - Calculate how many months are needed to pay off the balance using the given formula.
 -- - Internally convert APR to a daily rate.
--- - Use a function calculateMonthsUntilPaidOff(balance, apr, payment) to perform the calculation.
+-- - Use a function `calculateMonthsUntilPaidOff(balance, apr, payment)` to perform the calculation.
 -- - Round up any fractional result to the next whole number.
 -- - Do not access input values outside the function.
 
 
 module Pages.Ex26 exposing (Model, Msg(..), calculateMonthsUntilPaidOff, init, update, view)
 
+import Common.ResultEx as RE
 import Common.ResultMaybe exposing (ResultMaybe, map3)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, style, value)
-import Html.Events exposing (on, onBlur, onInput, targetValue)
-import Json.Decode as Decode
+import Html.Events exposing (onInput)
+import Maybe.Extra as MX
+import Result.Extra as RX
 
 
 
@@ -109,37 +111,25 @@ update msg model =
 -- VIEW
 
 
-g : ResultMaybe String Int -> String
-
-
-
--- TODO: rename
-
-
-g result =
-    case result of
-        Ok (Just v) ->
-            String.fromInt v
-
-        Ok Nothing ->
-            ""
-
-        Err str ->
-            str
+toFieldValue : ResultMaybe String Int -> String
+toFieldValue =
+    Result.map (MX.unwrap "" String.fromInt) >> RX.merge
 
 
 backgroundColor : ResultMaybe String a -> Html.Attribute msg
-backgroundColor value =
-    case value of
-        Ok _ ->
-            style "color" "inherit"
-
-        Err _ ->
-            class "error-message"
+backgroundColor =
+    RE.either
+        (always <| style "background-color" "inherit")
+        (always <| class "error-message")
 
 
-viewInputField : String -> String -> (String -> msg) -> ResultMaybe String Int -> Html msg
-viewInputField title placeholderMsg onInputHandler modelValue =
+viewInputField :
+    String
+    -> String
+    -> (String -> msg)
+    -> ResultMaybe String Int
+    -> Html msg
+viewInputField title placeholder_ inputHandler modelValue =
     div [ class "inputline", style "width" "100%" ]
         [ span
             [ style "width" "30%", style "display" "inline-block" ]
@@ -147,9 +137,9 @@ viewInputField title placeholderMsg onInputHandler modelValue =
         , input
             [ style "text-align" "right"
             , style "width" "100px"
-            , placeholder placeholderMsg
-            , onInput onInputHandler
-            , value (g modelValue)
+            , placeholder placeholder_
+            , onInput inputHandler
+            , value (toFieldValue modelValue)
             , backgroundColor modelValue
             ]
             []
@@ -161,7 +151,7 @@ viewOutputArea model =
     let
         output months =
             if isNaN (toFloat months) then
-                "Please enter valid numbers."
+                "⚠️ Invalid combination. Please review your values."
 
             else
                 "It will take you "
@@ -183,8 +173,8 @@ viewOutputArea model =
 view : Model -> Html Msg
 view model =
     div [ style "width" "100%" ]
-        [ viewInputField "Credit Card Balance" "eg. 5000" BalanceChanged model.balance
-        , viewInputField "APR (as a percent)" "eg. 12" APRChanged model.apr
-        , viewInputField "Monthly Payment" "eg. 100" PaymentChanged model.payment
+        [ viewInputField "Credit Card Balance:" "eg. 5000" BalanceChanged model.balance
+        , viewInputField "APR (as a percent):" "eg. 12" APRChanged model.apr
+        , viewInputField "Monthly Payment:" "eg. 100" PaymentChanged model.payment
         , viewOutputArea model
         ]

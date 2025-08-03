@@ -41,6 +41,7 @@ body {
   font-family: Arial, sans-serif;
   padding: 20px;
 }
+
 main {
   display: flex;
   flex-direction: row;
@@ -184,6 +185,7 @@ pre.error-message {
   margin: 10px 0;
   line-height: 2;
 }
+
 .error-message {
   color: red;
 }
@@ -270,29 +272,36 @@ pre.error-message {
   &__disabled-text {
     color: $disabled-color;
   }
+
   &__correct-answer {
     color: #00ff00;
     font-weight: bold;
   }
+
   &__wrong-answer {
     color: red;
     font-weight: bold;
   }
+
   &__missed-correct-answer {
     color: #338833;
   }
+
   &__wrong-answer::after {
     content: "← wrong";
     font-size: 80%;
   }
+
   &__missed-correct-answer::after {
     content: "← correct";
     font-size: 80%;
   }
+
   &__correct-question {
     color: #22aa22;
     font-weight: normal;
   }
+
   &__wrong-question {
     color: red;
     font-weight: normal;

@@ -41,7 +41,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | -------- | -------------| ----- | -----:|
 | Ex24 [x] [Anagram Checker](src/Pages/Ex24.elm)                 | | | 3(2) |
 | Ex25 [ ] [Password Strength Indicator](src/Pages/Ex25.elm)     | | | |
-| Ex26 [ ] [Months to Pay Off a Credit Card](src/Pages/Ex26.elm) | | | |
+| Ex26 [x] [Months to Pay Off a Credit Card](src/Pages/Ex26.elm) | elm-community/result-extra | | 3(2) |
 | Ex27 [ ] [Validating Inputs](src/Pages/Ex27.elm)               | | | |
 #### Chapter 6: Repetition
 | Exercise | dependencies | Memo  | Lv.  |
@@ -79,7 +79,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex49 [ ] [Flickr Photo Search](src/Pages/Ex49.elm)            | | | |
 | Ex50 [ ] [Movie Recommendations](src/Pages/Ex50.elm)          | | | |
 | Ex51 [ ] [Pushing Notes to Firebase](src/Pages/Ex51.elm)      | | | |
-| Ex52 [x] [Creating Your Own Time Service](src/Pages/Ex52.elm)    |rtfeldman/elm-iso8601-date-strings | JavaScript Interop(port), Json encode/decode, time formatting, BroadcastChannel (JavaScript)|4(3) |
+| Ex52 [x] [Creating Your Own Time Service](src/Pages/Ex52.elm)    rtfeldman/elm-iso8601-date-strings | JavaScript Interop(port), Json encode/decode, time formatting, BroadcastChannel (JavaScript)|4(3) |
 
 #### Chapter 10: Full Programs
 | Exercise | dependencies | Memo  | Lv.  |
@@ -102,8 +102,22 @@ A personal project to solve the exercises from the book *Exercises for Programme
 
 ### Dependency
 - [elm/http](https://package.elm-lang.org/packages/elm/http/2.0.0/)
+- [elm/browser](https://package.elm-lang.org/packages/elm/browser/1.0.2/)
+- [elm/core](https://package.elm-lang.org/packages/elm/core/1.0.5/)
+- [elm/file](https://package.elm-lang.org/packages/elm/file/1.0.5/)
+- [elm/html](https://package.elm-lang.org/packages/elm/html/1.0.0/)
+- [elm/json](https://package.elm-lang.org/packages/elm/json/1.1.3/)
+- [elm/random](https://package.elm-lang.org/packages/elm/random/1.0.0/)
+- [elm/time](https://package.elm-lang.org/packages/elm/time/1.0.0/)
+- [elm/url](https://package.elm-lang.org/packages/elm/url/1.0.0/)
+- [elm-community/list-extra](https://package.elm-lang.org/packages/elm-community/list-extra/8.7.0/)
+- [elm-community/maybe-extra](https://package.elm-lang.org/packages/elm-community/maybe-extra/5.3.0/)
+- [elm-community/random-extra](https://package.elm-lang.org/packages/elm-community/random-extra/3.2.0/)
+- [elm-community/result-extra](https://package.elm-lang.org/packages/elm-community/result-extra/2.4.0/)
 - [fabiommendes/elm-hour](https://package.elm-lang.org/packages/fabiommendes/elm-hour/1.0.1/)
 - [justinmimbs/date](https://package.elm-lang.org/packages/justinmimbs/date/4.1.0/)
+- [myrho/elm-round](https://package.elm-lang.org/packages/myrho/elm-round/1.0.5/)
+- [rtfeldman/elm-iso8601-date-strings](https://package.elm-lang.org/packages/rtfeldman/elm-iso8601-date-strings/1.1.4/)
 
 ## How to compile
 ```
