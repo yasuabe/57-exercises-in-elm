@@ -1,9 +1,9 @@
 module Pages.Ex02 exposing (Model, Msg(..), init, update, view)
 
-import Common.Events exposing (submitOnEnter)
+import Common.Events exposing (onEnter)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (placeholder, value)
-import Html.Events exposing (on, onInput)
+import Html.Events exposing (onInput)
 import String exposing (fromInt, length)
 
 
@@ -70,7 +70,7 @@ view model =
                 [ placeholder "eg. Homer"
                 , value model.input
                 , onInput InputChanged
-                , on "keydown" <| submitOnEnter Submit
+                , onEnter Submit
                 ]
                 []
             ]

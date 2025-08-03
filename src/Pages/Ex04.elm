@@ -1,9 +1,9 @@
 module Pages.Ex04 exposing (Model, Msg(..), init, update, view)
 
-import Common.Events exposing (submitOnEnter)
+import Common.Events exposing (onEnter)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (placeholder, value)
-import Html.Events exposing (on, onInput)
+import Html.Events exposing (onInput)
 import String exposing (isEmpty)
 
 
@@ -92,7 +92,7 @@ view model =
                 [ placeholder "eg. dog"
                 , value model.noun
                 , onInput NounChanged
-                , on "keydown" <| submitOnEnter Submit
+                , onEnter Submit
                 ]
                 []
             ]
@@ -102,7 +102,7 @@ view model =
                 [ placeholder "eg. walk"
                 , value model.verb
                 , onInput VerbChanged
-                , on "keydown" <| submitOnEnter Submit
+                , onEnter Submit
                 ]
                 []
             ]
@@ -112,7 +112,7 @@ view model =
                 [ placeholder "eg. blue"
                 , value model.adjective
                 , onInput AdjectiveChanged
-                , on "keydown" <| submitOnEnter Submit
+                , onEnter Submit
                 ]
                 []
             ]
@@ -122,7 +122,7 @@ view model =
                 [ placeholder "bg. quickly"
                 , value model.adverb
                 , onInput AdverbChanged
-                , on "keydown" <| submitOnEnter Submit
+                , onEnter Submit
                 ]
                 []
             ]

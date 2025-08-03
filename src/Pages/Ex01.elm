@@ -1,9 +1,9 @@
 module Pages.Ex01 exposing (Model, Msg(..), init, update, view)
 
-import Common.Events exposing (submitOnEnter)
-import Html exposing (Html, div, input, span, text)
-import Html.Attributes exposing (placeholder, value, class)
-import Html.Events exposing (on, onInput)
+import Common.Events exposing (onEnter2)
+import Common.MaybeEx as ME
+import Html exposing (Html, div, input, kbd, span, text)
+import Html.Attributes exposing (class, placeholder, value)
 
 
 
@@ -11,25 +11,31 @@ import Html.Events exposing (on, onInput)
 
 
 type alias Model =
-    { input : String
-    , message : String
-    }
+    Maybe String
 
 
 init : Model
 init =
-    { input = ""
-    , message = ""
-    }
+    Nothing
 
 
+fromString : String -> Model
+fromString =
+    ME.fromFilter (String.isEmpty >> not)
 
--- MSG
+
+toString : Model -> String
+toString =
+    Maybe.withDefault ""
+
+
+makeGreeting : Model -> Maybe String
+makeGreeting =
+    Maybe.map (\input -> "Hello, " ++ input ++ ", nice to meet you!")
 
 
 type Msg
-    = InputChanged String
-    | Submit
+    = Submit String
 
 
 
@@ -37,40 +43,37 @@ type Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg _ =
     case msg of
-        InputChanged str ->
-            ( { model | input = str }, Cmd.none )
-
-        Submit ->
-            ( { model
-                | message =
-                    if model.input /= "" then
-                        "Hello, " ++ model.input ++ ", nice to meet you!"
-
-                    else
-                        ""
-              }
-            , Cmd.none
-            )
+        Submit str ->
+            ( fromString str, Cmd.none )
 
 
+viewOutput : Model -> Html Msg
+viewOutput model =
+    case makeGreeting model of
+        Just greeting ->
+            div [ class "output" ] [ text greeting ]
 
--- VIEW
+        Nothing ->
+            div [ class "output" ]
+                [ text "Enter your name and press "
+                , kbd [] [ text "Enter" ]
+                ]
 
 
 view : Model -> Html Msg
 view model =
     div []
         [ div [ class "inputline" ]
-            [ span [] [ text "What is your name? " ]
+            [ span [ class "inputline__prompt" ] [ text "What is your name? " ]
             , input
-                [ placeholder "Enter your name"
-                , value model.input
-                , onInput InputChanged
-                , on "keydown" <| submitOnEnter Submit
+                [ class "inputline__text"
+                , placeholder "e.g. Brian"
+                , value <| toString model
+                , onEnter2 Submit
                 ]
                 []
             ]
-        , div [] [ text model.message ]
+        , viewOutput model
         ]

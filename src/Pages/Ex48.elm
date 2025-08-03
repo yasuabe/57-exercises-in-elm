@@ -1,6 +1,6 @@
 module Pages.Ex48 exposing (Model, Msg(..), init, kelvinToFahrenheit, update, view)
 
-import Common.Events exposing (submitOnEnter)
+import Common.Events exposing (onEnter)
 import Common.HttpEx exposing (errorToString)
 import Common.Math exposing (roundToDecimals)
 import Common.ResultMaybe as RM exposing (ResultMaybe)
@@ -9,7 +9,7 @@ import Common.UI exposing (viewOutputBlock)
 import Dict
 import Html exposing (Html, button, div, fieldset, input, label, legend, pre, text)
 import Html.Attributes exposing (checked, class, for, id, name, placeholder, style, type_, value)
-import Html.Events exposing (on, onClick, onInput)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as D
 import Json.Encode as E
@@ -195,7 +195,7 @@ viewInputBlock apiKey =
                         , class "inputline__text"
                         , placeholder "eg. Kanagawa"
                         , onInput UpdateLocation
-                        , on "keydown" <| submitOnEnter FetchData
+                        , onEnter FetchData
                         ]
                         [ text "Fetch" ]
                     , button [ class "inputline__button", onClick FetchData ] [ text "Fetch" ]

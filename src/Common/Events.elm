@@ -1,18 +1,45 @@
-module Common.Events exposing (submitOnEnter)
+module Common.Events exposing (onEnter, onEnter2)
 
-import Json.Decode as Decode
-
-
-submitOnEnter : msg -> Decode.Decoder msg
-submitOnEnter submit =
-    Decode.field "key" Decode.string
-        |> Decode.andThen (keyDecoder submit)
+import Html exposing (Attribute)
+import Html.Events exposing (on, targetValue)
+import Json.Decode as Decode exposing (andThen, fail, field, string, succeed)
 
 
-keyDecoder : msg -> String -> Decode.Decoder msg
-keyDecoder submit key =
-    if key == "Enter" then
-        Decode.succeed submit
+enterKeyDecoder : msg -> Decode.Decoder msg
+enterKeyDecoder msg =
+    let
+        decoder key =
+            if key == "Enter" then
+                succeed msg
 
-    else
-        Decode.fail "Not Enter key"
+            else
+                fail "Not the Enter key"
+    in
+    field "key" string |> andThen decoder
+
+
+
+-- TODO: remove after all usages are removed
+
+
+onEnter : msg -> Attribute msg
+onEnter msg =
+    on "keydown" <| enterKeyDecoder msg
+
+
+enterKeyDecoder2 : (String -> msg) -> Decode.Decoder msg
+enterKeyDecoder2 msg =
+    let
+        decoder key =
+            if key == "Enter" then
+                Decode.map msg targetValue
+
+            else
+                fail "Not the Enter key"
+    in
+    field "key" string |> andThen decoder
+
+
+onEnter2 : (String -> msg) -> Attribute msg
+onEnter2 msg =
+    on "keydown" <| enterKeyDecoder2 msg

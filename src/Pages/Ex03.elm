@@ -1,9 +1,9 @@
 module Pages.Ex03 exposing (Model, Msg(..), init, update, view)
 
-import Common.Events exposing (submitOnEnter)
+import Common.Events exposing (onEnter)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (placeholder, value)
-import Html.Events exposing (on, onInput)
+import Html.Events exposing (onInput)
 
 
 
@@ -74,7 +74,7 @@ view model =
                 [ placeholder "Enter a quote"
                 , value model.quote
                 , onInput QuoteChanged
-                , on "keydown" <| submitOnEnter Submit
+                , onEnter Submit
                 ]
                 []
             ]
@@ -84,7 +84,7 @@ view model =
                 [ placeholder "Enter the author"
                 , value model.author
                 , onInput AuthorChanged
-                , on "keydown" <| submitOnEnter Submit
+                , onEnter Submit
                 ]
                 []
             ]

@@ -13,12 +13,12 @@
 module Pages.Ex33 exposing (Model, Msg(..), init, update, view)
 
 import Array exposing (Array, fromList, get)
-import Common.Events exposing (submitOnEnter)
+import Common.Events exposing (onEnter)
 import Common.ResultMaybe exposing (ResultMaybe)
 import Common.UI exposing (viewInputFieldWithHandler, viewOutputBlock)
 import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
-import Html.Events exposing (on, onInput)
+import Html.Events exposing (onInput)
 import Random
 
 
@@ -93,7 +93,7 @@ view model =
         [ viewInputFieldWithHandler
             "inputline__text"
             [ onInput InputChanged
-            , on "keydown" <| submitOnEnter Submit
+            , onEnter Submit
             ]
             "What's your question? "
             "e.g. Will I be rich and famous? "

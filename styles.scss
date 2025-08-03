@@ -19,7 +19,7 @@ $font-size-larger: 18px;
   border-radius: 5px;
   background-color: $bg-color;
   color: white;
-  font-size: 16px;
+  font-size: $font-size-base;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -64,6 +64,18 @@ input [type="text"] {
 
 input [type="radio"] {
   vertical-align: text-top;
+}
+
+kbd {
+  display: inline-block;
+  padding: 1px 4px;
+  font-size: $font-size-smaller;
+  font-weight: 700;
+  background-color: #eee;
+  border-radius: 3px;
+  color: $text-color;
+  margin-left: 3px;
+  line-height: 1;
 }
 
 .left-pane {
