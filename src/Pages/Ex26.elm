@@ -12,12 +12,11 @@ module Pages.Ex26 exposing (Model, Msg(..), calculateMonthsUntilPaidOff, init, u
 
 import Common.CmdEx exposing (withNone)
 import Common.ResultEx as RE
-import Common.ResultMaybe exposing (ResultMaybe, map3)
+import Common.ResultMaybe exposing (ResultMaybe, convertInputToIntField, map3)
+import Common.UI exposing (intToFieldValue)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onInput)
-import Maybe.Extra as MX
-import Result.Extra as RX
 
 
 
@@ -74,44 +73,23 @@ type Msg
 
 
 -- UPDATE
--- TODO: duplicated code with Ex31.elm
-
-
-convertStringToRM : String -> ResultMaybe String Int
-convertStringToRM str =
-    case String.toInt str of
-        Just value ->
-            Ok (Just value)
-
-        Nothing ->
-            if String.isEmpty str then
-                Ok Nothing
-
-            else
-                Err str
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         BalanceChanged value ->
-            withNone { model | balance = convertStringToRM value }
+            withNone { model | balance = convertInputToIntField value }
 
         APRChanged value ->
-            withNone { model | apr = convertStringToRM value }
+            withNone { model | apr = convertInputToIntField value }
 
         PaymentChanged value ->
-            withNone { model | payment = convertStringToRM value }
+            withNone { model | payment = convertInputToIntField value }
 
 
 
 -- VIEW
--- TODO: duplicated code with Ex31.elm
-
-
-toFieldValue : ResultMaybe String Int -> String
-toFieldValue =
-    Result.map (MX.unwrap "" String.fromInt) >> RX.merge
 
 
 backgroundColor : ResultMaybe String a -> Html.Attribute msg
@@ -137,7 +115,7 @@ viewInputField title placeholder_ inputHandler modelValue =
             , style "width" "100px"
             , placeholder placeholder_
             , onInput inputHandler
-            , value (toFieldValue modelValue)
+            , value (intToFieldValue modelValue)
             , backgroundColor modelValue
             ]
             []

@@ -39,20 +39,7 @@ collectErrors2 rm1 rm2 =
 
 parseString : (String -> Maybe a) -> String -> String -> ResultMaybe String a
 parseString converter errMsg str =
-    let
-        trimmed =
-            String.trim str
-    in
-    if String.isEmpty trimmed then
-        Ok Nothing
-
-    else
-        case converter trimmed of
-            Just x ->
-                Ok <| Just x
-
-            Nothing ->
-                Err errMsg
+    convertStringToRM converter (always errMsg) str
 
 
 parseStringToFloat : String -> String -> ResultMaybe String Float
@@ -107,24 +94,6 @@ withDefault default result =
             default
 
 
-
--- TODO: duplicate code with parseString
-
-
-convertStringToRM : (String -> Maybe a) -> (String -> String) -> String -> ResultMaybe String a
-convertStringToRM convert strToErrMsg str =
-    case convert str of
-        Just value ->
-            Ok (Just value)
-
-        Nothing ->
-            if String.isEmpty str then
-                Ok Nothing
-
-            else
-                Err (strToErrMsg str)
-
-
 convertToRM : (from -> Maybe a) -> (from -> Bool) -> (from -> String) -> from -> ResultMaybe String a
 convertToRM convert isEmpty toErrMsg from =
     case convert from of
@@ -139,8 +108,9 @@ convertToRM convert isEmpty toErrMsg from =
                 Err (toErrMsg from)
 
 
-
--- TODO: move to appropriate module
+convertStringToRM : (String -> Maybe a) -> (String -> String) -> String -> ResultMaybe String a
+convertStringToRM convert strToErrMsg str =
+    convertToRM convert String.isEmpty strToErrMsg <| String.trim str
 
 
 convertInputToField : (String -> Maybe a) -> String -> ResultMaybe String a
@@ -151,3 +121,8 @@ convertInputToField convert =
 convertInputToFloatField : String -> ResultMaybe String Float
 convertInputToFloatField =
     convertInputToField (String.trim >> String.toFloat)
+
+
+convertInputToIntField : String -> ResultMaybe String Int
+convertInputToIntField =
+    convertInputToField (String.trim >> String.toInt)

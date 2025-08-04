@@ -1,14 +1,13 @@
 module Pages.Ex31 exposing (Model, Msg(..), calcHeartRate, generateTable, init, update, view)
 
-import Common.CmdEx exposing (withNone)
 import Basics.Extra as BX
+import Common.CmdEx exposing (withNone)
 import Common.ResultEx as RE
-import Common.ResultMaybe as RM exposing (ResultMaybe, map3)
+import Common.ResultMaybe as RM exposing (ResultMaybe, convertInputToIntField, map3)
+import Common.UI exposing (intToFieldValue)
 import Html exposing (Html, div, input, span, table, td, text, th, tr)
 import Html.Attributes as HA exposing (class, placeholder, style, type_, value)
 import Html.Events exposing (onInput)
-import Maybe.Extra as MX
-import Result.Extra as RX
 
 
 
@@ -52,37 +51,18 @@ type Msg
 
 -- UPDATE
 
--- TODO: duplicate
-convertStringToRM : (String -> Maybe a) -> String -> ResultMaybe String a
-convertStringToRM convert str =
-    case convert str of
-        Just value ->
-            Ok (Just value)
-
-        Nothing ->
-            if String.isEmpty str then
-                Ok Nothing
-
-            else
-                Err str
-
-
-convertStringToRMInt : String -> ResultMaybe String Int
-convertStringToRMInt =
-    convertStringToRM String.toInt
-
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         RestingHRChanged str ->
-            withNone { model | restingHR = convertStringToRMInt str }
+            withNone { model | restingHR = convertInputToIntField str }
 
         AgeChanged str ->
-            withNone { model | age = convertStringToRMInt str }
+            withNone { model | age = convertInputToIntField str }
 
         IntensityChanged str ->
-            withNone { model | intensity = convertStringToRMInt str }
+            withNone { model | intensity = convertInputToIntField str }
 
 
 calcHeartRate : Float -> Float -> Float -> Float
@@ -138,11 +118,6 @@ viewInputField title placeholder_ inputHandler modelValue toString =
         ]
 
 
-toStringFromRMInt : ResultMaybe String Int -> String
-toStringFromRMInt =
-    Result.map (MX.unwrap "" String.fromInt) >> RX.merge
-
-
 viewIntField :
     String
     -> String
@@ -150,7 +125,7 @@ viewIntField :
     -> ResultMaybe String Int
     -> Html msg
 viewIntField title placeholder_ inputHandler modelValue =
-    viewInputField title placeholder_ inputHandler modelValue toStringFromRMInt
+    viewInputField title placeholder_ inputHandler modelValue intToFieldValue
 
 
 viewIntensityRange : (String -> msg) -> ResultMaybe String Int -> Html msg
@@ -166,12 +141,12 @@ viewIntensityRange inputHandler intensity =
                 , HA.min "55"
                 , HA.max "95"
                 , HA.step "5"
-                , value (toStringFromRMInt intensity)
+                , value (intToFieldValue intensity)
                 ]
                 []
             , span
                 [ class "ex31__intensity" ]
-                [ text (toStringFromRMInt intensity ++ "%") ]
+                [ text (intToFieldValue intensity ++ "%") ]
             ]
         ]
 

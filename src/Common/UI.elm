@@ -5,6 +5,8 @@ import Html exposing (Attribute, Html, div, input, pre, span, text)
 import Html.Attributes exposing (class, placeholder, readonly, value)
 import Html.Events exposing (onInput)
 import List exposing (map)
+import Maybe.Extra as MX
+import Result.Extra as RX
 
 
 viewInputFieldWithHandler : String -> List (Attribute msg) -> String -> String -> String -> Html msg
@@ -51,3 +53,18 @@ viewOutputBlock output whenEmpty =
         Err messages ->
             pre [ class "output error-message", readonly True ] <|
                 map (\errorMessage -> div [] [ text errorMessage ]) messages
+
+
+toFieldValue : (a -> String) -> ResultMaybe String a -> String
+toFieldValue convert =
+    Result.map (MX.unwrap "" convert) >> RX.merge
+
+
+intToFieldValue : ResultMaybe String Int -> String
+intToFieldValue =
+    toFieldValue String.fromInt
+
+
+floatToFieldValue : ResultMaybe String Float -> String
+floatToFieldValue =
+    toFieldValue String.fromFloat

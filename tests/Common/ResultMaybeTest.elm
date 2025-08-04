@@ -1,8 +1,9 @@
 module Common.ResultMaybeTest exposing (..)
 
-import Common.ResultMaybe exposing (collectErrors, collectErrors2, map, map2, map3, withDefault)
+import Common.ResultMaybe exposing (collectErrors, collectErrors2, map, map2, map3, withDefault, convertStringToRM)
 import Expect exposing (..)
 import Test exposing (..)
+import Common.ResultMaybe exposing (parseString)
 
 
 suite : Test
@@ -68,4 +69,24 @@ suite =
                     Common.ResultMaybe.withDefault "default" (Ok Nothing)
                         |> equal "default"
             ]
+            , describe "convertStringToRM"
+                [ test "convert string to ResultMaybe" <|
+                    \_ ->
+                        convertStringToRM String.toFloat (always "error") " 3.14"
+                            |> equal (Ok <| Just 3.14)
+                , test "return Err if conversion fails" <|
+                    \_ ->
+                        convertStringToRM String.toFloat (\s -> "NG:" ++ s) "invalid"
+                            |> equal (Err "NG:invalid")
+                ]
+            , describe "parseString"
+                [ test "convert string to ResultMaybe" <|
+                    \_ ->
+                        parseString String.toFloat "error" " 3.14"
+                            |> equal (Ok <| Just 3.14)
+                , test "return Err if conversion fails" <|
+                    \_ ->
+                        parseString String.toFloat "NG" "invalid"
+                            |> equal (Err "NG")
+                ]
         ]

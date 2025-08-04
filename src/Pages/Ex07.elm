@@ -14,10 +14,9 @@ import Common.Events exposing (onBlur, onEnter)
 import Common.Math exposing (roundToDecimals)
 import Common.ResultEx as RE
 import Common.ResultMaybe as RM exposing (ResultMaybe, convertInputToFloatField)
+import Common.UI exposing (floatToFieldValue)
 import Html exposing (Html, div, input, span, text, pre)
 import Html.Attributes exposing (class, placeholder, style, value)
-import Maybe.Extra as MX
-import Result.Extra as RX
 
 
 
@@ -89,10 +88,6 @@ roundToTwoDecimals =
 -- VIEW
 
 
-toFieldValue : ResultMaybe String Float -> String
-toFieldValue =
-    Result.map (MX.unwrap "" String.fromFloat) >> RX.merge
-
 
 viewInputLine : String -> String -> ResultMaybe String Float -> (String -> Msg) -> Html Msg
 viewInputLine label placeholder_ value_ onChange =
@@ -108,7 +103,7 @@ viewInputLine label placeholder_ value_ onChange =
             [ class "inputline__number"
             , style "max-width" "75px"
             , placeholder placeholder_
-            , value <| toFieldValue value_
+            , value <| floatToFieldValue value_
             , onEnter onChange
             , onBlur onChange
             , backgroundColor value_
