@@ -1,10 +1,10 @@
-module Pages.Ex04 exposing (Model, Msg(..), init, update, view)
+module Pages.Ex04 exposing (Model, Msg(..), init, update, view, makeOutput)
 
-import Common.Events exposing (onEnter)
-import Html exposing (Html, div, input, span, text)
-import Html.Attributes exposing (placeholder, value)
+import Common.Events exposing (withNone)
+import Common.MaybeEx exposing (fromMaybe, toMaybe)
+import Html exposing (Html, div, input, pre, span, text)
+import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onInput)
-import String exposing (isEmpty)
 
 
 
@@ -12,27 +12,20 @@ import String exposing (isEmpty)
 
 
 type alias Model =
-    { noun : String
-    , verb : String
-    , adjective : String
-    , adverb : String
-    , message : String
+    { noun : Maybe String
+    , verb : Maybe String
+    , adjective : Maybe String
+    , adverb : Maybe String
     }
 
 
 init : Model
 init =
-    { noun = ""
-    , verb = ""
-    , adjective = ""
-    , adverb = ""
-    , message = ""
+    { noun = Nothing
+    , verb = Nothing
+    , adjective = Nothing
+    , adverb = Nothing
     }
-
-
-toStrings : Model -> List String
-toStrings m =
-    [ m.noun, m.verb, m.adjective, m.adverb ]
 
 
 
@@ -44,7 +37,6 @@ type Msg
     | VerbChanged String
     | AdjectiveChanged String
     | AdverbChanged String
-    | Submit
 
 
 
@@ -55,76 +47,59 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NounChanged str ->
-            ( { model | noun = str }, Cmd.none )
+            withNone { model | noun = toMaybe str }
 
         VerbChanged str ->
-            ( { model | verb = str }, Cmd.none )
+            withNone { model | verb = toMaybe str }
 
         AdjectiveChanged str ->
-            ( { model | adjective = str }, Cmd.none )
+            withNone { model | adjective = toMaybe str }
 
         AdverbChanged str ->
-            ( { model | adverb = str }, Cmd.none )
-
-        Submit ->
-            ( { model | message = makeOutput model }, Cmd.none )
+            withNone { model | adverb = toMaybe str }
 
 
-makeOutput : Model -> String
+makeOutput : Model -> Maybe String
 makeOutput model =
-    if toStrings model |> List.any isEmpty then
-        ""
+    Maybe.map4
+        (\n v a adv ->
+            "Do you " ++ v ++ " your " ++ a ++ " " ++ n ++ " " ++ adv ++ "?\nThat's hilarious!"
+        )
+        model.noun
+        model.verb
+        model.adjective
+        model.adverb
 
-    else
-        "Do you " ++ model.verb ++ " your " ++ model.adjective ++ " " ++ model.noun ++ " " ++ model.adverb ++ "? That's hilarious!"
+
+viewInputLine : String -> String -> (String -> Msg) -> Maybe String -> Html Msg
+viewInputLine label placeholder_ onChange value_ =
+    div [ class "inputline" ]
+        [ span [ class "inputline__prompt", style "width" "32%" ] [ text label ]
+        , input
+            [ placeholder placeholder_
+            , value (fromMaybe value_)
+            , onInput onChange
+            ]
+            []
+        ]
 
 
+viewOutputBlock : Maybe String -> Html Msg
+viewOutputBlock maybeOutput =
+    case maybeOutput of
+        Just output ->
+            pre [ class "output" ] [ text output ]
 
--- VIEW
+        Nothing ->
+            div [ class "output" ] [ text "Enter all fields " ]
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ div []
-            [ span [] [ text "What is the noun? " ]
-            , input
-                [ placeholder "eg. dog"
-                , value model.noun
-                , onInput NounChanged
-                , onEnter Submit
-                ]
-                []
-            ]
-        , div []
-            [ span [] [ text "What is the verb? " ]
-            , input
-                [ placeholder "eg. walk"
-                , value model.verb
-                , onInput VerbChanged
-                , onEnter Submit
-                ]
-                []
-            ]
-        , div []
-            [ span [] [ text "What is the adjective? " ]
-            , input
-                [ placeholder "eg. blue"
-                , value model.adjective
-                , onInput AdjectiveChanged
-                , onEnter Submit
-                ]
-                []
-            ]
-        , div []
-            [ span [] [ text "What is the adverb? " ]
-            , input
-                [ placeholder "bg. quickly"
-                , value model.adverb
-                , onInput AdverbChanged
-                , onEnter Submit
-                ]
-                []
-            ]
-        , div [] [ text model.message ]
+    div [ style "width" "100%" ]
+        [ viewInputLine "What is the noun? " "eg. dog" NounChanged model.noun
+        , viewInputLine "What is the verb? " "eg. walk" VerbChanged model.verb
+        , viewInputLine "What is the adjective? " "eg. blue" AdjectiveChanged model.adjective
+        , viewInputLine "What is the adverb? " "eg. quickly" AdverbChanged model.adverb
+        , viewOutputBlock (makeOutput model)
         ]

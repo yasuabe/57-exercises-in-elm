@@ -8,54 +8,69 @@ import Test exposing (..)
 suite : Test
 suite =
     describe "Ex04 Module"
-        [ describe "init"
-            [ test "should initialize with empty noun, verb, adjective, adverb and message" <|
-                \_ ->
-                    let
-                        isEmpty f =
-                            \m -> Expect.equal "" (f m)
-                    in
-                    Expect.all
-                        [ isEmpty (\m -> m.noun)
-                        , isEmpty (\m -> m.verb)
-                        , isEmpty (\m -> m.adjective)
-                        , isEmpty (\m -> m.adverb)
-                        ]
-                        Ex04.init
-            ]
-        , describe "update"
+        [ describe "update"
             [ test "VerbChanged should update verb field" <|
-                \_ -> testUpdate (Ex04.VerbChanged "v001") (\m -> m.verb) "v001"
+                always
+                    (Expect.all
+                        [ \f -> f (Ex04.VerbChanged "v001") <| Just "v001"
+                        , \f -> f (Ex04.VerbChanged "") <| Nothing
+                        ]
+                        (testUpdate .verb)
+                    )
             , test "NounChanged should update noun field" <|
-                \_ -> testUpdate (Ex04.NounChanged "a001") (\m -> m.noun) "a001"
+                always
+                    (Expect.all
+                        [ \f -> f (Ex04.NounChanged "n001") <| Just "n001"
+                        , \f -> f (Ex04.NounChanged "") <| Nothing
+                        ]
+                        (testUpdate .noun)
+                    )
             , test "AdjectiveChanged should update adjective field" <|
-                \_ -> testUpdate (Ex04.AdjectiveChanged "a001") (\m -> m.adjective) "a001"
+                always
+                    (Expect.all
+                        [ \f -> f (Ex04.AdjectiveChanged "a001") <| Just "a001"
+                        , \f -> f (Ex04.AdjectiveChanged "") <| Nothing
+                        ]
+                        (testUpdate .adjective)
+                    )
             , test "AdverbChanged should update adverb field" <|
-                \_ -> testUpdate (Ex04.AdverbChanged "a001") (\m -> m.adverb) "a001"
+                always
+                    (Expect.all
+                        [ \f -> f (Ex04.AdverbChanged "a001") <| Just "a001"
+                        , \f -> f (Ex04.AdverbChanged "") <| Nothing
+                        ]
+                        (testUpdate .adverb)
+                    )
             , test "Submit with non-empty quote and author should update output" <|
-                \_ -> testSubmit "n1" "v1" "adj1" "adv1" "Do you v1 your adj1 n1 adv1? That's hilarious!"
+                \_ -> testSubmit "n1" "v1" "adj1" "adv1" <| Just "Do you v1 your adj1 n1 adv1?\nThat's hilarious!"
             , test "Submit with empty hole should empty output" <|
-                \_ -> testSubmit "" "v1" "adj1" "adv1" ""
+                \_ -> testSubmit "" "v1" "adj1" "adv1" Nothing
             ]
         ]
 
 
-testUpdate : Ex04.Msg -> (Ex04.Model -> String) -> String -> Expect.Expectation
-testUpdate msg extractor expect =
-    let
-        ( newModel, _ ) =
-            Ex04.update msg <| Ex04.init
-    in
-    Expect.equal expect <| extractor newModel
+testUpdate : (Ex04.Model -> Maybe String) -> Ex04.Msg -> Maybe String -> Expect.Expectation
+testUpdate extractor msg expect =
+    Ex04.init
+        |> Ex04.update msg
+        |> Tuple.first
+        |> extractor
+        |> Expect.equal expect
 
 
-testSubmit : String -> String -> String -> String -> String -> Expect.Expectation
+testSubmit : String -> String -> String -> String -> Maybe String -> Expect.Expectation
 testSubmit n v adj adv expect =
     let
-        model =
-            { noun = n, verb = v, adjective = adj, adverb = adv, message = "---" }
-
-        ( newModel, _ ) =
-            Ex04.update Ex04.Submit model
+        output =
+            Ex04.init
+                |> Ex04.update (Ex04.NounChanged n)
+                |> Tuple.first
+                |> Ex04.update (Ex04.VerbChanged v)
+                |> Tuple.first
+                |> Ex04.update (Ex04.AdjectiveChanged adj)
+                |> Tuple.first
+                |> Ex04.update (Ex04.AdverbChanged adv)
+                |> Tuple.first
+                |> Ex04.makeOutput
     in
-    Expect.equal expect newModel.message
+    Expect.equal output expect

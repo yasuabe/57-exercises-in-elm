@@ -64,10 +64,7 @@ viewOutput model =
             div [ class "output" ] [ text output ]
 
         Nothing ->
-            div [ class "output" ]
-                [ text "Enter both fields and press "
-                , kbd [] [ text "Enter" ]
-                ]
+            div [ class "output" ] [ text "Enter both fields" ]
 
 
 viewInputLine : String -> String -> Maybe String -> (String -> Msg) -> Html Msg
