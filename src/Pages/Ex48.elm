@@ -88,7 +88,7 @@ getScaleInfo scale =
 
 type Msg
     = LoadConfig
-    | FetchData
+    | FetchData 
     | UpdateLocation String
     | SessionStorageItemReceived D.Value
     | GotData (Result String WeatherData)
@@ -195,7 +195,7 @@ viewInputBlock apiKey =
                         , class "inputline__text"
                         , placeholder "eg. Kanagawa"
                         , onInput UpdateLocation
-                        , onEnter FetchData
+                        , onEnter (always FetchData)
                         ]
                         [ text "Fetch" ]
                     , button [ class "inputline__button", onClick FetchData ] [ text "Fetch" ]

@@ -9,7 +9,7 @@
 
 module Pages.Ex07 exposing (Model, Msg(..), init, update, view, makeOutput)
 
-import Common.Events exposing (onBlur, onEnter2, withNone)
+import Common.Events exposing (onBlur, onEnter, withNone)
 import Common.Math exposing (roundToDecimals)
 import Common.ResultEx as RE
 import Common.ResultMaybe as RM exposing (ResultMaybe, convertInputToFloatField)
@@ -108,7 +108,7 @@ viewInputLine label placeholder_ value_ onChange =
             , style "max-width" "75px"
             , placeholder placeholder_
             , value <| toFieldValue value_
-            , onEnter2 onChange
+            , onEnter onChange
             , onBlur onChange
             , backgroundColor value_
             ]

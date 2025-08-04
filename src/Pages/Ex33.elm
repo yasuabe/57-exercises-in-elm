@@ -93,7 +93,7 @@ view model =
         [ viewInputFieldWithHandler
             "inputline__text"
             [ onInput InputChanged
-            , onEnter Submit
+            , onEnter (always Submit)
             ]
             "What's your question? "
             "e.g. Will I be rich and famous? "

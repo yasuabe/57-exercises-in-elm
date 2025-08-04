@@ -1,6 +1,6 @@
 module Pages.Ex02 exposing (Model, Msg(..), init, makeOutput, update, view)
 
-import Common.Events exposing (onEnter2)
+import Common.Events exposing (onEnter)
 import Common.MaybeEx as ME
 import Html exposing (Html, div, input, kbd, span, text)
 import Html.Attributes exposing (class, placeholder, value)
@@ -79,7 +79,7 @@ view model =
             , input
                 [ placeholder "eg. Homer"
                 , value <| toString model
-                , onEnter2 Submit
+                , onEnter Submit
                 ]
                 []
             ]
