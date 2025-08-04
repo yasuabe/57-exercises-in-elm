@@ -10,6 +10,7 @@
 
 module Pages.Ex26 exposing (Model, Msg(..), calculateMonthsUntilPaidOff, init, update, view)
 
+import Common.CmdEx exposing (withNone)
 import Common.ResultEx as RE
 import Common.ResultMaybe exposing (ResultMaybe, map3)
 import Html exposing (Html, div, input, span, text)
@@ -73,9 +74,9 @@ type Msg
 
 
 -- UPDATE
-
-
 -- TODO: duplicated code with Ex31.elm
+
+
 convertStringToRM : String -> ResultMaybe String Int
 convertStringToRM str =
     case String.toInt str of
@@ -88,12 +89,6 @@ convertStringToRM str =
 
             else
                 Err str
-
-
--- TODO: duplicated code with Ex31.elm
-withNone : Model -> ( Model, Cmd Msg )
-withNone model =
-    ( model, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -111,9 +106,9 @@ update msg model =
 
 
 -- VIEW
-
-
 -- TODO: duplicated code with Ex31.elm
+
+
 toFieldValue : ResultMaybe String Int -> String
 toFieldValue =
     Result.map (MX.unwrap "" String.fromInt) >> RX.merge

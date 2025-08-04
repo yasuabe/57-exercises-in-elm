@@ -3,6 +3,7 @@ port module Main exposing (main)
 import Array as A
 import Browser
 import Browser.Navigation as Nav
+import Common.CmdEx exposing (pureCmd)
 import Common.Format exposing (padZeros)
 import Common.MaybeEx as MaybeEx exposing (mapToList)
 import Common.SessionStorage as SS
@@ -339,7 +340,7 @@ init _ url key =
         command =
             case route of
                 Exercise 48 ->
-                    Task.perform (Ex48Msg << always Ex48.LoadConfig) <| Task.succeed ()
+                    pureCmd (Ex48Msg << always Ex48.LoadConfig) ()
 
                 _ ->
                     Cmd.none
@@ -412,7 +413,7 @@ update msg model =
 
                 Exercise 48 ->
                     ( { model0 | currentExercise = Just 48, ex48Model = Just Ex48.init }
-                    , Task.perform (Ex48Msg << always Ex48.LoadConfig) <| Task.succeed ()
+                    , pureCmd (Ex48Msg << always Ex48.LoadConfig) ()
                     )
 
                 Exercise n ->

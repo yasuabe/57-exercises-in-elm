@@ -9,7 +9,8 @@
 
 module Pages.Ex07 exposing (Model, Msg(..), init, update, view, makeOutput)
 
-import Common.Events exposing (onBlur, onEnter, withNone)
+import Common.CmdEx exposing (withNone)
+import Common.Events exposing (onBlur, onEnter)
 import Common.Math exposing (roundToDecimals)
 import Common.ResultEx as RE
 import Common.ResultMaybe as RM exposing (ResultMaybe, convertInputToFloatField)

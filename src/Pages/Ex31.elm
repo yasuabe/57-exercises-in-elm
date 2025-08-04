@@ -1,5 +1,6 @@
 module Pages.Ex31 exposing (Model, Msg(..), calcHeartRate, generateTable, init, update, view)
 
+import Common.CmdEx exposing (withNone)
 import Basics.Extra as BX
 import Common.ResultEx as RE
 import Common.ResultMaybe as RM exposing (ResultMaybe, map3)
@@ -69,11 +70,6 @@ convertStringToRM convert str =
 convertStringToRMInt : String -> ResultMaybe String Int
 convertStringToRMInt =
     convertStringToRM String.toInt
-
-
-withNone : Model -> ( Model, Cmd Msg )
-withNone model =
-    ( model, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

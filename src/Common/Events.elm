@@ -1,4 +1,4 @@
-module Common.Events exposing (onBlur, onEnter, withNone)
+module Common.Events exposing (onBlur, onEnter)
 
 import Html exposing (Attribute)
 import Html.Events exposing (on, targetValue)
@@ -26,8 +26,3 @@ onEnter msg =
 onBlur : (String -> msg) -> Attribute msg
 onBlur msg =
     on "blur" (Decode.map msg targetValue)
-
-
-withNone : a -> ( a, Cmd msg )
-withNone model =
-    ( model, Cmd.none )

@@ -1,6 +1,6 @@
 module Pages.Ex03 exposing (Model, Msg(..), init, makeOutput, update, view)
 
-import Common.Events exposing (withNone)
+import Common.CmdEx exposing (withNone)
 import Common.MaybeEx exposing (fromMaybe, toMaybe)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, style, value)

@@ -12,6 +12,7 @@ module Pages.Ex57 exposing (Model, Msg(..), init, update, view)
 -- - Use a local file (not Redis or RDB) to store the question data.
 
 import Array
+import Common.CmdEx exposing (pureCmd)
 import Html exposing (Html, button, div, input, label, li, ol, text)
 import Html.Attributes exposing (checked, class, disabled, for, id, name, type_, value)
 import Html.Events exposing (onClick)
@@ -20,7 +21,6 @@ import Maybe.Extra exposing (isNothing)
 import Random exposing (Generator, generate)
 import Random.List exposing (shuffle)
 import String
-import Task
 
 
 
@@ -331,12 +331,6 @@ viewFailedEndSession cur rest solved =
 
 
 -- UTILITY FUNCTIONS
--- TODO: check duplication with other solutions of exercises
-
-
-pureCmd : (a -> msg) -> a -> Cmd msg
-pureCmd msgFunc value =
-    Task.perform msgFunc (Task.succeed value)
 
 
 genRandomRange : Int -> Generator (List Int)
