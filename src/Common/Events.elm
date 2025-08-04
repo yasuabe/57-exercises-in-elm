@@ -1,4 +1,4 @@
-module Common.Events exposing (onEnter, onEnter2, withNone)
+module Common.Events exposing (onEnter, onEnter2, withNone, onBlur)
 
 import Html exposing (Attribute)
 import Html.Events exposing (on, targetValue)
@@ -43,6 +43,10 @@ enterKeyDecoder2 msg =
 onEnter2 : (String -> msg) -> Attribute msg
 onEnter2 msg =
     on "keydown" <| enterKeyDecoder2 msg
+
+onBlur : (String -> msg) -> Attribute msg
+onBlur msg =
+    on "blur" (Decode.map msg targetValue)
 
 
 withNone : a -> ( a, Cmd msg )

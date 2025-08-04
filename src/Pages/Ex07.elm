@@ -7,14 +7,16 @@
 -- - Display both square feet and square meters in the output.
 
 
-module Pages.Ex07 exposing (Model, Msg(..), init, update, view)
+module Pages.Ex07 exposing (Model, Msg(..), init, update, view, makeOutput)
 
+import Common.Events exposing (onBlur, onEnter2, withNone)
 import Common.Math exposing (roundToDecimals)
-import Common.ResultMaybe exposing (ResultMaybe, collectErrors, map, parseStringToFloat)
-import Common.UI exposing (viewNumberInput, viewOutputBlock)
-import Html exposing (Html, div, pre)
-import Html.Attributes exposing (class, readonly)
-import Maybe exposing (map2)
+import Common.ResultEx as RE
+import Common.ResultMaybe as RM exposing (ResultMaybe, convertInputToFloatField)
+import Html exposing (Html, div, input, span, text, pre)
+import Html.Attributes exposing (class, placeholder, style, value)
+import Maybe.Extra as MX
+import Result.Extra as RX
 
 
 
@@ -22,17 +24,15 @@ import Maybe exposing (map2)
 
 
 type alias Model =
-    { length : String
-    , width : String
-    , output : ResultMaybe (List String) String
+    { length : ResultMaybe String Float
+    , width : ResultMaybe String Float
     }
 
 
 init : Model
 init =
-    { length = ""
-    , width = ""
-    , output = Ok Nothing
+    { length = Ok Nothing
+    , width = Ok Nothing
     }
 
 
@@ -51,81 +51,96 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        newModel =
-            case msg of
-                LengthChanged str ->
-                    makeOutput { model | length = String.trim str }
+    case msg of
+        LengthChanged str ->
+            withNone { model | length = convertInputToFloatField str }
 
-                WidthChanged str ->
-                    makeOutput { model | width = String.trim str }
-    in
-    ( newModel, Cmd.none )
+        WidthChanged str ->
+            withNone { model | width = convertInputToFloatField str }
 
 
-makeOutput : Model -> Model
+makeOutput : Model -> ResultMaybe String String
 makeOutput model =
-    let
-        lengthInFeet =
-            parseStringToFloat "Invalid length" model.length
-
-        widthInFeet =
-            parseStringToFloat "Invalid width" model.width
-
-        areaResult =
-            case ( lengthInFeet, widthInFeet ) of
-                ( Ok o1, Ok o2 ) ->
-                    Ok <| map2 (*) o1 o2
-
-                _ ->
-                    Err <| collectErrors [ lengthInFeet, widthInFeet ]
-    in
-    { model
-        | output =
-            map
-                (\area ->
-                    "You entered dimensions of "
-                        ++ model.length
-                        ++ " feet by "
-                        ++ model.width
-                        ++ " feet.\n"
-                        ++ "The area is "
-                        ++ roundToTwoDecimals area
-                        ++ " square feet\n"
-                        ++ roundToTwoDecimals (area * 0.09290304)
-                        ++ " square meters"
-                )
-                areaResult
-    }
+    RM.map2
+        (\l w ->
+            "You entered dimensions of "
+                ++ roundToTwoDecimals l
+                ++ " feet by "
+                ++ roundToTwoDecimals w
+                ++ " feet.\n"
+                ++ "The area is "
+                ++ roundToTwoDecimals (l * w)
+                ++ " square feet.\n"
+                ++ "That's "
+                ++ roundToTwoDecimals (l * w * 0.09290304)
+                ++ " square meters."
+        )
+        model.length
+        model.width
 
 
 roundToTwoDecimals : Float -> String
-roundToTwoDecimals x =
-    roundToDecimals 2 x |> String.fromFloat
+roundToTwoDecimals =
+    roundToDecimals 2 >> String.fromFloat
 
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
-    div []
-        [ viewNumberInput
-            LengthChanged
-            "What is the length of the room in feet? "
-            "e.g. 15"
-            model.length
-        , viewNumberInput
-            WidthChanged
-            "What is the width of the room in feet? "
-            "e.g. 10"
-            model.width
-        , pre [ class "output", readonly True ]
-            [ viewOutputBlock model ]
+toFieldValue : ResultMaybe String Float -> String
+toFieldValue =
+    Result.map (MX.unwrap "" String.fromFloat) >> RX.merge
+
+
+viewInputLine : String -> String -> ResultMaybe String Float -> (String -> Msg) -> Html Msg
+viewInputLine label placeholder_ value_ onChange =
+    let
+        backgroundColor =
+            RE.either
+                (always <| style "background-color" "inherit")
+                (always <| class "error-message")
+    in
+    div [ class "inputline" ]
+        [ span [ class "inputline__prompt", style "width" "320px" ] [ text label ]
+        , input
+            [ class "inputline__number"
+            , style "max-width" "75px"
+            , placeholder placeholder_
+            , value <| toFieldValue value_
+            , onEnter2 onChange
+            , onBlur onChange
+            , backgroundColor value_
+            ]
+            []
         ]
 
 
-viewOutputBlock : Model -> Html Msg
-viewOutputBlock model =
-    Common.UI.viewOutputBlock model.output "Please enter both the length and width."
+viewOutput : Model -> Html Msg
+viewOutput model =
+    case makeOutput model of
+        Ok (Just output) ->
+            pre [ class "output" ] [ text output ]
+
+        Ok Nothing ->
+            div [ class "output" ] [ text "Enter both fields" ]
+
+        Err errMsg ->
+            div [ class "output" ] [ text <| "Invalid input: " ++ errMsg ]
+
+
+view : Model -> Html Msg
+view model =
+    div [ style "width" "100%" ]
+        [ viewInputLine
+            "What is the length of the room in feet? "
+            "e.g. 15"
+            model.length
+            LengthChanged
+        , viewInputLine
+            "What is the width of the room in feet? "
+            "e.g. 20"
+            model.width
+            WidthChanged
+        , viewOutput model
+        ]

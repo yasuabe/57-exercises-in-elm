@@ -105,3 +105,49 @@ withDefault default result =
 
         _ ->
             default
+
+
+
+-- TODO: duplicate code with parseString
+
+
+convertStringToRM : (String -> Maybe a) -> (String -> String) -> String -> ResultMaybe String a
+convertStringToRM convert strToErrMsg str =
+    case convert str of
+        Just value ->
+            Ok (Just value)
+
+        Nothing ->
+            if String.isEmpty str then
+                Ok Nothing
+
+            else
+                Err (strToErrMsg str)
+
+
+convertToRM : (from -> Maybe a) -> (from -> Bool) -> (from -> String) -> from -> ResultMaybe String a
+convertToRM convert isEmpty toErrMsg from =
+    case convert from of
+        Just value ->
+            Ok (Just value)
+
+        Nothing ->
+            if isEmpty from then
+                Ok Nothing
+
+            else
+                Err (toErrMsg from)
+
+
+
+-- TODO: move to appropriate module
+
+
+convertInputToField : (String -> Maybe a) -> String -> ResultMaybe String a
+convertInputToField convert =
+    convertToRM convert String.isEmpty String.trim
+
+
+convertInputToFloatField : String -> ResultMaybe String Float
+convertInputToFloatField =
+    convertInputToField (String.trim >> String.toFloat)

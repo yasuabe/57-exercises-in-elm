@@ -113,6 +113,7 @@ update msg model =
 -- VIEW
 
 
+-- TODO: duplicated code with Ex31.elm
 toFieldValue : ResultMaybe String Int -> String
 toFieldValue =
     Result.map (MX.unwrap "" String.fromInt) >> RX.merge

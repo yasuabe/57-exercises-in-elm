@@ -1,5 +1,6 @@
 module Pages.Ex07Test exposing (..)
 
+import Common.ResultMaybe exposing (ResultMaybe)
 import Expect
 import Pages.Ex07 as Ex07
 import Test exposing (..)
@@ -8,34 +9,24 @@ import Test exposing (..)
 suite : Test
 suite =
     describe "Ex07 Module"
-        [ describe "init"
-            [ test "should initialize with empty length, width and area" <|
-                \_ ->
-                    Expect.all
-                        [ \m -> Expect.equal "" m.length
-                        , \m -> Expect.equal "" m.width
-                        , \m -> Expect.equal (Ok Nothing) m.output
-                        ]
-                        Ex07.init
-            ]
-        , describe "update"
+        [ describe "update"
             [ test "Change events should update the output" <|
-                \_ ->
-                    let
-                        ( model, _ ) =
-                            Ex07.init
-                                |> Ex07.update (Ex07.LengthChanged "15")
-                                |> Tuple.first
-                                |> Ex07.update (Ex07.WidthChanged "20")
-                    in
-                    expectValidArea model "300" "27.87"
+                always <|
+                    (Ex07.init
+                        |> Ex07.update (Ex07.LengthChanged "15")
+                        |> Tuple.first
+                        |> Ex07.update (Ex07.WidthChanged "20")
+                        |> Tuple.first
+                        |> Ex07.makeOutput
+                        |> expectValidArea "300" "27.87"
+                    )
             ]
         ]
 
 
-expectValidArea : Ex07.Model -> String -> String -> Expect.Expectation
-expectValidArea model areaInFeet areaInMeters =
-    case model.output of
+expectValidArea : String -> String -> ResultMaybe String String -> Expect.Expectation
+expectValidArea areaInFeet areaInMeters actual =
+    case actual of
         Ok (Just message) ->
             Expect.all
                 [ Expect.equal True << String.contains areaInFeet

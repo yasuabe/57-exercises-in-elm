@@ -2,7 +2,7 @@ module Pages.Ex03 exposing (Model, Msg(..), init, makeOutput, update, view)
 
 import Common.Events exposing (withNone)
 import Common.MaybeEx exposing (fromMaybe, toMaybe)
-import Html exposing (Html, div, input, kbd, span, text)
+import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onInput)
 
@@ -57,16 +57,6 @@ update msg model =
 -- VIEW
 
 
-viewOutput : Model -> Html Msg
-viewOutput model =
-    case makeOutput model of
-        Just output ->
-            div [ class "output" ] [ text output ]
-
-        Nothing ->
-            div [ class "output" ] [ text "Enter both fields" ]
-
-
 viewInputLine : String -> String -> Maybe String -> (String -> Msg) -> Html Msg
 viewInputLine label placeholder_ value_ onChange =
     div [ class "inputline" ]
@@ -78,6 +68,16 @@ viewInputLine label placeholder_ value_ onChange =
             ]
             []
         ]
+
+
+viewOutput : Model -> Html Msg
+viewOutput model =
+    case makeOutput model of
+        Just output ->
+            div [ class "output" ] [ text output ]
+
+        Nothing ->
+            div [ class "output" ] [ text "Enter both fields" ]
 
 
 view : Model -> Html Msg

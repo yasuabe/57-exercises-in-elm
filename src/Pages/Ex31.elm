@@ -51,7 +51,7 @@ type Msg
 
 -- UPDATE
 
-
+-- TODO: duplicate
 convertStringToRM : (String -> Maybe a) -> String -> ResultMaybe String a
 convertStringToRM convert str =
     case convert str of
