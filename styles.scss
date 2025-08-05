@@ -281,6 +281,16 @@ pre.error-message {
 }
 
 // Additional styles for specific exercises
+.ex13 {
+  &__inputline-label {
+    width: 322px;
+    vertical-align: middle;
+  }
+
+  &__inputline-number{
+    width: 75px;
+  }
+}
 .ex31 {
   &__inputline-label {
     width: 20%;

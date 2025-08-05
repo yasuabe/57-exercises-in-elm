@@ -1,42 +1,52 @@
 -- Ex13: Determining Compound Interest
 --
--- - Prompt the user for principal principal, interest rate (as a percentage), number of years, and compounding frequency per year.
+-- - Prompt the user for principal, interest rate (as a percentage), number of years, and compounding frequency per year.
 -- - Convert the interest rate by dividing it by 100.
--- - Use the compound interest formula to compute the final principal.
+-- - Use the compound interest formula to compute the final amount.
 -- - Round up fractions of a cent to the next penny.
 -- - Format the output as money.
 
 
-module Pages.Ex13 exposing (Model, Msg(..), init, update, view)
+module Pages.Ex13 exposing (Model, Msg(..), init, update, view, makeOutput)
 
+import Common.CmdEx exposing (withNone)
+import Common.Events exposing (onBlur, onEnter)
 import Common.Math exposing (roundToDecimals)
-import Common.ResultMaybe exposing (ResultMaybe, collectErrors, map, parseStringToFloat)
-import Common.UI exposing (viewNumberInput, viewOutputBlock)
-import Html exposing (Html, div, pre)
-import Html.Attributes exposing (class, readonly)
-import List
+import Common.ResultEx as RE
+import Common.ResultMaybe exposing (ResultMaybe, convertInputToFloatField, map4)
+import Common.UI exposing (floatToFieldValue, viewOutputBlock)
+import Html exposing (Html, div, input, pre, span, text)
+import Html.Attributes exposing (class, placeholder, readonly, value)
+
 
 
 -- MODEL
 
 
+type alias FloatField =
+    ResultMaybe String Float
+
+
 type alias Model =
-    { principal : String
-    , rate : String
-    , years : String
-    , times : String
-    , output : ResultMaybe (List String) String
+    { principal : FloatField
+    , rate : FloatField
+    , years : FloatField
+    , times : FloatField
     }
 
 
 init : Model
 init =
-    { principal = ""
-    , rate = ""
-    , years = ""
-    , times = ""
-    , output = Ok <| Nothing
+    { principal = Ok Nothing
+    , rate = Ok Nothing
+    , years = Ok Nothing
+    , times = Ok Nothing
     }
+
+
+calcAmount : Float -> Float -> Float -> Float -> Float
+calcAmount principal rate years times =
+    principal * (1 + (rate / 100) / times) ^ (times * years)
 
 
 
@@ -56,102 +66,104 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( case msg of
+    case msg of
         PrincipalChanged str ->
-            makeOutput { model | principal = String.trim str }
+            withNone { model | principal = convertInputToFloatField str }
 
         RateChanged str ->
-            makeOutput { model | rate = String.trim str }
+            withNone { model | rate = convertInputToFloatField str }
 
         YearsChanged str ->
-            makeOutput { model | years = String.trim str }
+            withNone { model | years = convertInputToFloatField str }
 
         TimesChanged str ->
-            makeOutput { model | times = String.trim str }
-    , Cmd.none
-    )
+            withNone { model | times = convertInputToFloatField str }
 
 
-makeOutput : Model -> Model
+makeOutput : Model -> ResultMaybe String String
 makeOutput model =
-    let
-        principal =
-            parseStringToFloat "Invalid principal" model.principal
-
-        rate =
-            parseStringToFloat "Invalid rate" model.rate
-
-        years =
-            parseStringToFloat "Invalid years" model.years
-
-        times =
-            parseStringToFloat "Invalid times" model.times
-
-        calcResult =
-            case ( ( principal, rate ), ( years, times ) ) of
-                ( ( Ok (Just p), Ok (Just r) ), ( Ok (Just y), Ok (Just t) ) ) ->
-                    Ok <| Just ( ( p, r ), ( y, t, p * (1 + (r / 100) / t) ^ (t * y) ) )
-
-                _ ->
-                    let
-                        x =
-                            collectErrors [ principal, rate, years, times ]
-                    in
-                    if List.isEmpty x then
-                        Ok Nothing
-
-                    else
-                        Err x
-    in
-    { model
-        | output =
-            map
-                (\( ( p, r ), ( y, t, amount ) ) ->
-                    "$"
-                        ++ String.fromFloat p
-                        ++ " invested at "
-                        ++ String.fromFloat r
-                        ++ "% for "
-                        ++ String.fromFloat y
-                        ++ " years\n"
-                        ++ "compounded "
-                        ++ String.fromFloat t
-                        ++ " times per year is $"
-                        ++ (roundToDecimals 2 amount |> String.fromFloat)
-                        ++ "."
-                )
-                calcResult
-    }
+    map4
+        (\p r y t ->
+            "$"
+                ++ String.fromFloat p
+                ++ " invested at "
+                ++ String.fromFloat r
+                ++ "% for "
+                ++ String.fromFloat y
+                ++ " years\n"
+                ++ "compounded "
+                ++ String.fromFloat t
+                ++ " times per year is $"
+                ++ (roundToDecimals 2 (calcAmount p r y t) |> String.fromFloat)
+                ++ "."
+        )
+        model.principal
+        model.rate
+        model.years
+        model.times
 
 
 
 -- VIEW
 
 
+viewNumberInput : String -> String -> FloatField -> (String -> msg) -> Html msg
+viewNumberInput prompt placeholder_ inputValue handler =
+    let
+        class_ =
+            RE.either
+                (always <| "inputline__number ex13__inputline-number")
+                (always <| "inputline__number ex13__inputline-number error-message")
+    in
+    div [ class "inputline" ]
+        [ span [ class "inputline__prompt ex13__inputline-label" ] [ text prompt ]
+        , input
+            [ class <| class_ inputValue
+            , placeholder placeholder_
+            , value <| floatToFieldValue inputValue
+            , onEnter handler
+            , onBlur handler
+            ]
+            []
+        ]
+
+
+viewOutputBlock : ResultMaybe String String -> Html msg
+viewOutputBlock result =
+    case result of
+        Ok (Just output) ->
+            pre [ class "output", readonly True ] [ text output ]
+
+        Ok Nothing ->
+            pre [ class "output", readonly True ] [ text "Please fill all fields." ]
+
+        Err _ ->
+            pre [ class "output", readonly True ] [ text "Please fix the inputs" ]
+
+
 view : Model -> Html Msg
 view model =
     div []
         [ viewNumberInput
-            PrincipalChanged
-            "What is the principal principal? "
+            "What is the principal? "
             "e.g. 1500"
             model.principal
+            PrincipalChanged
         , viewNumberInput
-            RateChanged
-            "What is the rate? "
+            "What is the interest rate? "
             "e.g. 4.3"
             model.rate
+            RateChanged
         , viewNumberInput
-            YearsChanged
             "What is the number of years? "
             "e.g. 6"
             model.years
+            YearsChanged
         , viewNumberInput
-            TimesChanged
             "What is the number of times the interest is compounded per year? "
             "e.g. 4"
             model.times
-        , pre [ class "output", readonly True ]
-            [ viewOutputBlock model.output "fill all fields"
-            ]
+            TimesChanged
+        , div [ class "output" ]
+            [ viewOutputBlock (makeOutput model) ]
         ]

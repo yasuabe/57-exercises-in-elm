@@ -39,7 +39,7 @@ suite =
 
 expectValidAmount : Ex13.Model -> String -> Expectation
 expectValidAmount model expected =
-    case model.output of
+    case Ex13.makeOutput model of
         Ok (Just message) ->
             Expect.equal True <| String.contains expected message
 

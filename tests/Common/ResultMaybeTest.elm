@@ -1,6 +1,6 @@
 module Common.ResultMaybeTest exposing (..)
 
-import Common.ResultMaybe exposing (collectErrors, collectErrors2, map, map2, map3, withDefault, convertStringToRM)
+import Common.ResultMaybe exposing (collectErrors, collectErrors2, map, map2, map3, convertStringToRM)
 import Expect exposing (..)
 import Test exposing (..)
 import Common.ResultMaybe exposing (parseString)

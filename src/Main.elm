@@ -72,7 +72,6 @@ import Pages.Ex55 as Ex55
 import Pages.Ex56 as Ex56
 import Pages.Ex57 as Ex57
 import String as S exposing (fromInt, toInt)
-import Task
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), top)
 

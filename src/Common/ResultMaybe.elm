@@ -79,9 +79,25 @@ map2 f x_ y_ =
             Ok (Just (f x y))
 
 
-map3 : (x -> y -> z -> r) -> ResultMaybe e x -> ResultMaybe e y -> ResultMaybe e z -> ResultMaybe e r
+map3 :
+    (x -> y -> z -> r)
+    -> ResultMaybe e x
+    -> ResultMaybe e y
+    -> ResultMaybe e z
+    -> ResultMaybe e r
 map3 f x_ y_ z_ =
     map2 (\b c -> b c) (map2 f x_ y_) z_
+
+
+map4 :
+    (x -> y -> z -> w -> r)
+    -> ResultMaybe e x
+    -> ResultMaybe e y
+    -> ResultMaybe e z
+    -> ResultMaybe e w
+    -> ResultMaybe e r
+map4 f x_ y_ z_ w_ =
+    map2 (\b c -> b c) (map3 f x_ y_ z_) w_
 
 
 withDefault : a -> ResultMaybe e a -> a
