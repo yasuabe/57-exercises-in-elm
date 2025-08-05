@@ -13,7 +13,7 @@ module Pages.Ex26 exposing (Model, Msg(..), calculateMonthsUntilPaidOff, init, u
 import Common.CmdEx exposing (withNone)
 import Common.ResultEx as RE
 import Common.ResultMaybe exposing (ResultMaybe, convertInputToIntField, map3)
-import Common.UI exposing (intToFieldValue)
+import Common.UI exposing (IntField, intToFieldValue)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, style, value)
 import Html.Events exposing (onInput)
@@ -24,9 +24,9 @@ import Html.Events exposing (onInput)
 
 
 type alias Model =
-    { balance : ResultMaybe String Int
-    , apr : ResultMaybe String Int
-    , payment : ResultMaybe String Int
+    { balance : IntField
+    , apr : IntField
+    , payment : IntField
     }
 
 

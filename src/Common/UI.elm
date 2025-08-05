@@ -59,6 +59,10 @@ viewOutputBlock output whenEmpty =
 -- Input Field Converters
 
 
+type alias IntField =
+    ResultMaybe String Int
+
+
 type alias FloatField =
     ResultMaybe String Float
 
