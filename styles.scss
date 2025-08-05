@@ -291,6 +291,15 @@ pre.error-message {
     width: 75px;
   }
 }
+.ex14 {
+  &__inputline-label {
+    width: 240px;
+    vertical-align: middle;
+  }
+  &__inputline-input {
+    width: 86px;
+  }
+}
 .ex31 {
   &__inputline-label {
     width: 20%;

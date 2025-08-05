@@ -55,6 +55,14 @@ viewOutputBlock output whenEmpty =
                 map (\errorMessage -> div [] [ text errorMessage ]) messages
 
 
+
+-- Input Field Converters
+
+
+type alias FloatField =
+    ResultMaybe String Float
+
+
 toFieldValue : (a -> String) -> ResultMaybe String a -> String
 toFieldValue convert =
     Result.map (MX.unwrap "" convert) >> RX.merge
@@ -68,3 +76,7 @@ intToFieldValue =
 floatToFieldValue : ResultMaybe String Float -> String
 floatToFieldValue =
     toFieldValue String.fromFloat
+
+mergeToStringValue : ResultMaybe String String -> String
+mergeToStringValue =
+    Result.map (Maybe.withDefault "") >> RX.merge

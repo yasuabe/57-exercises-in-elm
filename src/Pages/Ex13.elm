@@ -22,6 +22,7 @@ import Html.Attributes exposing (class, placeholder, readonly, value)
 
 -- MODEL
 
+-- TODO: duplicate with UI.elm
 
 type alias FloatField =
     ResultMaybe String Float
