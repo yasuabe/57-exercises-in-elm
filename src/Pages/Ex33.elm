@@ -18,7 +18,6 @@ import Common.ResultMaybe exposing (ResultMaybe)
 import Common.UI exposing (viewInputFieldWithHandler, viewOutputBlock)
 import Html exposing (Html, div, pre)
 import Html.Attributes exposing (class, readonly)
-import Html.Events exposing (onInput)
 import Random
 
 
@@ -45,7 +44,7 @@ type alias Model =
 init : Model
 init =
     { question = ""
-    , output = Ok <| Nothing
+    , output = Ok Nothing
     }
 
 
@@ -54,9 +53,8 @@ init =
 
 
 type Msg
-    = InputChanged String
-    | GotSelectedIndex Int
-    | Submit
+    = GotSelectedIndex Int
+    | Submit String
 
 
 
@@ -66,13 +64,10 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Submit ->
-            ( model
+        Submit str ->
+            ( { model | question = str }
             , Random.generate GotSelectedIndex randomMessagePicker
             )
-
-        InputChanged str ->
-            ( { model | question = str }, Cmd.none )
 
         GotSelectedIndex index ->
             ( { model | output = Ok <| get index responses }, Cmd.none )
@@ -92,12 +87,11 @@ view model =
     div []
         [ viewInputFieldWithHandler
             "inputline__text"
-            [ onInput InputChanged
-            , onEnter (always Submit)
-            ]
+            [ onEnter Submit ]
             "What's your question? "
             "e.g. Will I be rich and famous? "
             model.question
-        , pre [ class "output", readonly True ]
+        , pre
+            [ class "output", readonly True ]
             [ viewOutputBlock model.output "" ]
         ]
