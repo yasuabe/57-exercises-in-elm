@@ -4,7 +4,7 @@ import Basics.Extra as BX
 import Common.CmdEx exposing (withNone)
 import Common.ResultEx as RE
 import Common.ResultMaybe as RM exposing (ResultMaybe, convertInputToIntField, map3)
-import Common.UI exposing (intToFieldValue)
+import Common.UI exposing (IntField, intToFieldValue)
 import Html exposing (Html, div, input, span, table, td, text, th, tr)
 import Html.Attributes as HA exposing (class, placeholder, style, type_, value)
 import Html.Events exposing (onInput)
@@ -19,9 +19,9 @@ type alias Rate =
 
 
 type alias Model =
-    { restingHR : ResultMaybe String Int
-    , age : ResultMaybe String Int
-    , intensity : ResultMaybe String Int
+    { restingHR : IntField
+    , age : IntField
+    , intensity : IntField
     }
 
 
@@ -212,7 +212,7 @@ viewOutputArea model =
 
 view : Model -> Html Msg
 view model =
-    div [ style "width" "100%" ]
+    div []
         [ div []
             [ viewIntField "Resting Pulse:" "e.g. 65" RestingHRChanged model.restingHR
             , viewIntField "Age:" "e.g. 22" AgeChanged model.age
