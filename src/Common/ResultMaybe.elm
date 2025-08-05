@@ -110,6 +110,11 @@ withDefault default result =
             default
 
 
+toMaybe : ResultMaybe e a -> Maybe a
+toMaybe result =
+    Result.withDefault Nothing result
+
+
 convertToRM : (from -> Maybe a) -> (from -> Bool) -> (from -> String) -> from -> ResultMaybe String a
 convertToRM convert isEmpty toErrMsg from =
     case convert from of

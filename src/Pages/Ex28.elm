@@ -7,13 +7,15 @@
 
 module Pages.Ex28 exposing (Model, Msg(..), init, update, view)
 
-import Array exposing (Array, repeat, set, toList)
-import Common.UI exposing (viewSimpleInput)
+import Common.CmdEx exposing (withNone)
+import Common.ResultMaybe as RM exposing (convertInputToIntField)
+import Common.UI exposing (IntField, intToFieldValue, viewSimpleInput)
 import Html exposing (Html, div, pre, text)
-import Html.Attributes exposing (class, readonly)
-import List exposing (filterMap, indexedMap, sum)
-import Maybe exposing (withDefault)
-import String exposing (isEmpty, toInt, trim)
+import Html.Attributes exposing (class, readonly, value)
+import List exposing (filterMap, indexedMap, repeat, sum)
+import List.Extra exposing (setAt)
+import Result.Extra exposing (unpack)
+import String
 
 
 
@@ -21,14 +23,12 @@ import String exposing (isEmpty, toInt, trim)
 
 
 type alias Model =
-    { inputStrings : Array String
-    , total : Int
-    }
+    List IntField
 
 
 init : Model
 init =
-    { inputStrings = repeat 5 "", total = 0 }
+    repeat 5 (Ok Nothing)
 
 
 
@@ -47,49 +47,47 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NumberChanged n str ->
-            ( updateTotal { model | inputStrings = set n (trim str) model.inputStrings }
-            , Cmd.none
-            )
+            withNone <| setAt n (convertInputToIntField str) model
 
 
-updateTotal : Model -> Model
-updateTotal model =
-    { model | total = model.inputStrings |> toList |> filterMap toInt |> sum }
+calculateTotal : List IntField -> Int
+calculateTotal =
+    filterMap RM.toMaybe >> sum
 
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
-view { inputStrings, total } =
-    div [] <|
-        (indexedMap renderInput <| toList inputStrings)
-            ++ viewOutputBlock total
-
-
-renderInput : Int -> String -> Html Msg
+renderInput : Int -> IntField -> Html Msg
 renderInput n value =
     let
-        class =
-            if isEmpty value then
-                "inputline__number"
-
-            else
-                toInt value
-                    |> Maybe.map (always "inputline__number")
-                    |> withDefault "inputline__number--invalid"
+        clazz =
+            unpack
+                (always "inputline__number--invalid")
+                (always "inputline__number")
+                value
     in
     viewSimpleInput
-        class
+        clazz
         (NumberChanged n)
         "Enter a number: "
         "e.g. 15"
-        value
+        (intToFieldValue value)
 
 
-viewOutputBlock : Int -> List (Html Msg)
+viewOutputBlock : Int -> Html Msg
 viewOutputBlock output =
-    [ pre [ class "output", readonly True ]
-        [ div [] [ text <| String.fromInt output ] ]
-    ]
+    pre [ class "output", readonly True ]
+        [ div
+            []
+            [ text <| "The total is " ++ String.fromInt output ++ "." ]
+        ]
+
+
+view : Model -> Html Msg
+view model =
+    div []
+        [ div [] (indexedMap renderInput model)
+        , viewOutputBlock <| calculateTotal model
+        ]
