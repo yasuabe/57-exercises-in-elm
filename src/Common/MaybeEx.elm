@@ -34,7 +34,7 @@ fromFilter predicate value =
 
 toMaybe : String -> Maybe String
 toMaybe =
-    fromFilter (String.isEmpty >> not)
+    String.trim >> fromFilter (String.isEmpty >> not)
 
 
 fromMaybe : Maybe String -> String

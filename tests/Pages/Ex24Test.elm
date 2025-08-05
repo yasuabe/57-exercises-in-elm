@@ -82,4 +82,4 @@ applyEvents messages model =
         update msg m =
             Ex24.update msg m |> Tuple.first
     in
-    (List.foldl update model messages).output
+    Ex24.makeOutput <| List.foldl update model messages

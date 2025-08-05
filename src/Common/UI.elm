@@ -63,6 +63,10 @@ type alias FloatField =
     ResultMaybe String Float
 
 
+type alias TextField =
+    ResultMaybe String String
+
+
 toFieldValue : (a -> String) -> ResultMaybe String a -> String
 toFieldValue convert =
     Result.map (MX.unwrap "" convert) >> RX.merge
@@ -76,6 +80,7 @@ intToFieldValue =
 floatToFieldValue : ResultMaybe String Float -> String
 floatToFieldValue =
     toFieldValue String.fromFloat
+
 
 mergeToStringValue : ResultMaybe String String -> String
 mergeToStringValue =

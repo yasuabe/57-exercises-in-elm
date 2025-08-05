@@ -39,7 +39,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 #### Chapter 5: Functions
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
-| Ex24 [x] [Anagram Checker](src/Pages/Ex24.elm)                 | | | 3(2) |
+| Ex24 [x] [Anagram Checker](src/Pages/Ex24.elm)                 | elm-community/string-extra| | 3(2) |
 | Ex25 [ ] [Password Strength Indicator](src/Pages/Ex25.elm)     | | | |
 | Ex26 [x] [Months to Pay Off a Credit Card](src/Pages/Ex26.elm) | elm-community/result-extra | | 3(2) |
 | Ex27 [ ] [Validating Inputs](src/Pages/Ex27.elm)               | | | |
@@ -115,6 +115,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 - [elm-community/maybe-extra](https://package.elm-lang.org/packages/elm-community/maybe-extra/5.3.0/)
 - [elm-community/random-extra](https://package.elm-lang.org/packages/elm-community/random-extra/3.2.0/)
 - [elm-community/result-extra](https://package.elm-lang.org/packages/elm-community/result-extra/2.4.0/)
+- [elm-community/string-extra](https://package.elm-lang.org/packages/elm-community/string-extra/4.0.1/)
 - [fabiommendes/elm-hour](https://package.elm-lang.org/packages/fabiommendes/elm-hour/1.0.1/)
 - [justinmimbs/date](https://package.elm-lang.org/packages/justinmimbs/date/4.1.0/)
 - [myrho/elm-round](https://package.elm-lang.org/packages/myrho/elm-round/1.0.5/)

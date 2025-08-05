@@ -1,12 +1,17 @@
-module Pages.Ex24 exposing (Model, Msg(..), init, update, view)
+module Pages.Ex24 exposing (Model, Msg(..), init, update, view, makeOutput)
 
-import Common.Function exposing (on)
+import Common.CmdEx exposing (withNone)
+import Common.Events exposing (onEnter)
+import Common.Function exposing (choose, on)
+import Common.MaybeEx exposing (toMaybe)
 import Common.ResultMaybe exposing (ResultMaybe)
-import Common.StringEx as StringEx exposing (quote, sort)
-import Common.UI exposing (viewTextInput)
-import Html exposing (Html, div, pre, text)
-import Html.Attributes exposing (class, readonly)
-import String exposing (isEmpty, length)
+import Common.StringEx exposing (sort)
+import Common.UI
+import Html exposing (Html, div, input, pre, span, text)
+import Html.Attributes exposing (class, placeholder, readonly, value)
+import Html.Events exposing (onInput)
+import String exposing (length)
+import String.Extra exposing (quote)
 
 
 
@@ -14,17 +19,15 @@ import String exposing (isEmpty, length)
 
 
 type alias Model =
-    { first : String
-    , second : String
-    , output : ResultMaybe (List String) String
+    { first : Maybe String
+    , second : Maybe String
     }
 
 
 init : Model
 init =
-    { first = ""
-    , second = ""
-    , output = Ok Nothing
+    { first = Nothing
+    , second = Nothing
     }
 
 
@@ -47,78 +50,89 @@ update msg model =
         newModel =
             case msg of
                 FirstChanged str ->
-                    makeOutput { model | first = String.trim str }
+                    { model | first = toMaybe str }
 
                 SecondChanged str ->
-                    makeOutput { model | second = String.trim str }
+                    { model | second = toMaybe str }
     in
-    ( newModel, Cmd.none )
+    withNone newModel
 
 
-isAnagram : Model  -> Bool
-isAnagram { first, second } =
-    let
-        normalize =
-            String.toLower >> sort
-    in
-    on (==) normalize first second
+isAnagram : String -> String -> Bool
+isAnagram =
+    on (==) (String.toLower >> sort)
 
 
-makeOutput : Model -> Model
+makeOutput : Model -> ResultMaybe (List String) String
 makeOutput model =
     let
-        quote =
-            StringEx.quote '"'
-
-        output =
-            if on (||) isEmpty model.first model.second then
-                Ok Nothing
-
-            else if on (/=) length model.first model.second then
+        checkAnagram first second =
+            if on (/=) length first second then
                 Err [ "The two strings must have the same length to be anagrams." ]
 
             else
-                let
-                    maybeNot =
-                        if isAnagram model then
-                            ""
-
-                        else
-                            "not "
-                in
-                Ok <| Just <| quote model.first ++ " and " ++ quote model.second ++ " are " ++ maybeNot ++ "anagrams."
+                quote first
+                    ++ " and "
+                    ++ quote second
+                    ++ " are "
+                    ++ choose (isAnagram first second) "" "not "
+                    ++ "anagrams."
+                    |> (Just >> Ok)
     in
-    { model | output = output }
+    Maybe.map2 checkAnagram model.first model.second
+        |> Maybe.withDefault (Ok Nothing)
 
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
-    div []
-        [ viewDescriptionBlock
-        , viewTextInput
-            FirstChanged
-            "What is the first? "
-            "e.g. note"
-            model.first
-        , viewTextInput
-            SecondChanged
-            "What is the second? "
-            "e.g. tone"
-            model.second
-        , pre [ class "output", readonly True ]
-            [ viewOutputBlock model ]
+viewTextField : String -> String -> Maybe String -> (String -> msg) -> Html msg
+viewTextField prompt placeholderMsg inputValue onInputHandler =
+    div [ class "inputline" ]
+        [ span [ class "inputline__prompt ex24__label" ] [ text prompt ]
+        , input
+            [ class "inputline__text ex24__input"
+            , placeholder placeholderMsg
+            , value <| Maybe.withDefault "" inputValue
+            , onEnter onInputHandler
+            , onInput onInputHandler
+            ]
+            []
         ]
 
 
 viewDescriptionBlock : Html Msg
 viewDescriptionBlock =
-    div [ class "description" ] [ text "Enter two strings and I'll tell you if they are anagrams:" ]
+    div [ class "description ex24__description" ]
+        [ text "Enter two strings and I'll tell you if they are anagrams:" ]
 
 
 viewOutputBlock : Model -> Html Msg
 viewOutputBlock model =
-    Common.UI.viewOutputBlock model.output "Please enter both the length and width."
+    Common.UI.viewOutputBlock
+        (makeOutput model)
+        "Please enter both the length and width."
+
+
+view : Model -> Html Msg
+view model =
+    div []
+        [ viewDescriptionBlock
+        , div
+            [ class "ex24__inputs" ]
+            [ viewTextField
+                "What is the first? "
+                "e.g. note"
+                model.first
+                FirstChanged
+            , viewTextField
+                "What is the second? "
+                "e.g. tone"
+                model.second
+                SecondChanged
+            ]
+        , pre
+            [ class "output", readonly True ]
+            [ viewOutputBlock model ]
+        ]

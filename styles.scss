@@ -48,7 +48,9 @@ main {
   justify-content: space-between;
   width: 600px;
 }
-
+main > div {
+  width: 100%;
+}
 label {
   padding: 0 10px 0 2px;
 }
@@ -316,6 +318,21 @@ pre.error-message {
     font-weight: bold;
     margin-top: 20px;
     color: #007bff;
+  }
+}
+.ex24 {
+  &__description {
+    margin-bottom: 24px;
+  }
+  &__inputs {
+    margin-bottom: 24px;
+  }
+  &__label {
+    width: 240px;
+    vertical-align: middle;
+  }
+  &__input {
+    width: 86px;
   }
 }
 .ex31 {
