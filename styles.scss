@@ -300,6 +300,24 @@ pre.error-message {
     width: 86px;
   }
 }
+.ex23 {
+  margin-top: 16px;
+  &__answered {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: normal;
+  }
+  &__questioning {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  &__solution {
+    font-weight: bold;
+    margin-top: 20px;
+    color: #007bff;
+  }
+}
 .ex31 {
   &__inputline-label {
     width: 20%;

@@ -1,7 +1,8 @@
 module Pages.Ex23 exposing (Diagnosis, LastStep(..), Model, Msg(..), init, traverse, update, view)
 
+import Common.CmdEx exposing (withNone)
 import Html exposing (Html, div, input, label, span, text)
-import Html.Attributes exposing (checked, class, name, style, type_)
+import Html.Attributes exposing (checked, class, name, type_)
 import Html.Events exposing (onClick)
 import List exposing (indexedMap, length)
 import Maybe exposing (withDefault)
@@ -60,12 +61,12 @@ type alias Diagnosis =
 
 
 type alias Model =
-    { decisions : List Bool }
+    List Bool
 
 
 init : Model
 init =
-    { decisions = [] }
+    []
 
 
 traverse : List Bool -> Diagnosis
@@ -104,16 +105,11 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SelectAnswer index answer ->
-            ( { decisions = (List.take index <| model.decisions) ++ [ answer ] }, Cmd.none )
+            withNone <| List.take index model ++ [ answer ]
 
 
 
 -- VIEW
-
-
-view : Model -> Html Msg
-view model =
-    div [] [ renderDiagnosis model.decisions ]
 
 
 renderYesNo : Int -> Maybe Bool -> List (Html Msg)
@@ -123,8 +119,8 @@ renderYesNo n check =
             Maybe.map (\b -> ( [ checked b ], [ checked (not b) ] )) check
                 |> withDefault ( [], [] )
 
-        radio b =
-            [ type_ "radio", name <| String.fromInt n, onClick (SelectAnswer n b) ]
+        radio selected =
+            [ type_ "radio", name <| String.fromInt n, onClick (SelectAnswer n selected) ]
     in
     [ input (radio True ++ yes) []
     , label [] [ text "Yes" ]
@@ -139,18 +135,25 @@ renderDiagnosis decisions =
         diagnosis =
             traverse decisions
 
+        answered =
+            indexedMap
+                (\n ( q, a ) -> div [ class "ex23__answered" ] <| span [] [ text q ] :: (renderYesNo n <| Just a))
+                diagnosis.steps
+
         lastRow =
             case diagnosis.lastStep of
                 Question q ->
-                    div [ class "inputline" ] <| span [] [ text q ] :: renderYesNo (length diagnosis.steps) Nothing
+                    div [ class "ex23__questioning" ] <|
+                        span [] [ text q ]
+                            :: renderYesNo (length diagnosis.steps) Nothing
 
                 Solution s ->
-                    div [ style "font-weight" "bold", style "margin-top" "20px", style "color" "#007bff" ]
+                    div [ class "ex23__solution" ]
                         [ span [] [ text "Diagnosis: " ], text s ]
-
-        steps =
-            indexedMap
-                (\n ( q, a ) -> div [ class "inputline" ] <| span [] [ text q ] :: (renderYesNo n <| Just a))
-                diagnosis.steps
     in
-    div [] <| steps ++ [ lastRow ]
+    div [] <| answered ++ [ lastRow ]
+
+
+view : Model -> Html Msg
+view model =
+    div [ class "ex23 "] [ renderDiagnosis model ]
