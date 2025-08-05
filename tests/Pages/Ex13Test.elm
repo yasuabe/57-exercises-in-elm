@@ -17,28 +17,26 @@ import Test exposing (..)
 suite : Test
 suite =
     let
-        update msg m =
-            m |> Ex13.update msg |> Tuple.first
+        update msg =
+            Ex13.update msg >> Tuple.first
     in
     describe "Ex13 Module"
         [ describe "update"
             [ test "Change events should update the output" <|
-                \_ ->
-                    let
-                        model =
-                            Ex13.init
-                                |> update (Ex13.PrincipalChanged "1500")
-                                |> update (Ex13.RateChanged "4.3")
-                                |> update (Ex13.YearsChanged "6")
-                                |> update (Ex13.TimesChanged "4")
-                    in
-                    expectValidAmount model "1938.84"
+                always
+                    (Ex13.init
+                        |> update (Ex13.PrincipalChanged "1500")
+                        |> update (Ex13.RateChanged "4.3")
+                        |> update (Ex13.YearsChanged "6")
+                        |> update (Ex13.TimesChanged "4")
+                        |> expectValidAmount "1938.84"
+                    )
             ]
         ]
 
 
-expectValidAmount : Ex13.Model -> String -> Expectation
-expectValidAmount model expected =
+expectValidAmount : String -> Ex13.Model -> Expectation
+expectValidAmount expected model =
     case Ex13.makeOutput model of
         Ok (Just message) ->
             Expect.equal True <| String.contains expected message
