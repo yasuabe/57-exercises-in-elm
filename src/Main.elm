@@ -252,6 +252,7 @@ initDict =
         , ( 33, { init = \m -> { m | ex33Model = Just Ex33.init } } )
         , ( 40, { init = \m -> { m | ex40Model = Just Ex40.init } } )
         , ( 41, { init = \m -> { m | ex41Model = Just Ex41.init } } )
+        , ( 46, { init = \m -> { m | ex46Model = Just Ex46.init } } )
         , ( 47, { init = \m -> { m | ex47Model = Just Ex47.init } } )
         , ( 48, { init = \m -> { m | ex48Model = Just Ex48.init } } )
         , ( 52, { init = \m -> { m | ex52Model = Just Ex52.init } } )
@@ -282,6 +283,7 @@ type Msg
     | Ex33Msg Ex33.Msg
     | Ex40Msg Ex40.Msg
     | Ex41Msg Ex41.Msg
+    | Ex46Msg Ex46.Msg
     | Ex47Msg Ex47.Msg
     | Ex48Msg Ex48.Msg
     | Ex52Msg Ex52.Msg
@@ -471,6 +473,9 @@ update msg model =
 
         Ex41Msg subMsg ->
             update_ .ex41Model subMsg Ex41.update (\m n -> { m | ex41Model = Just n }) Ex41Msg
+
+        Ex46Msg subMsg ->
+            update_ .ex46Model subMsg Ex46.update (\m n -> { m | ex46Model = Just n }) Ex46Msg
 
         Ex47Msg subMsg ->
             update_ .ex47Model subMsg Ex47.update (\m n -> { m | ex47Model = Just n }) Ex47Msg
@@ -674,6 +679,9 @@ mainPane model =
 
             Just 41 ->
                 mapMain model 41 .ex41Model Ex41.view Ex41Msg
+
+            Just 46 ->
+                mapMain model 46 .ex46Model Ex46.view Ex46Msg
 
             Just 47 ->
                 mapMain model 47 .ex47Model Ex47.view Ex47Msg

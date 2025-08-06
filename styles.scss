@@ -48,10 +48,12 @@ main {
   justify-content: space-between;
   width: 600px;
 }
-main > div {
+
+main>div {
   width: 100%;
   margin-top: 16px;
 }
+
 label {
   padding: 0 10px 0 2px;
 }
@@ -290,58 +292,70 @@ pre.error-message {
     vertical-align: middle;
   }
 
-  &__inputline-number{
+  &__inputline-number {
     width: 75px;
   }
 }
+
 .ex14 {
   &__inputline-label {
     width: 240px;
     vertical-align: middle;
   }
+
   &__inputline-input {
     width: 86px;
   }
 }
+
 .ex23 {
   margin-top: 16px;
+
   &__answered {
     display: block;
     margin-bottom: 10px;
     font-weight: normal;
   }
+
   &__questioning {
     display: block;
     margin-bottom: 10px;
     font-weight: bold;
   }
+
   &__solution {
     font-weight: bold;
     margin-top: 20px;
     color: #007bff;
   }
 }
+
 .ex24 {
   &__description {
     margin-bottom: 24px;
   }
+
   &__inputs {
     margin-bottom: 24px;
   }
+
   &__label {
     width: 240px;
     vertical-align: middle;
   }
+
   &__input {
     width: 86px;
   }
 }
+
 .ex31 {
   &__inputline-label {
     width: 20%;
     display: inline-block;
     margin-right: 16px;
   }
+
   &__inputline-input {
     width: 104px;
   }
@@ -350,6 +364,7 @@ pre.error-message {
     display: inline-block;
     vertical-align: middle;
   }
+
   &__intensity-range {
     width: 104px;
     display: block;
@@ -384,25 +399,50 @@ pre.error-message {
     width: 50%
   }
 }
+
 .ex40 {
   &__filters {
     margin-bottom: 16px;
   }
+
   fieldset {
     padding-top: 12px;
     margin-bottom: 16px;
   }
+
   .inputline span {
     display: inline-block;
     width: 160px;
   }
 
 }
+
+.ex46 {
+  &__histogram {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px;
+
+    div {
+      display: contents;
+    }
+
+    label {
+      grid-column: 1;
+    }
+
+    progress {
+      grid-column: 2;
+    }
+  }
+}
+
 .ex48 {
   &__apikey-input {
     margin-right: 10px;
   }
 }
+
 .ex57 {
   &__disabled-text {
     color: $disabled-color;
