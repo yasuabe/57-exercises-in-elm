@@ -384,7 +384,11 @@ pre.error-message {
     width: 50%
   }
 }
-
+.ex48 {
+  &__apikey-input {
+    margin-right: 10px;
+  }
+}
 .ex57 {
   &__disabled-text {
     color: $disabled-color;

@@ -5,7 +5,7 @@
 -- ・ Display the total at the end.
 
 
-module Pages.Ex28 exposing (Model, Msg(..), init, update, view)
+module Pages.Ex28 exposing (Model, Msg(..), init, update, view, calculateTotal)
 
 import Common.CmdEx exposing (withNone)
 import Common.ResultMaybe as RM exposing (convertInputToIntField)
@@ -62,14 +62,14 @@ calculateTotal =
 renderInput : Int -> IntField -> Html Msg
 renderInput n value =
     let
-        clazz =
+        class =
             unpack
                 (always "inputline__number--invalid")
                 (always "inputline__number")
                 value
     in
     viewSimpleInput
-        clazz
+        class
         (NumberChanged n)
         "Enter a number: "
         "e.g. 15"
@@ -79,9 +79,7 @@ renderInput n value =
 viewOutputBlock : Int -> Html Msg
 viewOutputBlock output =
     pre [ class "output", readonly True ]
-        [ div
-            []
-            [ text <| "The total is " ++ String.fromInt output ++ "." ]
+        [ div [] [ text <| "The total is " ++ String.fromInt output ++ "." ]
         ]
 
 

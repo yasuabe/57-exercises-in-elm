@@ -1,5 +1,6 @@
 module Pages.Ex48 exposing (Model, Msg(..), init, kelvinToFahrenheit, update, view)
 
+import Basics.Extra exposing (flip)
 import Common.Events exposing (onEnter)
 import Common.HttpEx exposing (errorToString)
 import Common.Math exposing (roundToDecimals)
@@ -34,7 +35,7 @@ type alias WeatherData =
 
 type alias Model =
     { apiKey : Maybe String
-    , input : String
+    , query : String
     , tmpApiKey : String
     , weatherData : ResultMaybe String WeatherData
     , scale : TempScale
@@ -44,7 +45,7 @@ type alias Model =
 init : Model
 init =
     { apiKey = Nothing
-    , input = ""
+    , query = ""
     , tmpApiKey = "<API_KEY>"
     , weatherData = Ok Nothing
     , scale = C
@@ -88,7 +89,7 @@ getScaleInfo scale =
 
 type Msg
     = LoadConfig
-    | FetchData 
+    | FetchData
     | UpdateLocation String
     | SessionStorageItemReceived D.Value
     | GotData (Result String WeatherData)
@@ -114,7 +115,7 @@ update msg model =
             ( model, fetchWeatherData model )
 
         UpdateLocation input ->
-            ( { model | input = String.trim input }, Cmd.none )
+            ( { model | query = String.trim input }, Cmd.none )
 
         GotData response ->
             ( { model | weatherData = Result.map Just response }, Cmd.none )
@@ -151,11 +152,11 @@ registerApiKey apiKey =
 
 
 fetchWeatherData : Model -> Cmd Msg
-fetchWeatherData { apiKey, input } =
+fetchWeatherData { apiKey, query } =
     case apiKey of
         Just key ->
             Http.get
-                { url = "https://api.openweathermap.org/data/2.5/weather?q=" ++ input ++ "&appid=" ++ key
+                { url = "https://api.openweathermap.org/data/2.5/weather?q=" ++ query ++ "&appid=" ++ key
                 , expect = Http.expectJson (Result.mapError errorToString >> GotData) weatherDataDecoder
                 }
 
@@ -174,74 +175,56 @@ weatherDataDecoder =
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
-    div [ style "max-width" "600px" ]
-        [ viewInputBlock model.apiKey
-        , viewFetchResult model
+viewWeatherQuery : String -> List (Html Msg)
+viewWeatherQuery key =
+    [ div [ class "input-line" ]
+        [ label [ for "query" ] [ text "Where Are You? " ]
+        , input
+            [ id "query"
+            , class "inputline__text"
+            , placeholder "eg. Kanagawa"
+            , onInput UpdateLocation
+            , onEnter (always FetchData)
+            ]
+            [ text "Fetch" ]
+        , button [ class "inputline__button", onClick FetchData ] [ text "Fetch" ]
+        , div [ style "display" "none" ] [ text key ]
         ]
+    ]
+
+
+viewApiKeyInput : List (Html Msg)
+viewApiKeyInput =
+    [ pre
+        [ class "error-message" ]
+        [ text "OpenWeatherMap API key is missing. \nPlease set it in session storage." ]
+    , div []
+        [ input
+            [ type_ "text"
+            , class "ex48__apikey-input"
+            , placeholder "Enter API key for OpenWeatherMap"
+            , onInput ApiKeyChanged
+            ]
+            []
+        , button
+            [ type_ "text"
+            , onClick RegisterApiKey
+            ]
+            [ text "Set API key" ]
+        ]
+    ]
 
 
 viewInputBlock : Maybe String -> Html Msg
 viewInputBlock apiKey =
-    case apiKey of
-        Just key ->
-            div
-                [ class "inputblock" ]
-                [ div [ class "input-line" ]
-                    [ label [ for "query" ] [ text "Where Are You? " ]
-                    , input
-                        [ id "query"
-                        , class "inputline__text"
-                        , placeholder "eg. Kanagawa"
-                        , onInput UpdateLocation
-                        , onEnter (always FetchData)
-                        ]
-                        [ text "Fetch" ]
-                    , button [ class "inputline__button", onClick FetchData ] [ text "Fetch" ]
-                    , div [ style "display" "none" ] [ text key ]
-                    ]
-                ]
-
-        Nothing ->
-            div
-                []
-                [ pre
-                    [ class "error-message"]
-                    [ text "OpenWeatherMap API key is missing. \nPlease set it in session storage." ]
-                , div []
-                    [ input
-                        [ type_ "text"
-                        , placeholder "Enter API key for OpenWeatherMap"
-                        , onInput ApiKeyChanged
-                        ]
-                        []
-                    , button
-                        [ type_ "text"
-                        , onClick RegisterApiKey
-                        ]
-                        [ text "Set API key" ]
-                    ]
-                ]
+    Maybe.map viewWeatherQuery apiKey
+        |> Maybe.withDefault viewApiKeyInput
+        |> div [ class "inputblock" ]
 
 
-viewFetchResult : Model -> Html Msg
-viewFetchResult { weatherData, scale } =
+viewScaleRadio : TempScale -> List (Html Msg)
+viewScaleRadio scale =
     let
-        tempScale =
-            getScaleInfo scale
-
-        output =
-            weatherData
-                |> Result.mapError List.singleton
-                |> RM.map
-                    (\w ->
-                        String.join "\n"
-                            [ w.location ++ " weather: "
-                            , String.fromFloat (tempScale.func w.temp) ++ " degrees " ++ tempScale.text
-                            ]
-                    )
-
         makeScaleRadio key =
             let
                 v =
@@ -258,21 +241,41 @@ viewFetchResult { weatherData, scale } =
                 []
             , label [ for v.id ] [ text v.text ]
             ]
-
-        options =
-            List.concatMap makeScaleRadio [ C, F, K ]
-
-        scaleRadio =
-            weatherData
-                |> RM.map
-                    (always
-                        [ fieldset
-                            []
-                            [ legend [] [ text "Temperature Scale" ]
-                            , div [ class "scale-radio" ] options
-                            ]
-                        ]
-                    )
-                |> RM.withDefault []
     in
-    div [] (scaleRadio ++ [ viewOutputBlock output "No data available" ])
+    [ fieldset
+        []
+        [ legend [] [ text "Temperature Scale" ]
+        , div [ class "scale-radio" ] (List.concatMap makeScaleRadio [ C, F, K ])
+        ]
+    ]
+
+
+viewFetchResult : Model -> Html Msg
+viewFetchResult { weatherData, scale } =
+    let
+        scaleInfo =
+            getScaleInfo scale
+
+        outputBlock =
+            weatherData
+                |> Result.mapError List.singleton
+                |> RM.map
+                    (\w ->
+                        String.join "\n"
+                            [ w.location ++ " weather: "
+                            , String.fromFloat (scaleInfo.func w.temp) ++ " degrees " ++ scaleInfo.text
+                            ]
+                    )
+                |> flip viewOutputBlock "No data available"
+                |> List.singleton
+    in
+    div []
+        (viewScaleRadio scale ++ outputBlock)
+
+
+view : Model -> Html Msg
+view model =
+    div [ style "max-width" "600px" ]
+        [ viewInputBlock model.apiKey
+        , viewFetchResult model
+        ]
