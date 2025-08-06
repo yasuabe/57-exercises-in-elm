@@ -17,9 +17,8 @@ suite =
                 \_ ->
                     Ex47.init
                         |> Expect.equal
-                            { astroData = Nothing
+                            { astroData = Ok Nothing
                             , loading = False
-                            , error = Nothing
                             }
             ]
         , describe "update"
@@ -27,9 +26,8 @@ suite =
                 \_ ->
                     let
                         initialModel =
-                            { astroData = Nothing
+                            { astroData = Err Http.Timeout
                             , loading = False
-                            , error = Just "Previous error"
                             }
 
                         ( newModel, _ ) =
@@ -37,9 +35,8 @@ suite =
                     in
                     newModel
                         |> Expect.equal
-                            { astroData = Nothing
+                            { astroData = Err Http.Timeout
                             , loading = True
-                            , error = Nothing
                             }
             , test "GotData with Ok result updates astroData and sets loading to false" <|
                 \_ ->
@@ -51,9 +48,8 @@ suite =
                             }
 
                         initialModel =
-                            { astroData = Nothing
+                            { astroData = Ok Nothing
                             , loading = True
-                            , error = Nothing
                             }
 
                         ( newModel, _ ) =
@@ -61,17 +57,15 @@ suite =
                     in
                     newModel
                         |> Expect.equal
-                            { astroData = Just astroData
+                            { astroData = Ok <| Just astroData
                             , loading = False
-                            , error = Nothing
                             }
             , test "GotData with Err result sets error and loading to false" <|
                 \_ ->
                     let
                         initialModel =
-                            { astroData = Nothing
+                            { astroData = Ok Nothing
                             , loading = True
-                            , error = Nothing
                             }
 
                         ( newModel, _ ) =
@@ -79,9 +73,8 @@ suite =
                     in
                     newModel
                         |> Expect.equal
-                            { astroData = Nothing
+                            { astroData = Err Http.NetworkError
                             , loading = False
-                            , error = Just "Failed to fetch data"
                             }
             ]
         , describe "view"
@@ -100,18 +93,16 @@ suite =
                         |> Query.has [ text "Click the button to fetch data" ]
             , test "shows loading message when loading" <|
                 \_ ->
-                    { astroData = Nothing
+                    { astroData = Ok Nothing
                     , loading = True
-                    , error = Nothing
                     }
                         |> Ex47.view
                         |> Query.fromHtml
                         |> Query.has [ text "Loading..." ]
             , test "shows error message when error exists" <|
                 \_ ->
-                    { astroData = Nothing
+                    { astroData = Err Http.NetworkError
                     , loading = False
-                    , error = Just "Network error"
                     }
                         |> Ex47.view
                         |> Query.fromHtml
@@ -129,9 +120,8 @@ suite =
                             }
 
                         model =
-                            { astroData = Just astroData
+                            { astroData = Ok <| Just astroData
                             , loading = False
-                            , error = Nothing
                             }
                     in
                     Ex47.view model
@@ -157,9 +147,8 @@ suite =
                             }
 
                         model =
-                            { astroData = Just astroData
+                            { astroData = Ok <| Just astroData
                             , loading = False
-                            , error = Nothing
                             }
                     in
                     Ex47.view model
