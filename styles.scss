@@ -216,7 +216,7 @@ pre.error-message {
 
   th,
   td {
-    padding: 12px 15px;
+    padding: 8px 15px;
     text-align: left;
     border-bottom: 1px solid $table-border;
   }
@@ -383,6 +383,20 @@ pre.error-message {
   &__th-rate {
     width: 50%
   }
+}
+.ex40 {
+  &__filters {
+    margin-bottom: 16px;
+  }
+  fieldset {
+    padding-top: 12px;
+    margin-bottom: 16px;
+  }
+  .inputline span {
+    display: inline-block;
+    width: 160px;
+  }
+
 }
 .ex48 {
   &__apikey-input {
