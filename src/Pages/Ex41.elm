@@ -17,7 +17,6 @@ import File.Download as Download
 import File.Select as Select
 import Html exposing (Html, button, div, pre, text)
 import Html.Events exposing (onClick)
-import Maybe exposing (withDefault)
 import Task
 
 

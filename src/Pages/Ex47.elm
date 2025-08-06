@@ -1,6 +1,19 @@
-module Pages.Ex47 exposing (Model, Msg(..), init, update, view, personDecoder, astroDataDecoder, fetchAstroData)
+-- ## Ex47: Who’s in Space?
+--
+-- - Access live data from the Open Notify API (http://api.open-notify.org/astros.json).
+-- - Parse the JSON response.
+-- - Display:
+--     - Total number of people in space.
+--     - A table of names and spacecraft.
+-- - Do not use pre-downloaded data.
 
-import Html exposing (Html, div, text, table, thead, tbody, caption, tr, th, td, button)
+
+module Pages.Ex47 exposing (Model, Msg(..), astroDataDecoder, fetchAstroData, init, personDecoder, update, view)
+
+import Common.CmdEx exposing (withNone)
+import Common.HttpEx exposing (errorToString)
+import Common.ResultMaybe exposing (ResultMaybe)
+import Html exposing (Html, button, caption, div, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Http
@@ -25,18 +38,17 @@ type alias AstroData =
 
 
 type alias Model =
-    { astroData : Maybe AstroData
+    { astroData : ResultMaybe Http.Error AstroData
     , loading : Bool
-    , error : Maybe String
     }
 
 
 init : Model
 init =
-    { astroData = Nothing
+    { astroData = Ok Nothing
     , loading = False
-    , error = Nothing
     }
+
 
 
 -- MSG
@@ -55,27 +67,25 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FetchData ->
-            ( { model | loading = True, error = Nothing }
+            ( { model | loading = True }
             , fetchAstroData
             )
-        
+
         GotData result ->
             case result of
                 Ok astroData ->
-                    ( { model 
-                      | astroData = Just astroData
-                      , loading = False
-                      }
-                    , Cmd.none
-                    )
-                
-                Err _ ->
-                    ( { model 
-                      | error = Just "Failed to fetch data"
-                      , loading = False
-                      }
-                    , Cmd.none
-                    )
+                    withNone
+                        { model
+                            | astroData = Ok <| Just astroData
+                            , loading = False
+                        }
+
+                Err error ->
+                    withNone
+                        { model
+                            | astroData = Err error
+                            , loading = False
+                        }
 
 
 
@@ -113,40 +123,15 @@ personDecoder =
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
-    div []
-        [ button [ onClick FetchData ] [ text "Fetch Astronaut Data" ]
-        , viewContent model
-        ]
-
-
-viewContent : Model -> Html Msg
-viewContent model =
-    if model.loading then
-        div [] [ text "Loading..." ]
-    else
-        case model.error of
-            Just errorMsg ->
-                div [] [ text errorMsg ]
-            
-            Nothing ->
-                case model.astroData of
-                    Just data ->
-                        viewTable data
-                    
-                    Nothing ->
-                        div [] [ text "Click the button to fetch data" ]
-
-
 viewTable : AstroData -> Html Msg
 viewTable data =
     div []
         [ table [ class "contents-table" ]
-            [ caption [] [ text ("Total people in space: " ++ String.fromInt data.number) ]
+            [ caption []
+                [ text ("Total people in space: " ++ String.fromInt data.number) ]
             , thead []
                 [ tr []
-                    [ th [ style "width" "70%"] [ text "Name" ]
+                    [ th [ style "width" "70%" ] [ text "Name" ]
                     , th [] [ text "Craft" ]
                     ]
                 ]
@@ -161,4 +146,30 @@ viewPersonRow person =
     tr []
         [ td [] [ text person.name ]
         , td [] [ text person.craft ]
+        ]
+
+
+viewContent : Model -> Html Msg
+viewContent { astroData, loading } =
+    case ( astroData, loading ) of
+        ( _, True ) ->
+            text "Loading..."
+
+        ( Ok (Just data), _ ) ->
+            viewTable data
+
+        ( Ok Nothing, _ ) ->
+            text "Click the button to fetch data"
+
+        ( Err error, _ ) ->
+            text ("Error: " ++ errorToString error)
+
+
+view : Model -> Html Msg
+view model =
+    div []
+        [ div [ class "inputline" ]
+            [ button [ onClick FetchData ] [ text "Fetch Astronaut Data" ]
+            ]
+        , div [] [ viewContent model ]
         ]
