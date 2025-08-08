@@ -424,6 +424,11 @@ update msg model =
                     , pureCmd (Ex48Msg << always Ex48.LoadConfig) ()
                     )
 
+                Exercise 49 ->
+                    ( { model0 | currentExercise = Just 49, ex49Model = Just Ex49.init }
+                    , pureCmd (Ex49Msg << Ex49.FetchFeed) (Debug.log "Ex49 init" "nymphalidae")
+                    )
+
                 Exercise n ->
                     ( Dict.get n initDict
                         |> Maybe.map (\p -> p.init { model0 | currentExercise = Just n })
