@@ -12,9 +12,12 @@ import Common.Events exposing (onEnter)
 import Common.HttpEx as HE
 import Common.UI exposing (displayNone)
 import Html exposing (Html, div, img, input, span, text)
-import Html.Attributes exposing (alt, class, placeholder, src, type_)
+import Html.Attributes exposing (alt, class, placeholder, src, title, type_)
+import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D exposing (errorToString)
+import List.Extra as LX
+import Maybe.Extra as MX
 import Result exposing (Result)
 import String as S exposing (dropLeft, dropRight)
 
@@ -23,42 +26,30 @@ import String as S exposing (dropLeft, dropRight)
 -- MODEL
 
 
+type alias Item =
+    { title : String
+    , url : String
+    , date_taken : String
+    , author : String
+    }
+
+
 type alias Model =
-    { feedResult : Result String (List String)
+    { feedResult : Result String (List Item)
     , status : Maybe String
+    , selected : Maybe Int
     }
 
 
 init : Model
 init =
-    { feedResult =
-        Ok
-            [ "https://live.staticflickr.com/65535/54707576688_8a8a918217_m.jpg"
-            , "https://live.staticflickr.com/65535/54707576728_e21872c1c9_m.jpg"
-            , "https://live.staticflickr.com/65535/54706545637_efbfb60dba_m.jpg"
-            , "https://live.staticflickr.com/65535/54707576693_18b8147ba1_m.jpg"
-            , "https://live.staticflickr.com/65535/54707326984_50190acedc_m.jpg"
-            , "https://live.staticflickr.com/65535/54707103091_bd15e6558a_m.jpg"
-            , "https://live.staticflickr.com/65535/54707328624_b5aacd7f2f_m.jpg"
-            , "https://live.staticflickr.com/65535/54707250534_7331dce650_m.jpg"
-            , "https://live.staticflickr.com/65535/54706809341_55091b7759_m.jpg"
-            , "https://live.staticflickr.com/65535/54706653135_7e7ff17c4f_m.jpg"
-            , "https://live.staticflickr.com/65535/54706033088_b007f10dc7_m.jpg"
-            , "https://live.staticflickr.com/65535/54704786682_d621c7efb0_m.jpg"
-            , "https://live.staticflickr.com/65535/54705535839_734b1fbfa7_m.jpg"
-            , "https://live.staticflickr.com/65535/54705257821_6c62da8504_m.jpg"
-            , "https://live.staticflickr.com/65535/54705478348_fbcef96423_m.jpg"
-            , "https://live.staticflickr.com/65535/54705462263_e41b2c1c7c_m.jpg"
-            , "https://live.staticflickr.com/65535/54705243868_627d3d7847_m.jpg"
-            , "https://live.staticflickr.com/65535/54705368885_aedfb0d135_m.jpg"
-            , "https://live.staticflickr.com/65535/54705034676_5a2c65907e_m.jpg"
-            , "https://live.staticflickr.com/65535/54705369000_5e7fcc6159_m.jpg"
-            ]
+    { feedResult = Ok []
     , status = Nothing
+    , selected = Nothing
     }
 
 
-decode : String -> Result String (List String)
+decode : String -> Result String (List Item)
 decode =
     let
         stripJsonp =
@@ -67,9 +58,21 @@ decode =
         decoder =
             D.field "items" <|
                 D.list <|
-                    D.at [ "media", "m" ] D.string
+                    D.map4 Item
+                        (D.field "title" D.string)
+                        (D.at [ "media", "m" ] D.string)
+                        (D.field "date_taken" D.string)
+                        (D.field "author" D.string)
     in
     stripJsonp >> D.decodeString decoder >> Result.mapError errorToString
+
+
+selectedItem : Model -> Maybe Item
+selectedItem model =
+    MX.andThen2
+        (\index items -> LX.getAt index items)
+        model.selected
+        (Result.toMaybe model.feedResult)
 
 
 
@@ -79,6 +82,8 @@ decode =
 type Msg
     = FetchFeed String
     | GetText (Result Http.Error String)
+    | SelectImage Int
+    | UnselectImage
 
 
 
@@ -97,13 +102,19 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FetchFeed query ->
-            ( { model | status = Just "Loading..." }, feedDataDecoder query )
+            ( { model | selected = Nothing, status = Just "Loading..." }, feedDataDecoder query )
 
         GetText (Ok result) ->
             withNone { model | status = Nothing, feedResult = decode result }
 
         GetText (Err error) ->
             withNone { model | status = Nothing, feedResult = Err (HE.errorToString error) }
+
+        SelectImage index ->
+            ( { model | selected = Just index }, Cmd.none )
+
+        UnselectImage ->
+            ( { model | selected = Nothing }, Cmd.none )
 
 
 
@@ -137,14 +148,15 @@ viewInput model =
         ]
 
 
-viewThumbnail : String -> Html Msg
-viewThumbnail url =
+viewThumbnail : Int -> Item -> Html Msg
+viewThumbnail index item =
     div
         [ class "ex49__thumbnail-container" ]
         [ img
-            [ src url
-            , alt "Flickr Image"
-            , class "thumbnail"
+            [ src item.url
+            , alt item.title
+            , title item.title
+            , onClick (SelectImage index)
             ]
             []
         ]
@@ -155,15 +167,46 @@ viewPictures model =
     case model.feedResult of
         Ok pictures ->
             div [ class "ex49__gallery" ]
-                (List.map viewThumbnail pictures)
+                (List.indexedMap viewThumbnail pictures)
 
         Err error ->
             div [] [ text ("Error: " ++ error) ]
+
+
+viewEnlarged : Model -> Html Msg
+viewEnlarged model =
+    case selectedItem model of
+        Just item ->
+            div
+                [ class "ex49__enlarged-overlay"
+                , onClick UnselectImage
+                ]
+                [ div
+                    [ class "ex49__close-button"
+                    , onClick UnselectImage
+                    ]
+                    [ text "×" ]
+                , div
+                    [ class "ex49__enlarged-content"
+                    , onClick UnselectImage
+                    ]
+                    [ img [ src item.url, alt item.title, title item.title ] []
+                    , div [ class "ex49__enlarged-title" ] [ text item.title ]
+                    , div [ class "ex49__enlarged-date" ] [ text item.date_taken ]
+                    , div [ class "ex49__enlarged-date" ] [ text item.author ]
+                    ]
+                ]
+
+        Nothing ->
+            div [ displayNone ] []
 
 
 view : Model -> Html Msg
 view model =
     div []
         [ viewInput model
-        , viewPictures model
+        , div [ class "ex49__container" ]
+            [ viewPictures model
+            , viewEnlarged model
+            ]
         ]

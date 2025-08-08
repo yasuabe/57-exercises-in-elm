@@ -171,6 +171,7 @@ button {
   &__prompt {
     margin-right: 15px;
     display: inline-block;
+    vertical-align: bottom;
   }
 
   &__number {
@@ -449,12 +450,17 @@ pre.error-message {
 .ex49 {
   $thumbnail-size: 118px;
 
+  &__container {
+    position: relative;
+  }
+
   &__thumbnail-container {
     height: $thumbnail-size;
     width: $thumbnail-size;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 
   &__thumbnail-container img {
@@ -462,10 +468,68 @@ pre.error-message {
     max-width: $thumbnail-size;
   }
 
+  &__thumbnail-container img:hover {
+    transform: scale(1.04);
+  }
+
   &__gallery {
     display: grid;
     grid-template-columns: repeat(5, $thumbnail-size);
     gap: 2px;
+  }
+
+  &__enlarged-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    cursor: pointer;
+  }
+
+  &__enlarged-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 80%;
+    max-height: 80%;
+    overflow: auto;
+    text-align: center;
+    cursor: default;
+  }
+
+  &__enlarged-content img {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+  }
+
+  &__enlarged-title {
+    font-size: $font-size-larger;
+    font-weight: bold;
+    margin: 15px 0 10px 0;
+    color: #333;
+  }
+
+  &__enlarged-date {
+    font-size: $font-size-smaller;
+    color: #666;
+    margin: 5px 0;
+  }
+
+  &__close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    z-index: 1001;
   }
 }
 

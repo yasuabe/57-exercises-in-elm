@@ -347,8 +347,8 @@ init _ url key =
                 Exercise 48 ->
                     pureCmd (Ex48Msg << always Ex48.LoadConfig) ()
 
-                -- Exercise 49 ->
-                --     pureCmd (Ex49Msg << Ex49.FetchFeed) ""
+                Exercise 49 ->
+                    pureCmd (Ex49Msg << Ex49.FetchFeed) ""
 
                 _ ->
                     Cmd.none

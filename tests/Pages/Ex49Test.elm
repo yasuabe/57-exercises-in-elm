@@ -7,21 +7,26 @@ import Test.Html.Selector exposing (..)
 
 
 
-
 suite : Test
 suite =
     describe "Ex49 Module"
-        [ describe "parse"
-            [ test "Flickr API response" <|
+        [ describe "decode"
+            [ test "should decode the given Flickr feed into the list of Items" <|
                 \_ ->
                     decode sampleResponse
                         |> Expect.equal
                             (Ok
-                                -- { items =
-                                [ "https://live.staticflickr.com/65535/54704464772_f145f9d166_m.jpg"
-                                , "https://live.staticflickr.com/65535/54704465152_a0008a07dc_m.jpg"
+                                [ { title = "HIDDEN GARDENS"
+                                  , url = "https://live.staticflickr.com/65535/54704464772_f145f9d166_m.jpg"
+                                  , date_taken = "2025-08-07T03:06:14-08:00"
+                                  , author = """nobody@flickr.com ("trisha owen")"""
+                                  }
+                                , { title = "Ferrari F40 1987"
+                                  , url = "https://live.staticflickr.com/65535/54704465152_a0008a07dc_m.jpg"
+                                  , date_taken = "2025-06-05T15:16:38-08:00"
+                                  , author = """nobody@flickr.com ("Dr. Dwarf")"""
+                                  }
                                 ]
-                             -- }
                             )
             ]
         ]
