@@ -426,21 +426,46 @@ pre.error-message {
     div {
       display: contents;
     }
+
     span:nth-child(2) {
       background-color: blue;
       height: 16px;
       margin-top: 6px;
     }
+
     span:nth-child(3) {
       text-align: right;
     }
-    
+
   }
 }
 
 .ex48 {
   &__apikey-input {
     margin-right: 10px;
+  }
+}
+
+.ex49 {
+  $thumbnail-size: 118px;
+
+  &__thumbnail-container {
+    height: $thumbnail-size;
+    width: $thumbnail-size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__thumbnail-container img {
+    max-height: $thumbnail-size;
+    max-width: $thumbnail-size;
+  }
+
+  &__gallery {
+    display: grid;
+    grid-template-columns: repeat(5, $thumbnail-size);
+    gap: 2px;
   }
 }
 

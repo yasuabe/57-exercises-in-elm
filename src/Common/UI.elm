@@ -2,7 +2,7 @@ module Common.UI exposing (..)
 
 import Common.ResultMaybe exposing (ResultMaybe)
 import Html exposing (Attribute, Html, div, input, pre, span, text)
-import Html.Attributes exposing (class, placeholder, readonly, value)
+import Html.Attributes exposing (class, placeholder, readonly, value, style)
 import Html.Events exposing (onInput)
 import List exposing (map)
 import Maybe.Extra as MX
@@ -53,6 +53,15 @@ viewOutputBlock output whenEmpty =
         Err messages ->
             pre [ class "output error-message", readonly True ] <|
                 map (\errorMessage -> div [] [ text errorMessage ]) messages
+
+
+
+-- Style
+
+
+displayNone : Attribute msg
+displayNone =
+    style "display" "none"
 
 
 

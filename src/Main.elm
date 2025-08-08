@@ -255,6 +255,7 @@ initDict =
         , ( 46, { init = \m -> { m | ex46Model = Just Ex46.init } } )
         , ( 47, { init = \m -> { m | ex47Model = Just Ex47.init } } )
         , ( 48, { init = \m -> { m | ex48Model = Just Ex48.init } } )
+        , ( 49, { init = \m -> { m | ex49Model = Just Ex49.init } } )
         , ( 52, { init = \m -> { m | ex52Model = Just Ex52.init } } )
         , ( 57, { init = \m -> { m | ex57Model = Just Ex57.init } } )
         ]
@@ -286,6 +287,7 @@ type Msg
     | Ex46Msg Ex46.Msg
     | Ex47Msg Ex47.Msg
     | Ex48Msg Ex48.Msg
+    | Ex49Msg Ex49.Msg
     | Ex52Msg Ex52.Msg
     | Ex53Msg Ex53.Msg
     | Ex57Msg Ex57.Msg
@@ -344,6 +346,9 @@ init _ url key =
             case route of
                 Exercise 48 ->
                     pureCmd (Ex48Msg << always Ex48.LoadConfig) ()
+
+                -- Exercise 49 ->
+                --     pureCmd (Ex49Msg << Ex49.FetchFeed) ""
 
                 _ ->
                     Cmd.none
@@ -482,6 +487,9 @@ update msg model =
 
         Ex48Msg subMsg ->
             update_ .ex48Model subMsg Ex48.update (\m n -> { m | ex48Model = Just n }) Ex48Msg
+
+        Ex49Msg subMsg ->
+            update_ .ex49Model subMsg Ex49.update (\m n -> { m | ex49Model = Just n }) Ex49Msg
 
         Ex52Msg subMsg ->
             update_ .ex52Model subMsg Ex52.update (\m n -> { m | ex52Model = Just n }) Ex52Msg
@@ -688,6 +696,9 @@ mainPane model =
 
             Just 48 ->
                 mapMain model 48 .ex48Model Ex48.view Ex48Msg
+
+            Just 49 ->
+                mapMain model 49 .ex49Model Ex49.view Ex49Msg
 
             Just 52 ->
                 mapMain model 52 .ex52Model Ex52.view Ex52Msg

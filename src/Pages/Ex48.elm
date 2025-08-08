@@ -109,6 +109,7 @@ update msg model =
             ( model, getItem "Ex53" )
 
         SessionStorageItemReceived value ->
+            -- TODO: use `withNone`
             ( { model | apiKey = decodeConfig value }, Cmd.none )
 
         FetchData ->
