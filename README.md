@@ -75,8 +75,8 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
 | Ex47 [x] [Who’s in Space?](src/Pages/Ex47.elm)                | elm/http | HTTP Client, JSON decode | 3(2) |
-| Ex48 [x] [Grabbing the Weather](src/Pages/Ex48.elm)           | elm/http | SessionStora, port, JSON encode/decode, HTTP Client| 4(3) |
-| Ex49 [ ] [Flickr Photo Search](src/Pages/Ex49.elm)            | | | |
+| Ex48 [x] [Grabbing the Weather](src/Pages/Ex48.elm)           | elm/http | SessionStorage, port, JSON encode/decode, HTTP Client| 4(3) |
+| Ex49 [x] [Flickr Photo Search](src/Pages/Ex49.elm)            |  elm/http | HTTP Client, CORS proxy(AWS Lambda/API Gateway) | 4(3) |
 | Ex50 [ ] [Movie Recommendations](src/Pages/Ex50.elm)          | | | |
 | Ex51 [ ] [Pushing Notes to Firebase](src/Pages/Ex51.elm)      | | | |
 | Ex52 [x] [Creating Your Own Time Service](src/Pages/Ex52.elm)    rtfeldman/elm-iso8601-date-strings | JavaScript Interop(port), Json encode/decode, time formatting, BroadcastChannel (JavaScript)|4(3) |
