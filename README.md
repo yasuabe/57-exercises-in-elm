@@ -61,7 +61,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex37 [ ] [Password Generator](src/Pages/Ex37.elm)    | | | |
 | Ex38 [ ] [Filtering Values](src/Pages/Ex39.elm)      | | | |
 | Ex39 [ ] [Sorting Records](src/Pages/Ex39.elm)       | | | |
-| Ex40 [ ] [Filtering Records](src/Pages/Ex40.elm)     | | | |
+| Ex40 [x] [Filtering Records](src/Pages/Ex40.elm)     | | |3(2) |
 #### Chapter 8: Working with Files
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
@@ -70,7 +70,7 @@ A personal project to solve the exercises from the book *Exercises for Programme
 | Ex43 [ ] [Website Generator](src/Pages/Ex43.elm)     | | | |
 | Ex44 [ ] [Product Search](src/Pages/Ex44.elm)        | | | |
 | Ex45 [ ] [Word Finder](src/Pages/Ex45.elm)           | | | |
-| Ex46 [ ] [Word Frequency Finder](src/Pages/Ex46.elm) | | | |
+| Ex46 [x] [Word Frequency Finder](src/Pages/Ex46.elm) | | |3(2) |
 #### Chapter 9: Working with External Services
 | Exercise | dependencies | Memo  | Lv.  |
 | -------- | -------------| ----- | -----:|
