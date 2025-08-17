@@ -9,7 +9,7 @@
 port module Pages.Ex52 exposing (Model, Msg(..), init, update, view)
 
 import Common.Format exposing (..)
-import Common.ResultEx as ResultEx exposing (either)
+import Common.ResultEx exposing (either)
 import Common.TimeEx exposing (decompose, toEnglishMonth)
 import Env exposing (baseUrl)
 import Html exposing (Html, a, button, div, text)
@@ -17,6 +17,7 @@ import Html.Attributes exposing (class, href, target)
 import Html.Events exposing (onClick)
 import Iso8601
 import Json.Decode as Decode exposing (Decoder, decodeString)
+import Result.Extra exposing (mapBoth)
 import String exposing (fromInt)
 import Time exposing (Posix)
 
@@ -64,7 +65,7 @@ update msg model =
             let
                 decoded =
                     decodeString currentTimeDecoder timeString
-                        |> ResultEx.mapEither .currentTime Decode.errorToString
+                        |> mapBoth Decode.errorToString .currentTime
             in
             ( { model | timestamp = decoded }, Cmd.none )
 

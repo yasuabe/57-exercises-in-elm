@@ -10,15 +10,7 @@ import String exposing (fromInt)
 suite : Test
 suite =
     describe "Common.MaybeEx"
-        [ describe "maybe"
-            [ test "should apply `f` to `Just x` and return the result" <|
-                \_ -> 
-                    equal "0" <| SUT.maybe "x" String.fromInt <| Just 0
-            , test "should return `n` for `Nothing`" <|
-                \_ -> 
-                    equal "x" <| SUT.maybe "x" String.fromInt Nothing
-            ]
-        , describe "mapToList"
+        [ describe "mapToList"
             [ test "should map `Nothing` to an empty list" <|
                 \_ ->
                     Expect.equal [] <| mapToList (always []) Nothing

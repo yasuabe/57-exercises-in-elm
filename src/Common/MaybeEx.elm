@@ -1,24 +1,16 @@
 module Common.MaybeEx exposing (..)
 
+import Maybe.Extra exposing (unwrap)
 
-maybe : b -> (a -> b) -> Maybe a -> b
-maybe n f maybeValue =
-    case maybeValue of
-        Just value ->
-            f value
 
-        Nothing ->
-            n
+mapToList : (a -> List b) -> Maybe a -> List b
+mapToList =
+    unwrap []
 
 
 filter : (a -> Bool) -> Maybe a -> Maybe a
 filter =
     Maybe.andThen << fromFilter
-
-
-mapToList : (a -> List b) -> Maybe a -> List b
-mapToList f maybeValue =
-    maybe [] f maybeValue
 
 
 fromFilter : (a -> Bool) -> a -> Maybe a
@@ -30,7 +22,9 @@ fromFilter predicate value =
         Nothing
 
 
+
 -- Maybe String
+
 
 toMaybe : String -> Maybe String
 toMaybe =
@@ -40,4 +34,3 @@ toMaybe =
 fromMaybe : Maybe String -> String
 fromMaybe =
     Maybe.withDefault ""
-

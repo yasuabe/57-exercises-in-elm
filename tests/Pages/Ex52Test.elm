@@ -1,6 +1,5 @@
 module Pages.Ex52Test exposing (..)
 
-import Common.ResultEx as ResultEx
 import Expect
 import Iso8601 exposing (fromTime)
 import Pages.Ex52 as Ex52
@@ -8,6 +7,7 @@ import Test exposing (..)
 import Test.Html.Selector exposing (..)
 import Tuple exposing (first)
 import Utils.ExpectEx exposing (checkStringContains)
+import Result.Extra exposing (merge)
 
 
 suite : Test
@@ -19,7 +19,7 @@ suite =
                 |> first
                 |> .timestamp
                 |> Result.map fromTime
-                |> ResultEx.fromEither
+                |> merge
     in
     describe "Ex52 Module"
         [ describe "update"
